@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  phone     String?
+  name      String   @default("")
+  createdAt DateTime @default(now())
+  orders    Order[]
+}
+
+model Order {
+  id             String      @id @default(uuid())
+  subjectName    String
+  subjectAge     String
+  subjectGender  String
+  aiLabel        String      @default("")
+  customerEmail  String      @default("")
+  customerPhone  String      @default("")
+  customerNote   String      @default("")
+  status         OrderStatus @default(RECEIVED)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+
+  trainingId     String?
+  trainingFailed Boolean     @default(false)
+  falRequestId   String?     // fal.ai queue request_id for webhook correlation
+  loraUrl        String?
+  aiOverride     String      @default("")
+
+  userId         String?
+  user           User?       @relation(fields: [userId], references: [id])
+  characters     OrderCharacter[]
+  uploads        Upload[]
+  generatedImages GeneratedImage[]
+}
+
+enum OrderStatus {
+  RECEIVED
+  TRAINING
+  SAMPLING
+  PROCESSING_ALL
+  READY_FOR_PRINT
+  SHIPPED
+  CANCELLED
+}
+
+model OrderCharacter {
+  id        String  @id @default(uuid())
+  orderId   String
+  name      String  // English name for AI
+  displayName String // Hebrew display name
+  category  String  // superheroes | professions | fairytales | custom
+  position  Int     // order within the game (0-19)
+
+  order     Order   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Upload {
+  id           String   @id @default(uuid())
+  orderId      String
+  filename     String
+  originalName String
+  mimeType     String
+  sizeBytes    Int
+  storageUrl   String
+  createdAt    DateTime @default(now())
+
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model GeneratedImage {
+  id             String   @id @default(uuid())
+  orderId        String
+  characterName  String
+  characterIndex Int
+  imageUrl       String
+  variation      String   @default("default")  // closeup | halfbody | dramatic
+  isSample       Boolean  @default(false)
+  isSelected     Boolean  @default(false)
+  createdAt      DateTime @default(now())
+
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
