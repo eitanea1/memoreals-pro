@@ -87,13 +87,12 @@ export default async function AdminPage() {
 
           <CardContent className="pt-4">
             <div className="admin-thumbs mb-4">
-              {order.uploads.slice(0, 6).map((u) => (
+              {order.uploads.map((u) => (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img key={u.id} src={u.storageUrl} alt={u.originalName} className="admin-thumb" />
+                <a key={u.id} href={u.storageUrl} target="_blank" rel="noopener noreferrer">
+                  <img src={u.storageUrl} alt={u.originalName} className="admin-thumb" />
+                </a>
               ))}
-              {order.uploads.length > 6 && (
-                <div className="admin-thumb admin-thumb-more">+{order.uploads.length - 6}</div>
-              )}
             </div>
 
             {/* Interactive controls */}
