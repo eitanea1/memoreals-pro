@@ -24,7 +24,7 @@ async function generateForCharacterVariation(params: {
     variation: params.variation,
   });
 
-  const result = await fal.subscribe('fal-ai/flux-lora', {
+  const result = await fal.subscribe('fal-ai/flux-2-lora-gallery/realism', {
     input: {
       prompt,
       loras: [{ path: params.loraUrl, scale: 0.9 }],

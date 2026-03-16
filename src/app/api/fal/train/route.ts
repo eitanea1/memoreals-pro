@@ -53,7 +53,7 @@ export async function POST(req: NextRequest) {
     });
 
     // Submit training to the queue (returns immediately, no blocking)
-    const { request_id } = await fal.queue.submit('fal-ai/flux-lora-fast-training', {
+    const { request_id } = await fal.queue.submit('fal-ai/flux-lora-portrait-trainer', {
       input: {
         images_data_url: blob.url,
         trigger_word: LORA_TRIGGER,
