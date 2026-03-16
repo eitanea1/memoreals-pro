@@ -9,7 +9,7 @@ export async function GET(
   const { filename } = await params;
 
   // Basic security: no path traversal
-  if (filename.includes('..') || filename.includes('/')) {
+  if (filename.includes('..') || filename.includes('/') || filename.includes('\\')) {
     return new NextResponse('Forbidden', { status: 403 });
   }
 

@@ -75,9 +75,7 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
 
     return { orderId: order.id };
   } catch (err) {
-    // DB not available — generate a temporary client-side ID so the flow continues
-    console.error('[submitOrder] DB unavailable, using fallback id:', err);
-    const fallbackId = `local-${Date.now()}`;
-    return { orderId: fallbackId };
+    console.error('[submitOrder] DB unavailable:', err);
+    throw new Error('לא ניתן לשמור את ההזמנה. נסו שוב מאוחר יותר.');
   }
 }

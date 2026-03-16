@@ -9,6 +9,16 @@ import { prisma } from '@/lib/prisma';
  */
 export async function POST(req: NextRequest) {
   try {
+    // Basic webhook verification: check shared secret if configured
+    const webhookSecret = process.env.FAL_WEBHOOK_SECRET;
+    if (webhookSecret) {
+      const authHeader = req.headers.get('x-fal-webhook-secret') ?? '';
+      if (authHeader !== webhookSecret) {
+        console.warn('[fal/webhook] Invalid webhook secret');
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      }
+    }
+
     const body = await req.json();
     const { request_id, status, payload, error: falError } = body;
 
@@ -18,7 +28,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Missing request_id' }, { status: 400 });
     }
 
-    // Find the order that initiated this training
+    // Find the order that initiated this training — validates the request_id exists
     const order = await prisma.order.findFirst({
       where: { falRequestId: request_id },
     });

@@ -42,11 +42,11 @@ async function generateForCharacterVariation(params: {
   const images = result.data?.images ?? [];
 
   await prisma.generatedImage.createMany({
-    data: images.map(() => ({
+    data: images.map((img) => ({
       orderId:        params.orderId,
       characterName:  params.characterName,
       characterIndex: params.characterIndex,
-      imageUrl:       images[0]?.url ?? '',
+      imageUrl:       img?.url ?? '',
       variation:      params.variation,
       isSample:       params.isSample,
       isSelected:     false,

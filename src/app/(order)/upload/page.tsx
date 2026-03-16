@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { v4 as uuidv4 } from 'uuid';
 import { useApp } from '@/context/AppContext';
@@ -10,6 +10,25 @@ import CropModal from '@/components/upload/CropModal';
 import StepIndicator from '@/components/shared/StepIndicator';
 import { Button } from '@/components/ui/button';
 import type { UploadedPhoto } from '@/lib/types';
+
+function CropModalWrapper({ file, queuePosition, onDone, onSkip }: {
+  file: File;
+  queuePosition: { current: number; total: number };
+  onDone: (blob: Blob, url: string) => void;
+  onSkip: () => void;
+}) {
+  const objectUrl = useMemo(() => URL.createObjectURL(file), [file]);
+  useEffect(() => () => URL.revokeObjectURL(objectUrl), [objectUrl]);
+  return (
+    <CropModal
+      src={objectUrl}
+      originalName={file.name}
+      queuePosition={queuePosition}
+      onDone={onDone}
+      onSkip={onSkip}
+    />
+  );
+}
 
 export default function PhotoUploadPage() {
   const { state, dispatch } = useApp();
@@ -148,9 +167,8 @@ export default function PhotoUploadPage() {
       )}
 
       {cropQueue.length > 0 && (
-        <CropModal
-          src={URL.createObjectURL(cropQueue[0])}
-          originalName={cropQueue[0].name}
+        <CropModalWrapper
+          file={cropQueue[0]}
           queuePosition={{ current: state.photos.length + 1, total: state.photos.length + cropQueue.length }}
           onDone={handleCropDone}
           onSkip={handleCropSkip}
