@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
+import { put } from '@vercel/blob';
+import JSZip from 'jszip';
 import { LORA_TRIGGER } from '@/lib/prompts';
 
 fal.config({ credentials: process.env.FAL_KEY });
@@ -29,10 +31,31 @@ export async function POST(req: NextRequest) {
   const webhookUrl = `${baseUrl}/api/fal/webhook`;
 
   try {
+    // fal.ai expects images_data_url as a single URL to a ZIP file
+    // Download all images and pack them into a ZIP
+    const zip = new JSZip();
+    await Promise.all(
+      imageUrls.map(async (url, i) => {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`Failed to fetch image ${i}: ${res.status}`);
+        const buffer = await res.arrayBuffer();
+        const ext = url.split('.').pop()?.toLowerCase() ?? 'jpg';
+        zip.file(`image_${i}.${ext}`, buffer);
+      })
+    );
+
+    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+
+    // Upload ZIP to Vercel Blob
+    const blob = await put(`training/${orderId}.zip`, zipBuffer, {
+      access: 'public',
+      contentType: 'application/zip',
+    });
+
     // Submit training to the queue (returns immediately, no blocking)
     const { request_id } = await fal.queue.submit('fal-ai/flux-lora-fast-training', {
       input: {
-        images_data_url: imageUrls,
+        images_data_url: blob.url,
         trigger_word: LORA_TRIGGER,
         steps: 1000,
         learning_rate: 0.0004,
