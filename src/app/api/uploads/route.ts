@@ -1,14 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile, mkdir } from 'fs/promises';
-import { join } from 'path';
+import { put } from '@vercel/blob';
 import { v4 as uuidv4 } from 'uuid';
-
-const UPLOADS_DIR = join(process.cwd(), 'uploads');
 
 export async function POST(req: NextRequest) {
   try {
-    await mkdir(UPLOADS_DIR, { recursive: true });
-
     const formData = await req.formData();
     const files = formData.getAll('photos') as File[];
 
@@ -21,12 +16,16 @@ export async function POST(req: NextRequest) {
         const id = uuidv4();
         const ext = file.name.split('.').pop() ?? 'jpg';
         const filename = `${id}.${ext}`;
-        const buffer = Buffer.from(await file.arrayBuffer());
-        await writeFile(join(UPLOADS_DIR, filename), buffer);
+
+        const blob = await put(filename, file, {
+          access: 'public',
+          contentType: file.type || 'image/jpeg',
+        });
+
         return {
           id,
           originalName: file.name,
-          url: `/api/uploads/${filename}`,
+          url: blob.url,
           size: file.size,
         };
       })
