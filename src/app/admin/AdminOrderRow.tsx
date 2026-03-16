@@ -30,6 +30,7 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [override, setOverride] = useState(order.aiOverride);
   const [error, setError] = useState('');
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   // Group generated images by character
   const imagesByChar: Record<string, GeneratedImage[]> = {};
@@ -150,6 +151,7 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
                     : 'hover:ring-2 hover:ring-[#a0aec0]'
                 }`}
                 onClick={() => handleSelectImage(img.id)}
+                onDoubleClick={(e) => { e.stopPropagation(); setLightboxUrl(img.imageUrl); }}
               />
               {img.isSelected && (
                 <span className="absolute top-1 right-1 bg-[#667eea] text-white text-xs rounded-full px-1.5 py-0.5">✓</span>
@@ -279,6 +281,37 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
       )}
 
       {error && <p className="text-sm text-red-500">{error}</p>}
+
+      {/* Lightbox — double-click an image to view full size */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 cursor-zoom-out"
+          onClick={() => setLightboxUrl(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightboxUrl}
+            alt="Full size"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            className="absolute top-4 left-4 text-white text-3xl font-bold bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70"
+            onClick={() => setLightboxUrl(null)}
+          >
+            ×
+          </button>
+          <a
+            href={lightboxUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="absolute bottom-4 left-4 text-white text-sm bg-black/50 rounded-lg px-3 py-2 hover:bg-black/70"
+            onClick={(e) => e.stopPropagation()}
+          >
+            פתח בטאב חדש ↗
+          </a>
+        </div>
+      )}
     </div>
   );
 }
