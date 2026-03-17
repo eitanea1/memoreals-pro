@@ -4,64 +4,68 @@ export type PromptVariation = (typeof VARIATIONS)[number];
 
 const VARIATION_STYLES: Record<PromptVariation, string> = {
   closeup:
-    'cinematic close-up portrait, face filling the frame, soft bokeh background, ' +
-    'intimate eye contact with camera, shallow depth of field f/1.4',
+    'ultra-realistic close-up portrait, face filling the frame, detailed skin pores and textures, ' +
+    'cinematic shallow depth of field f/1.4, soft ambient light wrapping around the face, ' +
+    'atmospheric bokeh with environmental context bleeding through',
   halfbody:
-    'half-body portrait, dynamic natural pose, environmental context visible, ' +
-    'medium shot, balanced composition, professional studio lighting',
+    'ultra-realistic half-body environmental portrait, natural dynamic pose interacting with surroundings, ' +
+    'rich detailed background with depth, medium shot balanced composition, ' +
+    'professional cinematic lighting with natural light sources',
   dramatic:
-    'dramatic wide-angle portrait, full costume visible, epic cinematic lighting, ' +
-    'volumetric fog, golden hour rim light, heroic low-angle shot',
+    'ultra-realistic wide-angle cinematic shot, full costume and environment visible, ' +
+    'epic golden hour rim lighting, volumetric fog and atmospheric haze, ' +
+    'dramatic low-angle heroic composition, environmental storytelling',
 };
 
 // ── Base atmosphere (shared across all variations) ────────────────────────────
 const ATMOSPHERE =
-  'ultra-realistic, masterpiece 8k, photorealistic skin texture, ' +
-  'sharp facial features, professional photography';
+  '8K ultra-realistic photography, photorealistic skin texture with natural imperfections, ' +
+  'sharp facial features, cinematic color grading, atmospheric depth and haze, ' +
+  'natural environmental lighting, RAW photo quality, rich textured details in clothing and surroundings';
 
-// ── Character costume descriptions ────────────────────────────────────────────
+// ── Character costume & scene descriptions ──────────────────────────────────
 const CHARACTER_DESCRIPTIONS: Record<string, string> = {
   // Superheroes
-  'Spider-Man':       'wearing a full Spider-Man suit, red and blue spandex, web pattern details, mask on face',
-  'Wonder Woman':     'wearing Wonder Woman armor, golden tiara, red and gold breastplate, blue skirt with stars, lasso at hip',
-  'Batman':           'wearing Batman suit, black armored batsuit, cowl with bat ears, dark cape flowing behind',
-  'Superman':         'wearing Superman suit, iconic blue bodysuit, red cape billowing, golden S-shield on chest',
-  'Iron Man':         'wearing Iron Man armor, red and gold metallic suit, glowing arc reactor on chest, helmet under arm',
-  'Black Panther':    'wearing Black Panther suit, sleek black vibranium armor, panther claw necklace, purple trim',
-  'Captain America':  'wearing Captain America suit, blue uniform, star on chest, holding iconic red-white-blue shield',
-  'Thor':             'wearing Thor costume, Norse warrior armor, red cape, holding Mjolnir hammer, golden hair',
-  'The Flash':        'wearing The Flash suit, scarlet red bodysuit, golden lightning bolt symbol, speed lightning effects',
-  'Aquaman':          'wearing Aquaman armor, orange and green scale-patterned suit, golden trident in hand',
-  'Hulk':             'as the Hulk, massive green muscular body, torn purple pants, intense expression',
-  'Doctor Strange':   'wearing Doctor Strange cloak, burgundy sorcerer robes, Cloak of Levitation, Eye of Agamotto amulet',
+  'Spider-Man':       'as Spider-Man, wearing full red and blue spandex suit with web pattern details, perched on a rain-soaked rooftop ledge at dusk, city lights glowing below, misty atmosphere',
+  'Wonder Woman':     'as Wonder Woman, wearing golden tiara, red and gold breastplate, blue skirt with stars, lasso glowing at hip, standing in ancient Greek temple ruins at golden hour, dust particles in warm light',
+  'Batman':           'as Batman, wearing black armored batsuit, dark cape billowing in wind, standing on gothic gargoyle overlooking foggy Gotham city at night, neon reflections on wet surfaces',
+  'Superman':         'as Superman, wearing iconic blue bodysuit with red cape billowing, golden S-shield on chest, hovering above cloud layer at sunrise, warm golden light from below',
+  'Iron Man':         'as Iron Man, wearing red and gold metallic armor, glowing arc reactor on chest, helmet under arm, standing in high-tech workshop with holographic displays, cool blue ambient light',
+  'Black Panther':    'as Black Panther, wearing sleek black vibranium armor with purple trim, panther claw necklace, standing in lush Wakandan jungle, bioluminescent plants glowing around, misty atmosphere',
+  'Captain America':  'as Captain America, wearing blue tactical uniform with star on chest, holding iconic shield, standing on battlefield at dawn, morning mist rising, dramatic backlight',
+  'Thor':             'as Thor, wearing Norse warrior armor with red cape, holding Mjolnir hammer crackling with lightning, standing on Bifrost bridge, aurora borealis in sky, epic storm clouds',
+  'The Flash':        'as The Flash, wearing scarlet red bodysuit with golden lightning bolt, speed lightning trailing behind, running through rain-soaked city street at night, motion blur on surroundings',
+  'Aquaman':          'as Aquaman, wearing orange and green scale armor, holding golden trident, standing on rocky ocean cliff, massive waves crashing behind, dramatic stormy sky, sea spray in air',
+  'Hulk':             'as the Hulk, massive green muscular body, torn purple pants, standing in destroyed urban landscape, dust and debris floating in air, dramatic sunset backlighting',
+  'Doctor Strange':   'as Doctor Strange, wearing burgundy Cloak of Levitation, Eye of Agamotto glowing, conjuring orange magical mandalas, floating in mystical dimension with fractured reality around',
 
   // Professions
-  'Firefighter':      'wearing full firefighter gear, yellow turnout coat, helmet, breathing apparatus, fire hose in hand',
-  'Nurse':            'wearing nursing scrubs, stethoscope around neck, gentle caring expression, hospital setting',
-  'Astronaut':        'wearing NASA spacesuit, white pressurized suit, clear helmet visor, mission patches on arm',
-  'Chef':             'wearing white chef uniform, tall toque blanche hat, holding a pan, professional kitchen',
-  'Police Officer':   'wearing police uniform, badge on chest, utility belt, authoritative confident pose',
-  'Teacher':          'wearing smart professional attire, holding chalk near chalkboard, warm inviting expression',
-  'Doctor':           'wearing white doctor coat, stethoscope around neck, clipboard in hand, clinic background',
-  'Pilot':            'wearing pilot uniform, captain epaulettes, aviator sunglasses, cockpit background',
-  'Engineer':         'wearing hard hat and reflective vest, holding blueprints, construction site background',
-  'Veterinarian':     'wearing veterinarian scrubs, holding a small animal, kind smile, clinic background',
-  'Artist':           'wearing paint-splattered apron, holding palette and brush, colorful art studio background',
-  'Scientist':        'wearing lab coat, safety goggles, test tube in hand, laboratory background',
+  'Firefighter':      'as a firefighter, wearing yellow turnout coat and helmet with visor, breathing apparatus ready, standing before a massive blazing fire, orange flames reflecting off gear, smoke and embers swirling in air',
+  'Nurse':            'as a nurse, wearing teal medical scrubs, stethoscope around neck, in modern hospital corridor, soft fluorescent lighting, caring determined expression, medical equipment in background',
+  'Astronaut':        'as an astronaut, wearing white NASA spacesuit with mission patches, clear helmet visor reflecting Earth, floating in space station cupola, Earth glowing blue below, lens flare from sun',
+  'Chef':             'as a chef, wearing white chef uniform and tall toque hat, flames rising from a pan mid-flip, professional kitchen with copper pots, warm amber lighting, steam and kitchen atmosphere',
+  'Police Officer':   'as a police officer, wearing dark blue uniform with badge, utility belt, standing by patrol car at dusk, red and blue lights casting colored shadows, urban street scene',
+  'Teacher':          'as a teacher, wearing smart professional attire, standing by large chalkboard covered in equations, warm classroom light streaming through tall windows, golden dust particles in air',
+  'Doctor':           'as a doctor, wearing white coat with stethoscope, standing in modern surgical suite, cool blue-green lighting, medical monitors glowing in background, professional focused expression',
+  'Pilot':            'as a pilot, wearing captain uniform with epaulettes, standing on tarmac at sunset, massive aircraft behind, golden hour light reflecting off plane fuselage, heat haze rising',
+  'Engineer':         'as an engineer, wearing hard hat and reflective vest, holding blueprints, standing on steel skyscraper framework at sunrise, city skyline panorama below, wind-swept clouds',
+  'Veterinarian':     'as a veterinarian, wearing scrubs, gently holding a small animal, in warm veterinary clinic, soft natural window light, shelves with supplies in background, compassionate expression',
+  'Artist':           'as an artist, wearing paint-splattered apron, holding palette and brush, standing in sunlit studio with massive canvases, colorful paint splashes everywhere, golden afternoon light streaming in',
+  'Scientist':        'as a scientist, wearing lab coat and safety goggles, holding glowing test tube, in dimly lit laboratory, colorful chemical reactions bubbling, dramatic colored lighting from experiments',
 
   // Fairy Tales
-  'Cinderella':       'wearing Cinderella ball gown, shimmering light blue dress, glass slippers, magical sparkles',
-  'Peter Pan':        'wearing Peter Pan costume, green tunic, pointy hat with feather, flying pose',
-  'Snow White':       'wearing Snow White dress, yellow and blue royal gown, red bow headband, apple in hand',
-  'Little Red Riding Hood': 'wearing red hooded cape, white dress, holding basket of goods, forest background',
-  'Rapunzel':         'wearing Rapunzel purple dress, long flowing magical golden hair, frying pan in hand',
-  'Pinocchio':        'wearing Pinocchio costume, tyrolian hat, suspenders, wooden puppet details',
-  'Beauty & the Beast': 'wearing golden ball gown inspired by Belle, yellow satin dress, magical rose nearby',
-  'The Little Mermaid': 'as Ariel, wearing mermaid costume, teal sequined tail, seashell top, underwater scene',
-  'Sleeping Beauty':  'wearing Aurora gown, pink and blue magical dress, golden crown, spinning wheel nearby',
-  'Hansel & Gretel':  'wearing Bavarian folk costume, dirndl or lederhosen, holding gingerbread cookie',
-  'Aladdin':          'wearing Aladdin costume, purple vest, red fez hat, magic lamp in hand, Agrabah setting',
-  'Jack and the Beanstalk': 'wearing medieval peasant costume, holding magic beans, giant beanstalk behind',
+  'Cinderella':       'as Cinderella, wearing shimmering light blue ball gown with glass slippers, descending grand marble staircase, magical sparkles swirling around, moonlit castle ballroom, chandeliers twinkling',
+  'Peter Pan':        'as Peter Pan, wearing green tunic with pointy hat and feather, flying above moonlit London rooftops, Big Ben in background, starry night sky, fairy dust trail glowing',
+  'Snow White':       'as Snow White, wearing yellow and blue royal gown with red bow headband, standing in enchanted forest clearing, woodland animals nearby, soft dappled sunlight through ancient trees',
+  'Little Red Riding Hood': 'as Little Red Riding Hood, wearing flowing red hooded cape over white dress, holding basket, walking through misty dark forest path, shafts of light breaking through tall trees',
+  'Rapunzel':         'as Rapunzel, wearing purple dress with long flowing golden hair cascading down tower, hundreds of floating lanterns rising into twilight sky, warm golden glow everywhere',
+  'Pinocchio':        'as Pinocchio, wearing tyrolian hat and suspenders, wooden puppet details, in old Italian puppet workshop, warm candlelight, wooden toys and tools on shelves, cozy atmosphere',
+  'Beauty & the Beast': 'as Belle, wearing iconic golden ball gown, dancing in enchanted castle ballroom, magical rose glowing under glass dome nearby, warm candlelit atmosphere, falling rose petals',
+  'The Little Mermaid': 'as Ariel, wearing mermaid costume with teal sequined tail, sitting on rocky shore at sunset, waves crashing, golden light on water, sea foam and spray, magical underwater hints',
+  'Sleeping Beauty':  'as Aurora, wearing flowing pink and blue magical gown with golden crown, in enchanted castle garden, roses blooming everywhere, soft dreamy fog, fairy sparkles in air',
+  'Hansel & Gretel':  'as Hansel, wearing Bavarian folk costume, standing before magical gingerbread house in dark forest, candy decorations glowing, mysterious fog, fairy tale atmosphere',
+  'Aladdin':          'as Aladdin, wearing purple vest and red fez, riding magic carpet above moonlit Arabian city, golden magic lamp glowing, palace domes below, starry desert sky',
+  'Jack and the Beanstalk': 'as Jack, wearing medieval peasant costume, climbing enormous beanstalk above the clouds, looking up at giant castle, dramatic clouds swirling, golden light from above',
 };
 
 // ── Trigger word used during LoRA training ────────────────────────────────────
@@ -74,8 +78,8 @@ export function buildPrompt(params: {
   aiOverride?: string;    // admin global override
   variation?: PromptVariation;
 }): string {
-  const costume = CHARACTER_DESCRIPTIONS[params.characterName]
-    ?? `wearing ${params.characterName} costume`;
+  const scene = CHARACTER_DESCRIPTIONS[params.characterName]
+    ?? `as ${params.characterName}, in a cinematic environment`;
 
   const variation = params.variation ?? 'closeup';
   const style = VARIATION_STYLES[variation];
@@ -85,13 +89,14 @@ export function buildPrompt(params: {
     : '';
 
   return (
-    `portrait of ${LORA_TRIGGER}, a ${params.aiLabel}, ` +
-    `${costume}${override}, ` +
-    `${style}, ${ATMOSPHERE}`
+    `Ultra-realistic outdoor/indoor photography of ${LORA_TRIGGER}, a ${params.aiLabel}, ` +
+    `${scene}${override}. ` +
+    `${style}. ${ATMOSPHERE}`
   );
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────
 export const NEGATIVE_PROMPT =
   'cartoon, anime, illustration, painting, drawing, blurry, deformed, ' +
-  'ugly, bad anatomy, extra limbs, watermark, text, nsfw, nude';
+  'ugly, bad anatomy, extra limbs, watermark, text, nsfw, nude, ' +
+  'flat lighting, studio backdrop, plain background, low quality, jpeg artifacts';
