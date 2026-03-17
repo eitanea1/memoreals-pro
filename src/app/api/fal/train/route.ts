@@ -1,11 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
-import { put } from '@vercel/blob';
+import { put, head } from '@vercel/blob';
 import JSZip from 'jszip';
 import { LORA_TRIGGER } from '@/lib/prompts';
 
 fal.config({ credentials: process.env.FAL_KEY });
+
+export const maxDuration = 60; // Allow up to 60s for ZIP creation
 
 export async function POST(req: NextRequest) {
   const { orderId } = await req.json();
@@ -31,31 +33,40 @@ export async function POST(req: NextRequest) {
   const webhookUrl = `${baseUrl}/api/fal/webhook`;
 
   try {
-    // fal.ai expects images_data_url as a single URL to a ZIP file
-    // Download all images and pack them into a ZIP
-    const zip = new JSZip();
-    await Promise.all(
-      imageUrls.map(async (url, i) => {
-        const res = await fetch(url);
-        if (!res.ok) throw new Error(`Failed to fetch image ${i}: ${res.status}`);
-        const buffer = await res.arrayBuffer();
-        const ext = url.split('.').pop()?.toLowerCase() ?? 'jpg';
-        zip.file(`image_${i}.${ext}`, buffer);
-      })
-    );
+    // Check if ZIP already exists in Blob (retraining case)
+    const zipPath = `training/${orderId}.zip`;
+    let zipUrl: string;
 
-    const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+    try {
+      const existing = await head(zipPath);
+      zipUrl = existing.url;
+      console.log('[train] Reusing existing ZIP:', zipUrl);
+    } catch {
+      // ZIP doesn't exist — create it
+      console.log('[train] Creating ZIP from', imageUrls.length, 'images');
+      const zip = new JSZip();
+      await Promise.all(
+        imageUrls.map(async (url, i) => {
+          const res = await fetch(url);
+          if (!res.ok) throw new Error(`Failed to fetch image ${i}: ${res.status}`);
+          const buffer = await res.arrayBuffer();
+          const ext = url.split('.').pop()?.toLowerCase() ?? 'jpg';
+          zip.file(`image_${i}.${ext}`, buffer);
+        })
+      );
 
-    // Upload ZIP to Vercel Blob
-    const blob = await put(`training/${orderId}.zip`, zipBuffer, {
-      access: 'public',
-      contentType: 'application/zip',
-    });
+      const zipBuffer = await zip.generateAsync({ type: 'nodebuffer' });
+      const blob = await put(zipPath, zipBuffer, {
+        access: 'public',
+        contentType: 'application/zip',
+      });
+      zipUrl = blob.url;
+    }
 
     // Submit training to the queue (returns immediately, no blocking)
     const { request_id } = await fal.queue.submit('fal-ai/flux-lora-portrait-trainer', {
       input: {
-        images_data_url: blob.url,
+        images_data_url: zipUrl,
         trigger_word: LORA_TRIGGER,
         steps: 1000,
         learning_rate: 0.0004,
