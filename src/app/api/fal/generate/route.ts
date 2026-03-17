@@ -5,6 +5,8 @@ import { buildPrompt, VARIATIONS, type PromptVariation } from '@/lib/prompts';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
+export const maxDuration = 300; // 5 minutes max
+
 type FalImageResult = { data: { images: { url: string }[] } };
 
 async function generateForCharacterVariation(params: {
@@ -28,7 +30,7 @@ async function generateForCharacterVariation(params: {
     input: {
       prompt,
       loras: [{ path: params.loraUrl, scale: 0.9 }],
-      num_images: 1,  // 1 image per variation (3 variations = 3 images total)
+      num_images: 1,
       image_size: 'portrait_4_3',
       num_inference_steps: 28,
       guidance_scale: 3.5,
@@ -55,8 +57,9 @@ async function generateForCharacterVariation(params: {
 }
 
 export async function POST(req: NextRequest) {
-  const { orderId, mode } = await req.json();
-  // mode: 'samples' (first 5 characters) | 'full' (all 20 characters)
+  const { orderId, mode, startIndex } = await req.json();
+  // mode: 'samples' (first 5 characters) | 'full' (all characters)
+  // startIndex: optional, for batch continuation
 
   if (!orderId || !mode) {
     return NextResponse.json({ error: 'orderId and mode required' }, { status: 400 });
@@ -64,45 +67,88 @@ export async function POST(req: NextRequest) {
 
   const order = await prisma.order.findUnique({
     where: { id: orderId },
-    include: { characters: { orderBy: { position: 'asc' } } },
+    include: {
+      characters: { orderBy: { position: 'asc' } },
+      generatedImages: { select: { characterName: true, variation: true, isSample: true } },
+    },
   });
 
   if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   if (!order.loraUrl) return NextResponse.json({ error: 'LoRA not trained yet' }, { status: 400 });
 
-  // Determine which characters to generate
   const allChars = order.characters;
   const isSample = mode === 'samples';
   const charsToGenerate = isSample ? allChars.slice(0, 5) : allChars;
 
-  try {
-    // Generate sequentially to avoid rate limits
-    for (const char of charsToGenerate) {
-      // 3 different prompt variations per character
-      for (const variation of VARIATIONS) {
-        await generateForCharacterVariation({
-          characterName:  char.name,
-          characterIndex: char.position,
-          loraUrl:        order.loraUrl,
-          aiLabel:        order.aiLabel,
-          aiOverride:     order.aiOverride,
-          orderId:        order.id,
-          isSample,
-          variation,
-        });
+  // Find which characters still need generation (skip already generated)
+  const existingKeys = new Set(
+    order.generatedImages
+      .filter((img) => img.isSample === isSample)
+      .map((img) => `${img.characterName}:${img.variation}`)
+  );
+
+  const pending: { char: typeof allChars[0]; variation: PromptVariation }[] = [];
+  for (const char of charsToGenerate) {
+    for (const variation of VARIATIONS) {
+      if (!existingKeys.has(`${char.name}:${variation}`)) {
+        pending.push({ char, variation });
       }
     }
+  }
 
-    // Update order status
+  if (pending.length === 0) {
     if (mode === 'full') {
       await prisma.order.update({
         where: { id: orderId },
-        data:  { status: 'PROCESSING_ALL' },
+        data: { status: 'PROCESSING_ALL' },
+      });
+    }
+    return NextResponse.json({ success: true, generated: 0, message: 'All images already generated' });
+  }
+
+  // Process in batches — generate up to 15 images per request (5 characters × 3 variations)
+  const BATCH_SIZE = 15;
+  const batch = pending.slice(0, BATCH_SIZE);
+
+  try {
+    let generated = 0;
+    for (const { char, variation } of batch) {
+      await generateForCharacterVariation({
+        characterName:  char.name,
+        characterIndex: char.position,
+        loraUrl:        order.loraUrl,
+        aiLabel:        order.aiLabel,
+        aiOverride:     order.aiOverride,
+        orderId:        order.id,
+        isSample,
+        variation,
+      });
+      generated++;
+    }
+
+    const remaining = pending.length - batch.length;
+
+    // If there are more to generate, trigger the next batch
+    if (remaining > 0) {
+      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3002';
+      fetch(`${baseUrl}/api/fal/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ orderId, mode, startIndex: (startIndex ?? 0) + batch.length }),
+      }).catch(() => {}); // fire-and-forget
+    } else if (mode === 'full') {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'PROCESSING_ALL' },
       });
     }
 
-    const totalGenerated = charsToGenerate.length * VARIATIONS.length;
-    return NextResponse.json({ success: true, generated: totalGenerated });
+    return NextResponse.json({
+      success: true,
+      generated,
+      remaining,
+      total: pending.length,
+    });
   } catch (err) {
     console.error('[generate] Error:', err);
     return NextResponse.json({ error: 'Generation failed', detail: String(err) }, { status: 500 });
