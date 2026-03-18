@@ -28,7 +28,7 @@ const CHARACTER_DESCRIPTIONS: Record<string, string> = {
     'hovers in mid-air with arms extended, glowing repulsors charging in his hands. His ultra-realistic red and gold suit shines with reflective metallic textures, and sparks of magical energy surround him. The background features a futuristic city illuminated by neon lights and glowing blue energy trails',
 
   'Captain America':
-    'stands on a glowing battlefield, holding a vibranium shield that pulses with a radiant blue glow. His ultra-realistic suit is detailed with subtle metallic accents, and his heroic stance is illuminated by golden light from the setting sun. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere',
+    'stands on a glowing battlefield, wearing the iconic bright blue Captain America suit with a bold white star on the chest, red and white stripes on the torso, and a blue helmet with an A insignia. He holds the round red-white-and-blue vibranium shield that pulses with a radiant blue glow. His heroic stance is illuminated by golden light from the setting sun. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere',
 
   'Thor':
     'stands atop a rocky mountain, gripping a glowing Mjolnir that crackles with vibrant blue lightning. His ultra-realistic Asgardian armor gleams with intricate metallic designs, and his red cape flows majestically behind him. The background features swirling storm clouds illuminated by magical streaks of energy and glowing stars',
@@ -184,7 +184,7 @@ export function buildPrompt(params: {
     : '';
 
   return (
-    `${LORA_TRIGGER}, a ${params.aiLabel} ${scene}${override}. ` +
+    `${LORA_TRIGGER}, a ${params.aiLabel} ${params.characterName}, ${scene}${override}. ` +
     `${style}. ${ATMOSPHERE}`
   );
 }
