@@ -27,8 +27,7 @@ const ATMOSPHERE =
   'cinematic color grading, atmospheric haze and volumetric light, ' +
   'golden sparks and floating embers in the air, ' +
   'photorealistic skin with natural imperfections, ' +
-  'rich environmental depth and texture, ' +
-  'smooth plastic skin, airbrushed';
+  'rich environmental depth and texture, sharp focus on face';
 
 // ── Character costume & scene descriptions ──────────────────────────────────
 const CHARACTER_DESCRIPTIONS: Record<string, string> = {
