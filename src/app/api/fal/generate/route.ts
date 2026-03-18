@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
-import { buildPrompt, VARIATIONS, type PromptVariation } from '@/lib/prompts';
+import { buildPrompt, VARIATIONS, LORA_TRIGGER, type PromptVariation } from '@/lib/prompts';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
@@ -18,12 +18,14 @@ async function generateForCharacterVariation(params: {
   orderId: string;
   isSample: boolean;
   variation: PromptVariation;
+  customPrompt?: string;
 }) {
   const prompt = buildPrompt({
     characterName: params.characterName,
     aiLabel: params.aiLabel,
     aiOverride: params.aiOverride,
     variation: params.variation,
+    customPrompt: params.customPrompt,
   });
 
   const result = await fal.subscribe('fal-ai/flux-lora', {
@@ -31,9 +33,9 @@ async function generateForCharacterVariation(params: {
       prompt,
       loras: [{ path: params.loraUrl, scale: 0.9 }],
       num_images: 1,
-      image_size: 'portrait_4_3',
-      num_inference_steps: 28,
-      guidance_scale: 3.5,
+      image_size: { width: 1024, height: 1424 },
+      num_inference_steps: 40,
+      guidance_scale: 3.0,
       enable_safety_checker: false,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,
@@ -57,9 +59,10 @@ async function generateForCharacterVariation(params: {
 }
 
 export async function POST(req: NextRequest) {
-  const { orderId, mode, startIndex } = await req.json();
-  // mode: 'samples' (first 5 characters) | 'full' (all characters)
-  // startIndex: optional, for batch continuation
+  const { orderId, mode, startIndex, characterName, customPrompts } = await req.json();
+  // mode: 'samples' | 'full' | 'single' (regenerate one character)
+  // characterName: required for mode='single'
+  // customPrompts: optional { closeup?: string, halfbody?: string, dramatic?: string }
 
   if (!orderId || !mode) {
     return NextResponse.json({ error: 'orderId and mode required' }, { status: 400 });
@@ -75,6 +78,38 @@ export async function POST(req: NextRequest) {
 
   if (!order) return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   if (!order.loraUrl) return NextResponse.json({ error: 'LoRA not trained yet' }, { status: 400 });
+
+  // ── Single character regeneration ──
+  if (mode === 'single') {
+    if (!characterName) {
+      return NextResponse.json({ error: 'characterName required for single mode' }, { status: 400 });
+    }
+    const char = order.characters.find((c) => c.name === characterName);
+    if (!char) return NextResponse.json({ error: 'Character not found' }, { status: 404 });
+
+    try {
+      let generated = 0;
+      for (const variation of VARIATIONS) {
+        const custom = customPrompts?.[variation] as string | undefined;
+        await generateForCharacterVariation({
+          characterName: char.name,
+          characterIndex: char.position,
+          loraUrl: order.loraUrl,
+          aiLabel: order.aiLabel,
+          aiOverride: order.aiOverride,
+          orderId: order.id,
+          isSample: false,
+          variation,
+          customPrompt: custom,
+        });
+        generated++;
+      }
+      return NextResponse.json({ success: true, generated });
+    } catch (err) {
+      console.error('[generate] Single char error:', err);
+      return NextResponse.json({ error: 'Generation failed', detail: String(err) }, { status: 500 });
+    }
+  }
 
   const allChars = order.characters;
   const isSample = mode === 'samples';

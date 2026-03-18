@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
+import { buildPrompt, VARIATIONS, type PromptVariation } from '@/lib/prompts';
 
 interface GeneratedImage {
   id: string;
@@ -31,6 +32,8 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
   const [override, setOverride] = useState(order.aiOverride);
   const [error, setError] = useState('');
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
+  const [expandedChar, setExpandedChar] = useState<string | null>(null);
+  const [charPrompts, setCharPrompts] = useState<Record<string, Record<string, string>>>({});
 
   // Group generated images by character
   const imagesByChar: Record<string, GeneratedImage[]> = {};
@@ -105,6 +108,22 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     } finally { setLoading(null); }
   }
 
+  async function handleRegenerateChar(charName: string) {
+    setLoading(`regen-${charName}`); setError('');
+    try {
+      const customPrompts = charPrompts[charName] ?? {};
+      await post('/api/fal/generate', {
+        orderId: order.id,
+        mode: 'single',
+        characterName: charName,
+        customPrompts,
+      });
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה ביצירה מחדש');
+    } finally { setLoading(null); }
+  }
+
   async function handleSelectImage(imageId: string) {
     try {
       await post('/api/admin/select-image', { imageId });
@@ -119,49 +138,125 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     } finally { setLoading(null); }
   }
 
+  function getDefaultPrompt(charName: string, variation: PromptVariation): string {
+    return buildPrompt({
+      characterName: charName,
+      aiLabel: order.aiLabel,
+      aiOverride: order.aiOverride,
+      variation,
+    });
+  }
+
+  function togglePromptEditor(charName: string) {
+    if (expandedChar === charName) {
+      setExpandedChar(null);
+      return;
+    }
+    // Initialize prompts with defaults if not set
+    if (!charPrompts[charName]) {
+      const defaults: Record<string, string> = {};
+      for (const v of VARIATIONS) {
+        defaults[v] = getDefaultPrompt(charName, v);
+      }
+      setCharPrompts((prev) => ({ ...prev, [charName]: defaults }));
+    }
+    setExpandedChar(charName);
+  }
+
+  function updateCharPrompt(charName: string, variation: string, value: string) {
+    setCharPrompts((prev) => ({
+      ...prev,
+      [charName]: { ...(prev[charName] ?? {}), [variation]: value },
+    }));
+  }
+
   // Determine which step is active based on order status
-  const isReceived    = order.status === 'RECEIVED';
   const isTraining    = order.status === 'TRAINING';
   const isSampling    = order.status === 'SAMPLING';
   const isProcessing  = order.status === 'PROCESSING_ALL';
   const isReady       = order.status === 'READY_FOR_PRINT';
   const isShipped     = order.status === 'SHIPPED';
 
+  const VARIATION_LABELS: Record<string, string> = {
+    closeup: 'קלוזאפ',
+    halfbody: 'חצי גוף',
+    dramatic: 'דרמטי',
+  };
+
   // Helper to render images for a character grouped by variation
-  function renderCharacterImages(char: { name: string; displayName: string }) {
+  function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean) {
     const imgs = imagesByChar[char.name] ?? [];
-    if (imgs.length === 0) return null;
 
     return (
-      <div key={char.name} className="mb-4">
-        <p className="text-sm font-semibold text-[#4a5568] mb-2">
-          {char.displayName}
-          {selectedCharacters.has(char.name) && <span className="text-green-600 mr-2">✓ נבחרה</span>}
-        </p>
-        <div className="flex gap-2 flex-wrap">
-          {imgs.map((img) => (
-            <div key={img.id} className="relative group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={img.imageUrl}
-                alt={img.characterName}
-                className={`admin-gen-thumb cursor-pointer transition-all ${
-                  img.isSelected
-                    ? 'ring-3 ring-[#667eea] shadow-lg scale-105'
-                    : 'hover:ring-2 hover:ring-[#a0aec0]'
-                }`}
-                onClick={() => handleSelectImage(img.id)}
-                onDoubleClick={(e) => { e.stopPropagation(); setLightboxUrl(img.imageUrl); }}
-              />
-              {img.isSelected && (
-                <span className="absolute top-1 right-1 bg-[#667eea] text-white text-xs rounded-full px-1.5 py-0.5">✓</span>
-              )}
-              <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
-                {img.variation}
-              </span>
+      <div key={char.name} className="mb-6 border border-[#e2e8f0] rounded-xl p-3">
+        <div className="flex items-center justify-between mb-2">
+          <p className="text-sm font-semibold text-[#4a5568]">
+            {char.displayName}
+            {selectedCharacters.has(char.name) && <span className="text-green-600 mr-2">✓ נבחרה</span>}
+          </p>
+          {showRegenerate && (
+            <div className="flex gap-2">
+              <Button
+                variant="brand-outline" size="sm"
+                onClick={() => togglePromptEditor(char.name)}
+              >
+                {expandedChar === char.name ? 'סגור פרומפטים' : 'ערוך פרומפטים'}
+              </Button>
+              <Button
+                variant="brand" size="sm"
+                disabled={loading === `regen-${char.name}`}
+                onClick={() => handleRegenerateChar(char.name)}
+              >
+                {loading === `regen-${char.name}` ? '⏳ מייצר...' : '🔄 ג׳נרט מחדש'}
+              </Button>
             </div>
-          ))}
+          )}
         </div>
+
+        {/* Images */}
+        {imgs.length > 0 && (
+          <div className="flex gap-2 flex-wrap mb-2">
+            {imgs.map((img) => (
+              <div key={img.id} className="relative group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={img.imageUrl}
+                  alt={img.characterName}
+                  className={`admin-gen-thumb cursor-pointer transition-all ${
+                    img.isSelected
+                      ? 'ring-3 ring-[#667eea] shadow-lg scale-105'
+                      : 'hover:ring-2 hover:ring-[#a0aec0]'
+                  }`}
+                  onClick={() => handleSelectImage(img.id)}
+                  onDoubleClick={(e) => { e.stopPropagation(); setLightboxUrl(img.imageUrl); }}
+                />
+                {img.isSelected && (
+                  <span className="absolute top-1 right-1 bg-[#667eea] text-white text-xs rounded-full px-1.5 py-0.5">✓</span>
+                )}
+                <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
+                  {img.variation}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Prompt editor */}
+        {expandedChar === char.name && (
+          <div className="flex flex-col gap-2 mt-3 p-3 bg-[#f7fafc] rounded-lg">
+            {VARIATIONS.map((v) => (
+              <div key={v} className="flex flex-col gap-1">
+                <label className="text-xs font-semibold text-[#718096]">{VARIATION_LABELS[v] ?? v}</label>
+                <textarea
+                  value={charPrompts[char.name]?.[v] ?? ''}
+                  onChange={(e) => updateCharPrompt(char.name, v, e.target.value)}
+                  className="w-full h-20 px-2 py-1 text-xs border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#667eea] font-mono"
+                  dir="ltr"
+                />
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
@@ -227,14 +322,14 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
       {isSampling && hasSamples && (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-[#718096]">בחר תמונה מועדפת לכל דמות (לבדיקת איכות):</p>
-          {sampleChars.map((char) => renderCharacterImages(char))}
+          {sampleChars.map((char) => renderCharacterImages(char, true))}
         </div>
       )}
 
-      {/* ── Step 3: Generate Full Set (20 chars × 3 variations = 60 images) ── */}
+      {/* ── Step 3: Generate Full Set ── */}
       {(isSampling && hasSamples) && (
         <div className="admin-ai-step">
-          <span className="admin-step-label">שלב 3 — סט מלא (20 דמויות × 3 וריאציות = 60 תמונות)</span>
+          <span className="admin-step-label">שלב 3 — סט מלא ({totalChars} דמויות × 3 וריאציות = {totalChars * 3} תמונות)</span>
           <Button
             variant="brand" size="sm"
             disabled={!!loading || hasFullSet}
@@ -262,14 +357,14 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
           </div>
 
           <p className="text-sm text-[#718096]">בחר תמונה מנצחת לכל דמות:</p>
-          {order.characters.map((char) => renderCharacterImages(char))}
+          {order.characters.map((char) => renderCharacterImages(char, true))}
         </div>
       )}
 
       {/* ── Step 4: Download ZIP ── */}
       {(isProcessing || isReady) && allSelected && (
         <div className="admin-ai-step bg-green-50 border border-green-200 rounded-xl p-3">
-          <span className="admin-step-label text-green-800">🎉 כל 20 הדמויות נבחרו — מוכן להדפסה!</span>
+          <span className="admin-step-label text-green-800">🎉 כל {totalChars} הדמויות נבחרו — מוכן להדפסה!</span>
           <Button
             variant="brand" size="sm"
             onClick={handleDownloadZip}
