@@ -5,18 +5,18 @@ export type PromptVariation = (typeof VARIATIONS)[number];
 
 const VARIATION_MODIFIERS: Record<PromptVariation, string> = {
   variation_a:
-    'Cinematic wide shot, heroic low-angle composition, golden hour rim lighting, ' +
-    'volumetric fog and floating embers, dramatic lens flare from backlight',
+    'Full body visible from head to toe, heroic low-angle composition, ' +
+    'golden hour rim lighting, floating embers and sparks in the air',
   variation_b:
-    'Dynamic three-quarter shot, dramatic side lighting with warm and cool contrast, ' +
-    'atmospheric haze with glowing particles, epic depth of field with bokeh highlights',
+    'Full body visible, dynamic three-quarter angle, ' +
+    'dramatic side lighting with warm and cool contrast, glowing particles in the air',
 };
 
 // ── Base atmosphere (shared across all prompts) ──────────────────────────────
 const ATMOSPHERE =
-  'shot on ARRI Alexa 65, anamorphic lens, 8K RAW, ultra-realistic, ' +
+  '8K ultra-realistic photograph, sharp and in focus, ' +
   'cinematic color grading, photorealistic skin with natural imperfections, ' +
-  'sharp focus on face, rich environmental depth and texture';
+  'detailed background environment, no blur, no bokeh, everything in focus';
 
 // ── Character scene descriptions ─────────────────────────────────────────────
 const CHARACTER_DESCRIPTIONS: Record<string, string> = {
