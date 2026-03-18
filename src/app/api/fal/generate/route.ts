@@ -33,7 +33,7 @@ async function generateForCharacterVariation(params: {
       prompt,
       loras: [{ path: params.loraUrl, scale: 1.0 }],
       num_images: 1,
-      image_size: { width: 1024, height: 1424 },
+      image_size: { width: 1424, height: 1024 },
       num_inference_steps: 40,
       guidance_scale: 3.5,
       enable_safety_checker: false,

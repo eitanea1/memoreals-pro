@@ -178,9 +178,8 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
   const isShipped     = order.status === 'SHIPPED';
 
   const VARIATION_LABELS: Record<string, string> = {
-    closeup: 'קלוזאפ',
-    halfbody: 'חצי גוף',
-    dramatic: 'דרמטי',
+    variation_a: 'וריאציה A',
+    variation_b: 'וריאציה B',
   };
 
   // Helper to render images for a character grouped by variation

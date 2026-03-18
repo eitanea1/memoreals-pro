@@ -1,77 +1,161 @@
-// ── Prompt Variation Styles ────────────────────────────────────────────────────
-export const VARIATIONS = ['closeup', 'halfbody', 'dramatic'] as const;
+// ── Prompt Variations ─────────────────────────────────────────────────────────
+// Two cinematic variations per character for selection
+export const VARIATIONS = ['variation_a', 'variation_b'] as const;
 export type PromptVariation = (typeof VARIATIONS)[number];
 
-const VARIATION_STYLES: Record<PromptVariation, string> = {
-  closeup:
-    'epic cinematic close-up, face filling frame, intense eye contact, ' +
-    'shallow depth of field f/1.2, golden sparks reflecting in eyes, ' +
-    'warm rim lighting with atmospheric particles floating around face',
-  halfbody:
-    'cinematic half-body portrait, dynamic heroic pose, ' +
-    'detailed environmental context with depth and atmosphere, ' +
-    'volumetric light rays cutting through haze, ' +
-    'floating embers and golden particles in the air, ' +
-    'professional film lighting with practical light sources',
-  dramatic:
-    'ultra-wide cinematic shot, full costume and epic environment visible, ' +
-    'dramatic golden hour with long shadows, volumetric fog and dust particles, ' +
-    'sparks and embers swirling around the subject, ' +
-    'heroic low-angle composition, lens flare from backlight, ' +
-    'blockbuster movie still quality',
+const VARIATION_MODIFIERS: Record<PromptVariation, string> = {
+  variation_a:
+    'Cinematic wide shot, heroic low-angle composition, golden hour rim lighting, ' +
+    'volumetric fog and floating embers, dramatic lens flare from backlight',
+  variation_b:
+    'Dynamic three-quarter shot, dramatic side lighting with warm and cool contrast, ' +
+    'atmospheric haze with glowing particles, epic depth of field with bokeh highlights',
 };
 
-// ── Base atmosphere (shared across all variations) ────────────────────────────
+// ── Base atmosphere (shared across all prompts) ──────────────────────────────
 const ATMOSPHERE =
-  'shot on ARRI Alexa 65, anamorphic lens, 8K RAW, ' +
-  'cinematic color grading, atmospheric haze and volumetric light, ' +
-  'golden sparks and floating embers in the air, ' +
-  'photorealistic skin with natural imperfections, ' +
-  'rich environmental depth and texture, sharp focus on face';
+  'shot on ARRI Alexa 65, anamorphic lens, 8K RAW, ultra-realistic, ' +
+  'cinematic color grading, photorealistic skin with natural imperfections, ' +
+  'sharp focus on face, rich environmental depth and texture';
 
-// ── Character costume & scene descriptions ──────────────────────────────────
+// ── Character scene descriptions ─────────────────────────────────────────────
 const CHARACTER_DESCRIPTIONS: Record<string, string> = {
-  // Superheroes
-  'Spider-Man':       'as Spider-Man, wearing full red and blue spandex suit with web pattern details, perched on a rain-soaked rooftop ledge at dusk, city lights glowing below, golden sparks from electrical wires nearby, misty atmosphere',
-  'Wonder Woman':     'as Wonder Woman, wearing golden tiara, red and gold breastplate, blue skirt with stars, lasso glowing at hip, standing in ancient Greek temple ruins at golden hour, dust particles and embers swirling in warm light',
-  'Batman':           'as Batman, wearing black armored batsuit, dark cape billowing in wind, standing on gothic gargoyle overlooking foggy Gotham city at night, sparks from rooftop vents, neon reflections on wet surfaces',
-  'Superman':         'as Superman, wearing iconic blue bodysuit with red cape billowing heroically, golden S-shield on chest, hovering above cloud layer at sunrise, golden sparks and light particles surrounding him, warm golden light from below',
-  'Iron Man':         'as Iron Man, wearing red and gold metallic armor, glowing arc reactor on chest, helmet under arm, standing in high-tech workshop with holographic displays, welding sparks flying around, cool blue ambient light mixed with orange sparks',
-  'Black Panther':    'as Black Panther, wearing sleek black vibranium armor with purple energy trim, panther claw necklace, standing in lush Wakandan jungle, bioluminescent plants glowing, purple energy sparks crackling from suit, misty atmosphere',
-  'Captain America':  'as Captain America, wearing blue tactical uniform with star on chest, holding iconic shield reflecting golden light, standing on battlefield at dawn, embers and sparks rising from fires behind, morning mist rising, dramatic backlight',
-  'Thor':             'as Thor, wearing Norse warrior armor with red cape, holding Mjolnir hammer crackling with lightning and sparks, standing on Bifrost bridge, aurora borealis in sky, electric sparks swirling everywhere, epic storm clouds',
-  'The Flash':        'as The Flash, wearing scarlet red bodysuit with golden lightning bolt, speed lightning and golden sparks trailing behind, running through rain-soaked city street at night, electricity arcing around',
-  'Aquaman':          'as Aquaman, wearing orange and green scale armor reflecting light, holding golden trident with energy sparks at tip, standing on rocky ocean cliff, massive waves crashing, dramatic stormy sky with lightning, sea spray and sparks in air',
-  'Hulk':             'as the Hulk, massive green muscular body, torn purple pants, standing in destroyed urban landscape, fire sparks and embers floating everywhere, dust and debris in air, dramatic sunset backlighting through smoke',
-  'Doctor Strange':   'as Doctor Strange, wearing burgundy Cloak of Levitation, Eye of Agamotto glowing, conjuring orange magical mandalas with sparks and energy particles, floating in mystical dimension with fractured reality and magical embers around',
+  // ── Superheroes ──
+  'Spider-Man':
+    'swings between glowing skyscrapers at dusk, his ultra-realistic suit showcasing detailed webbing and vibrant red and blue colors. His pose emphasizes agility as the spotlight reflects off his suit, and magical glowing webs leave shimmering trails in the air. The city lights below twinkle brightly, creating a dramatic and captivating background',
 
-  // Professions
-  'Firefighter':      'as a firefighter, wearing yellow turnout coat and helmet with visor, breathing apparatus ready, standing before a massive blazing fire, intense orange flames and sparks reflecting off gear, burning embers swirling in air, smoke and fire particles everywhere',
-  'Nurse':            'as a nurse, wearing teal medical scrubs, stethoscope around neck, in modern hospital corridor with dramatic lighting, soft warm light particles floating, caring determined expression, atmospheric hospital ambiance',
-  'Astronaut':        'as an astronaut, wearing white NASA spacesuit with mission patches, clear helmet visor reflecting Earth, floating in space station cupola, Earth glowing blue below, golden sun particles and lens flare, stars sparkling',
-  'Chef':             'as a chef, wearing white chef uniform and tall toque hat, flames and sparks rising dramatically from a pan mid-flip, professional kitchen with copper pots, warm amber fire glow, steam and fire sparks dancing in air',
-  'Police Officer':   'as a police officer, wearing dark blue uniform with badge, utility belt, standing by patrol car at dusk, red and blue lights casting dramatic colored light and sparks of reflection, atmospheric urban street scene with haze',
-  'Teacher':          'as a teacher, wearing smart professional attire, standing by large chalkboard covered in equations, warm golden classroom light streaming through tall windows, dust particles dancing in golden light beams like sparks',
-  'Doctor':           'as a doctor, wearing white coat with stethoscope, standing in modern surgical suite, dramatic blue-green lighting with lens flare from surgical lights, light particles floating, professional focused expression',
-  'Pilot':            'as a pilot, wearing captain uniform with epaulettes, standing on tarmac at sunset, massive aircraft behind, golden hour light and heat shimmer sparks reflecting off plane fuselage, dramatic sky with warm particles',
-  'Engineer':         'as an engineer, wearing hard hat and reflective vest, holding blueprints, standing on steel skyscraper framework at sunrise, welding sparks flying nearby, city skyline panorama below, wind-swept clouds and golden light',
-  'Veterinarian':     'as a veterinarian, wearing scrubs, gently holding a small animal, in warm veterinary clinic, soft golden window light with floating dust particles like sparks, shelves with supplies in background, compassionate expression',
-  'Artist':           'as an artist, wearing paint-splattered apron, holding palette and brush, standing in sunlit studio with massive canvases, colorful paint splashes everywhere, golden afternoon light streaming in with particles dancing like sparks',
-  'Scientist':        'as a scientist, wearing lab coat and safety goggles, holding glowing test tube with sparks of chemical reaction, in dimly lit laboratory, colorful chemical reactions bubbling with energy sparks, dramatic colored lighting',
+  'Iron Man':
+    'hovers in mid-air with arms extended, glowing repulsors charging in his hands. His ultra-realistic red and gold suit shines with reflective metallic textures, and sparks of magical energy surround him. The background features a futuristic city illuminated by neon lights and glowing blue energy trails',
 
-  // Fairy Tales
-  'Cinderella':       'as Cinderella, wearing shimmering light blue ball gown with glass slippers, descending grand marble staircase, magical golden sparkles and fairy dust swirling around like embers, moonlit castle ballroom, chandeliers casting prismatic light sparks',
-  'Peter Pan':        'as Peter Pan, wearing green tunic with pointy hat and feather, flying above moonlit London rooftops, Big Ben in background, starry night sky with fairy dust trail glowing like golden sparks, magical particles everywhere',
-  'Snow White':       'as Snow White, wearing yellow and blue royal gown with red bow headband, standing in enchanted forest clearing, magical golden light particles floating like fireflies and sparks, soft dappled sunlight through ancient trees',
-  'Little Red Riding Hood': 'as Little Red Riding Hood, wearing flowing red hooded cape over white dress, holding basket, walking through misty dark forest path, magical golden light sparks breaking through tall trees, fireflies glowing like embers',
-  'Rapunzel':         'as Rapunzel, wearing purple dress with long flowing golden hair cascading down tower, hundreds of floating lanterns rising into twilight sky like golden sparks and embers, warm magical glow everywhere',
-  'Pinocchio':        'as Pinocchio, wearing tyrolian hat and suspenders, wooden puppet details, in old Italian puppet workshop, warm candlelight casting golden sparks, wooden toys and tools on shelves, magical fairy dust particles in cozy atmosphere',
-  'Beauty & the Beast': 'as Belle, wearing iconic golden ball gown, dancing in enchanted castle ballroom, magical rose glowing under glass dome with golden sparks rising from it, warm candlelit atmosphere, falling rose petals and magical embers',
-  'The Little Mermaid': 'as Ariel, wearing mermaid costume with teal sequined tail, sitting on rocky shore at sunset, waves crashing with golden light sparks on water, sea foam spray catching golden light, magical underwater sparkles',
-  'Sleeping Beauty':  'as Aurora, wearing flowing pink and blue magical gown with golden crown, in enchanted castle garden, roses blooming everywhere, golden fairy sparkles and magical embers floating in dreamy fog, enchanted atmosphere',
-  'Hansel & Gretel':  'as Hansel, wearing Bavarian folk costume, standing before magical gingerbread house in dark forest, candy decorations glowing with magical sparks, mysterious fog with floating embers, fairy tale atmosphere',
-  'Aladdin':          'as Aladdin, wearing purple vest and red fez, riding magic carpet above moonlit Arabian city, golden magic lamp glowing with sparks and magical embers, palace domes below, starry desert sky with golden particles',
-  'Jack and the Beanstalk': 'as Jack, wearing medieval peasant costume, climbing enormous beanstalk above the clouds, magical golden sparks and light particles swirling around beanstalk, dramatic clouds, golden light from above like embers',
+  'Captain America':
+    'stands on a glowing battlefield, holding a vibranium shield that pulses with a radiant blue glow. His ultra-realistic suit is detailed with subtle metallic accents, and his heroic stance is illuminated by golden light from the setting sun. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere',
+
+  'Thor':
+    'stands atop a rocky mountain, gripping a glowing Mjolnir that crackles with vibrant blue lightning. His ultra-realistic Asgardian armor gleams with intricate metallic designs, and his red cape flows majestically behind him. The background features swirling storm clouds illuminated by magical streaks of energy and glowing stars',
+
+  'Doctor Strange':
+    'hovers mid-air with glowing magical symbols forming around his hands. His ultra-realistic cloak flows dramatically, its edges faintly glowing with golden light. The background features a swirling portal surrounded by glowing runes and vibrant cosmic energy, highlighting the mystical elements',
+
+  'Superman':
+    'soars above a magical valley bathed in golden sunlight. His ultra-realistic suit glows faintly with reflective details, and his red cape flows powerfully behind him. The background features radiant beams of light streaming from the sky, with glowing fireflies and sparkling clouds adding a touch of enchantment',
+
+  'Batman':
+    'stands on a glowing rooftop overlooking a fantastical Gotham City. His ultra-realistic armored suit reflects the faint glow of the Bat-Signal shining in the sky. Mystical fog and glowing bats surround him, capturing his heroic stance in this atmospheric, magical setting',
+
+  'The Flash':
+    'runs through a futuristic street surrounded by glowing lightning trails. His ultra-realistic red suit features golden lightning bolts that pulse with energy. Vibrant streaks of light and magical energy flow dynamically around him as he moves at incredible speed',
+
+  'Black Panther':
+    'stands in a glowing Wakandan jungle, his ultra-realistic black vibranium suit pulsing with purple energy. Bioluminescent plants glow around him, and energy sparks crackle from his suit. The mystical atmosphere is enhanced by floating particles and a moonlit sky above',
+
+  'Hulk':
+    'stands in a destroyed urban landscape, his massive green muscular body ultra-realistically detailed. Fire sparks and embers float everywhere, dust and debris swirl in the air. Dramatic sunset backlighting through smoke creates an epic, powerful atmosphere',
+
+  'Aquaman':
+    'stands on a rocky ocean cliff, wearing ultra-realistic orange and green scale armor. He holds a golden trident with energy sparks at its tip. Massive waves crash behind him against a dramatic stormy sky with lightning, sea spray and golden sparks filling the air',
+
+  'Wonder Woman':
+    'stands in ancient Greek temple ruins at golden hour, wearing ultra-realistic golden tiara, red and gold breastplate, and blue skirt with stars. Her lasso glows at her hip. Dust particles and golden embers swirl in the warm light, creating a powerful and magical atmosphere',
+
+  'Green Arrow':
+    'stands in an enchanted forest filled with glowing plants and magical mist. His ultra-realistic green suit is detailed with leather textures and metallic accents. He draws a glowing, radiant arrow, ready to strike with precision, as shimmering light surrounds him',
+
+  // ── Fantasy & Movies ──
+  'Harry Potter':
+    'stands in the middle of a glowing magical library. His ultra-realistic Hogwarts robe is detailed with fine textures, and his iconic lightning-shaped scar glows faintly on his forehead. He holds a glowing wand, surrounded by floating books and radiant golden sparks, with a vibrant magical aura illuminating the scene',
+
+  'Jack Sparrow':
+    'stands on the deck of a glowing pirate ship under a starry sky. His ultra-realistic pirate costume features leather textures, a detailed tricorn hat, and shimmering golden details. He holds a glowing sword, surrounded by radiant treasure chests and floating magical lanterns, with the ocean reflecting the starlight',
+
+  'Avatar':
+    'stands in a lush glowing forest on Pandora. His ultra-realistic blue skin is detailed with bioluminescent patterns. He holds a bow made of glowing materials, surrounded by luminous plants and floating seeds of Eywa. The background captures the magical beauty of Pandora\'s jungles, with a glowing night sky above',
+
+  'Dragon Rider':
+    'sits confidently atop a massive, ultra-realistic dragon. He wears detailed leather armor with dragon scales embedded into the design. The dragon\'s glowing eyes and fiery breath light up the scene, while the background features a stormy sky and a distant, burning castle',
+
+  'Aladdin':
+    'stands atop a glowing magic carpet, flying high above a mystical Arabian city. His ultra-realistic outfit is detailed with embroidered patterns and shimmering accents. The glowing stars and crescent moon create a magical night sky, while radiant golden dust trails follow the carpet\'s path',
+
+  'Peter Pan':
+    'flies above moonlit London rooftops, wearing an ultra-realistic green tunic with pointy hat and feather. Big Ben glows in the background under a starry night sky. A fairy dust trail glows like golden sparks behind him, with magical particles everywhere',
+
+  // ── Professions ──
+  'Firefighter':
+    'stands before a massive blazing fire, wearing ultra-realistic yellow turnout coat and helmet with visor. Intense orange flames and sparks reflect off his gear, burning embers swirl in the air, smoke and fire particles create a dramatic, heroic atmosphere',
+
+  'Astronaut':
+    'stands proudly on the surface of the moon, wearing an ultra-realistic space suit. His helmet reflects the Earth in the distance, while his hands hold a small flag. The background features the vastness of space with glowing stars and distant planets, creating an awe-inspiring and breathtaking scene',
+
+  'Pilot':
+    'stands proudly next to a modern jet on an expansive airfield. He wears a perfectly detailed, ultra-realistic pilot uniform, complete with patches and a helmet under his arm. The background shows a clear blue sky and other jets preparing for takeoff, emphasizing professionalism and determination',
+
+  'Chef':
+    'stands in a professional kitchen, wearing ultra-realistic white chef uniform and tall toque hat. Flames and sparks rise dramatically from a pan mid-flip. Copper pots gleam in warm amber fire glow, steam and fire sparks dance in the air creating an exciting culinary atmosphere',
+
+  'Police Officer':
+    'stands by a patrol car at dusk, wearing ultra-realistic dark blue uniform with badge and utility belt. Red and blue lights cast dramatic colored shadows and sparks of reflection. The atmospheric urban street scene is enhanced by haze and glowing city lights',
+
+  'Doctor':
+    'stands in a modern surgical suite, wearing ultra-realistic white coat with stethoscope. Dramatic blue-green lighting with lens flare from surgical lights creates a professional atmosphere. Light particles float in the air, medical monitors glow in the background',
+
+  'Scientist':
+    'stands in a high-tech laboratory surrounded by glowing equipment and bubbling beakers. He wears an ultra-realistic white lab coat, goggles, and gloves, carefully pouring a radiant, glowing liquid into a test tube. Advanced monitors and shelves filled with scientific instruments emphasize a futuristic and innovative atmosphere',
+
+  'Teacher':
+    'stands by a large chalkboard covered in equations, wearing ultra-realistic smart professional attire. Warm golden classroom light streams through tall windows, dust particles dance in golden light beams like sparks, creating an inspiring educational atmosphere',
+
+  'Nurse':
+    'stands in a modern hospital corridor, wearing ultra-realistic teal medical scrubs with stethoscope around neck. Soft warm light particles float in the air, creating a caring and atmospheric hospital ambiance',
+
+  'Engineer':
+    'stands on a steel skyscraper framework at sunrise, wearing ultra-realistic hard hat and reflective vest, holding blueprints. Welding sparks fly nearby, city skyline panorama below, wind-swept clouds and golden light create an epic construction scene',
+
+  'Veterinarian':
+    'stands in a warm veterinary clinic, wearing ultra-realistic scrubs, gently holding a small animal. Soft golden window light with floating dust particles, shelves with supplies in background, creating a compassionate and warm atmosphere',
+
+  'Artist':
+    'stands in a sunlit studio with massive canvases, wearing ultra-realistic paint-splattered apron, holding palette and brush. Colorful paint splashes everywhere, golden afternoon light streams in with particles dancing like sparks',
+
+  // ── Sports ──
+  'Football Player':
+    'is captured mid-celebration after scoring a goal, wearing an ultra-realistic football jersey with matching shorts and cleats. His arms are raised triumphantly as he runs along the field, face glowing with excitement. The background features a packed stadium with waving flags, cheering fans, and the goalpost, creating an energetic and realistic atmosphere',
+
+  'Basketball Player':
+    'dribbles a basketball on a polished indoor court, wearing an ultra-realistic jersey paired with matching shorts and high-top sneakers. The background shows the hardwood floor reflecting gym lights, with cheering fans in the stands and a hoop visible in the distance',
+
+  'Rock Singer':
+    'performs passionately on stage, captured from the audience perspective. He wears an ultra-realistic leather jacket, ripped jeans, and a band t-shirt, holding a microphone in one hand. The stage is illuminated by dynamic red, blue, and white spotlights, while silhouettes of a cheering crowd with raised hands fill the foreground, enhancing the excitement of the live performance',
+
+  // ── Fairy Tales ──
+  'Cinderella':
+    'descends a grand marble staircase wearing a shimmering ultra-realistic light blue ball gown with glass slippers. Magical golden sparkles and fairy dust swirl around like embers. The moonlit castle ballroom glows with chandeliers casting prismatic light sparks',
+
+  'Snow White':
+    'stands in an enchanted forest clearing wearing an ultra-realistic yellow and blue royal gown with red bow headband. Magical golden light particles float like fireflies and sparks, soft dappled sunlight filters through ancient trees',
+
+  'Little Red Riding Hood':
+    'walks through a misty dark forest path wearing a flowing ultra-realistic red hooded cape over white dress, holding a basket. Magical golden light sparks break through tall trees, fireflies glow like embers creating a mystical fairy tale atmosphere',
+
+  'Rapunzel':
+    'stands at a tower window wearing an ultra-realistic purple dress with long flowing golden hair cascading down. Hundreds of floating lanterns rise into the twilight sky like golden sparks and embers, warm magical glow fills the entire scene',
+
+  'Pinocchio':
+    'stands in an old Italian puppet workshop wearing ultra-realistic tyrolian hat and suspenders with wooden puppet details. Warm candlelight casts golden sparks, wooden toys and tools line the shelves in a cozy, magical atmosphere',
+
+  'Beauty & the Beast':
+    'dances in an enchanted castle ballroom wearing an iconic ultra-realistic golden ball gown. A magical rose glows under a glass dome nearby with golden sparks rising from it. Warm candlelit atmosphere with falling rose petals and magical embers',
+
+  'The Little Mermaid':
+    'sits on a rocky shore at sunset wearing ultra-realistic mermaid costume with teal sequined tail. Waves crash with golden light sparks on water, sea foam spray catches golden light, magical underwater sparkles shimmer everywhere',
+
+  'Sleeping Beauty':
+    'stands in an enchanted castle garden wearing a flowing ultra-realistic pink and blue magical gown with golden crown. Roses bloom everywhere, golden fairy sparkles and magical embers float in dreamy fog',
+
+  'Hansel & Gretel':
+    'stands before a magical gingerbread house in a dark forest wearing ultra-realistic Bavarian folk costume. Candy decorations glow with magical sparks, mysterious fog with floating embers creates a fairy tale atmosphere',
+
+  'Jack and the Beanstalk':
+    'climbs an enormous beanstalk above the clouds wearing ultra-realistic medieval peasant costume. Magical golden sparks and light particles swirl around the beanstalk, dramatic clouds part to reveal golden light from above',
 };
 
 // ── Trigger word used during LoRA training ────────────────────────────────────
@@ -80,29 +164,27 @@ export const LORA_TRIGGER = 'MEMRLS';
 // ── Build a full prompt for a single character + variation ─────────────────────
 export function buildPrompt(params: {
   characterName: string;
-  aiLabel: string;        // e.g. "child_male" from computeAiLabel()
+  aiLabel: string;        // e.g. "5-year-old boy" from computeAiLabel()
   aiOverride?: string;    // admin global override
   variation?: PromptVariation;
   customPrompt?: string;  // fully custom prompt (overrides everything)
 }): string {
-  // If a fully custom prompt is provided, use it directly
   if (params.customPrompt?.trim()) {
     return params.customPrompt.trim();
   }
 
   const scene = CHARACTER_DESCRIPTIONS[params.characterName]
-    ?? `as ${params.characterName}, in a cinematic environment with golden sparks and atmospheric particles`;
+    ?? `in a cinematic environment with golden sparks and atmospheric particles`;
 
-  const variation = params.variation ?? 'closeup';
-  const style = VARIATION_STYLES[variation];
+  const variation = params.variation ?? 'variation_a';
+  const style = VARIATION_MODIFIERS[variation];
 
   const override = params.aiOverride?.trim()
     ? `, ${params.aiOverride.trim()}`
     : '';
 
   return (
-    `Ultra-realistic cinematic photography of ${LORA_TRIGGER}, a ${params.aiLabel}, ` +
-    `${scene}${override}. ` +
+    `${LORA_TRIGGER}, a ${params.aiLabel} ${scene}${override}. ` +
     `${style}. ${ATMOSPHERE}`
   );
 }
