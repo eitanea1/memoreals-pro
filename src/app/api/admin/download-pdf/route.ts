@@ -132,20 +132,30 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
+    // After -90° rotation: image's 1424px maps to page height, 1024px to page width.
+    // Use cover mode (scale by max) to fill page without stretching.
+    // The draw origin for rotate(-90°) is (x, y), and:
+    //   horizontal coverage = height param, vertical coverage = width param.
+    const visW = embedded.height; // visual width after rotation (1024px)
+    const visH = embedded.width;  // visual height after rotation (1424px)
+    const scale = Math.max(PAGE_W / visW, PAGE_H / visH);
+    const scaledW = visW * scale; // horizontal span on page
+    const scaledH = visH * scale; // vertical span on page
+    // Center: negative offsets mean image bleeds past page edges (that's fine — we have 3mm bleed)
+    const dx = (PAGE_W - scaledW) / 2; // ≤ 0
+    const dy = (PAGE_H - scaledH) / 2; // ≤ 0
+
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
-
-      // Rotate landscape image 90° CW to fill portrait page.
-      // pdf-lib rotates around the draw origin (x, y).
-      // With rotate(-90°) around (0, PAGE_H), corners map to:
-      //   (0, PAGE_H)→top-left  (PAGE_H, PAGE_H)→(0,0)  (0,0)→(PAGE_W,PAGE_H)
-      // → image fills the full page.
+      // With rotate(-90°) around (dx, dy + scaledH):
+      //   height param controls horizontal span → scaledW
+      //   width param controls vertical span   → scaledH
       page.drawImage(embedded, {
-        x: 0,
-        y: PAGE_H,
-        width: PAGE_H,   // landscape width fills portrait height
-        height: PAGE_W,  // landscape height fills portrait width
+        x: dx,
+        y: dy + scaledH,
+        width: scaledH,
+        height: scaledW,
         rotate: degrees(-90),
       });
     }
