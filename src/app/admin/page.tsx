@@ -76,12 +76,14 @@ export default async function AdminPage() {
                   <Badge className="bg-red-100 text-red-700 border-0 text-xs">⚠ אימון נכשל</Badge>
                 )}
               </div>
-              <div className="flex items-center gap-2 text-sm text-[#718096]">
-                <span>{order.customerEmail}</span>
-                <span>·</span>
-                <span>גיל {order.subjectAge} · {GENDER_HEBREW[order.subjectGender]}</span>
-                <span>·</span>
-                <span>{new Date(order.createdAt).toLocaleDateString('he-IL')}</span>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 text-sm text-[#718096]">
+                  <span>{order.customerEmail}</span>
+                  <span>·</span>
+                  <span>גיל {order.subjectAge} · {GENDER_HEBREW[order.subjectGender]}</span>
+                  <span>·</span>
+                  <span>{new Date(order.createdAt).toLocaleDateString('he-IL')}</span>
+                </div>
                 <AdminDeleteOrder orderId={order.id} />
               </div>
             </div>

@@ -284,15 +284,13 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         <span className="admin-step-label">שלב 1 — אימון LoRA</span>
         <Button
           variant="brand" size="sm"
-          disabled={!!loading || isTraining}
+          disabled={!!loading || isTraining || isSampling || isProcessing || isReady || isShipped}
           onClick={handleTrain}
         >
           {loading === 'train'
             ? '⏳ שולח לאימון...'
             : isTraining
             ? '⏳ מאמן... (ממתין ל-webhook)'
-            : isSampling || isProcessing || isReady || isShipped
-            ? '🔄 אמן מחדש (Portrait Trainer)'
             : order.trainingFailed
             ? '🔄 נסה שוב (נכשל)'
             : '🚀 התחל אימון'}
