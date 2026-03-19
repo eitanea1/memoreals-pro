@@ -3,7 +3,13 @@
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 
-export default function AdminDeleteOrder({ orderId }: { orderId: string }) {
+export default function AdminDeleteOrder({
+  orderId,
+  onSuccess,
+}: {
+  orderId: string;
+  onSuccess?: () => void;
+}) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -21,7 +27,11 @@ export default function AdminDeleteOrder({ orderId }: { orderId: string }) {
         alert(err.error ?? 'שגיאה במחיקה');
         return;
       }
-      router.refresh();
+      if (onSuccess) {
+        onSuccess();
+      } else {
+        router.refresh();
+      }
     } finally {
       setLoading(false);
     }

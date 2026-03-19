@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { buildPrompt, VARIATIONS, type PromptVariation } from '@/lib/prompts';
+import type { SerializedOrder } from './page';
 
 interface GeneratedImage {
   id: string;
@@ -15,18 +16,7 @@ interface GeneratedImage {
   isSelected: boolean;
 }
 
-interface OrderData {
-  id: string;
-  status: string;
-  trainingFailed: boolean;
-  loraUrl: string | null;
-  aiOverride: string;
-  aiLabel: string;
-  characters: { name: string; displayName: string; position: number }[];
-  generatedImages: GeneratedImage[];
-}
-
-export default function AdminOrderRow({ order }: { order: OrderData }) {
+export default function AiTab({ order }: { order: SerializedOrder }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   const [override, setOverride] = useState(order.aiOverride);
@@ -42,18 +32,26 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     imagesByChar[img.characterName].push(img);
   }
 
-  // Count selections
   const selectedCharacters = new Set(
     order.generatedImages.filter((img) => img.isSelected).map((img) => img.characterName)
   );
   const totalChars = order.characters.length;
   const selectedCount = selectedCharacters.size;
-  const allSelected = selectedCount === totalChars && totalChars > 0;
 
-  // Check what images exist
   const sampleChars = order.characters.slice(0, 5);
   const hasSamples = sampleChars.every((c) => (imagesByChar[c.name]?.length ?? 0) > 0);
   const hasFullSet = order.characters.every((c) => (imagesByChar[c.name]?.length ?? 0) > 0);
+
+  const isTraining   = order.status === 'TRAINING';
+  const isSampling   = order.status === 'SAMPLING';
+  const isProcessing = order.status === 'PROCESSING_ALL';
+  const isReady      = order.status === 'READY_FOR_PRINT';
+  const isShipped    = order.status === 'SHIPPED';
+
+  const VARIATION_LABELS: Record<string, string> = {
+    variation_a: 'וריאציה A',
+    variation_b: 'וריאציה B',
+  };
 
   async function post(url: string, body: object) {
     const res = await fetch(url, {
@@ -140,20 +138,6 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     }
   }
 
-  async function handleDownloadZip() {
-    setLoading('zip');
-    try {
-      window.open(`/api/admin/download-zip?orderId=${order.id}`, '_blank');
-    } finally { setLoading(null); }
-  }
-
-  async function handleDownloadPdf() {
-    setLoading('pdf');
-    try {
-      window.open(`/api/admin/download-pdf?orderId=${order.id}`, '_blank');
-    } finally { setLoading(null); }
-  }
-
   function getDefaultPrompt(charName: string, variation: PromptVariation): string {
     return buildPrompt({
       characterName: charName,
@@ -164,16 +148,10 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
   }
 
   function togglePromptEditor(charName: string) {
-    if (expandedChar === charName) {
-      setExpandedChar(null);
-      return;
-    }
-    // Initialize prompts with defaults if not set
+    if (expandedChar === charName) { setExpandedChar(null); return; }
     if (!charPrompts[charName]) {
       const defaults: Record<string, string> = {};
-      for (const v of VARIATIONS) {
-        defaults[v] = getDefaultPrompt(charName, v);
-      }
+      for (const v of VARIATIONS) defaults[v] = getDefaultPrompt(charName, v);
       setCharPrompts((prev) => ({ ...prev, [charName]: defaults }));
     }
     setExpandedChar(charName);
@@ -186,22 +164,8 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     }));
   }
 
-  // Determine which step is active based on order status
-  const isTraining    = order.status === 'TRAINING';
-  const isSampling    = order.status === 'SAMPLING';
-  const isProcessing  = order.status === 'PROCESSING_ALL';
-  const isReady       = order.status === 'READY_FOR_PRINT';
-  const isShipped     = order.status === 'SHIPPED';
-
-  const VARIATION_LABELS: Record<string, string> = {
-    variation_a: 'וריאציה A',
-    variation_b: 'וריאציה B',
-  };
-
-  // Helper to render images for a character grouped by variation
   function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean) {
     const imgs = imagesByChar[char.name] ?? [];
-
     return (
       <div key={char.name} className="mb-6 border border-[#e2e8f0] rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
@@ -211,10 +175,7 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
           </p>
           {showRegenerate && (
             <div className="flex gap-2">
-              <Button
-                variant="brand-outline" size="sm"
-                onClick={() => togglePromptEditor(char.name)}
-              >
+              <Button variant="brand-outline" size="sm" onClick={() => togglePromptEditor(char.name)}>
                 {expandedChar === char.name ? 'סגור פרומפטים' : 'ערוך פרומפטים'}
               </Button>
               <Button
@@ -228,7 +189,6 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
           )}
         </div>
 
-        {/* Images */}
         {imgs.length > 0 && (
           <div className="flex gap-2 flex-wrap mb-2">
             {imgs.map((img) => (
@@ -263,7 +223,6 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
           </div>
         )}
 
-        {/* Prompt editor */}
         {expandedChar === char.name && (
           <div className="flex flex-col gap-2 mt-3 p-3 bg-[#f7fafc] rounded-lg">
             {VARIATIONS.map((v) => (
@@ -285,8 +244,7 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
 
   return (
     <div className="flex flex-col gap-4">
-
-      {/* ── Step 1: Train ── */}
+      {/* Step 1: Train */}
       <div className="admin-ai-step">
         <span className="admin-step-label">שלב 1 — אימון LoRA</span>
         <Button
@@ -304,7 +262,7 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         </Button>
       </div>
 
-      {/* ── AI Override (visible once training started or beyond) ── */}
+      {/* AI Override */}
       {(isSampling || isProcessing || isReady) && (
         <div className="admin-ai-step flex-col !items-start gap-2">
           <span className="admin-step-label">הנחיות AI גלובליות (אופציונלי)</span>
@@ -324,10 +282,10 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         </div>
       )}
 
-      {/* ── Step 2: Generate Samples (5 chars × 3 variations = 15 images) ── */}
+      {/* Step 2: Samples */}
       {isSampling && (
         <div className="admin-ai-step">
-          <span className="admin-step-label">שלב 2 — 5 דגימות (5 דמויות × 3 וריאציות = 15 תמונות)</span>
+          <span className="admin-step-label">שלב 2 — 5 דגימות (5 דמויות × 2 וריאציות)</span>
           <Button
             variant="brand" size="sm"
             disabled={!!loading || hasSamples}
@@ -338,7 +296,6 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         </div>
       )}
 
-      {/* ── Sample results ── */}
       {isSampling && hasSamples && (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-[#718096]">בחר תמונה מועדפת לכל דמות (לבדיקת איכות):</p>
@@ -346,10 +303,10 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         </div>
       )}
 
-      {/* ── Step 3: Generate Full Set ── */}
-      {(isSampling && hasSamples) && (
+      {/* Step 3: Full set */}
+      {isSampling && hasSamples && (
         <div className="admin-ai-step">
-          <span className="admin-step-label">שלב 3 — סט מלא ({totalChars} דמויות × 3 וריאציות = {totalChars * 3} תמונות)</span>
+          <span className="admin-step-label">שלב 3 — סט מלא ({totalChars} דמויות × 2 וריאציות)</span>
           <Button
             variant="brand" size="sm"
             disabled={!!loading || hasFullSet}
@@ -360,10 +317,9 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
         </div>
       )}
 
-      {/* ── Full set results ── */}
+      {/* Full set results */}
       {(isProcessing || isReady) && hasFullSet && (
         <div className="flex flex-col gap-2">
-          {/* Selection counter */}
           <div className="flex items-center justify-between bg-[#f7fafc] rounded-xl p-3">
             <span className="text-sm font-semibold text-[#4a5568]">
               נבחרו: {selectedCount}/{totalChars} דמויות
@@ -375,38 +331,14 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
               />
             </div>
           </div>
-
           <p className="text-sm text-[#718096]">בחר תמונה מנצחת לכל דמות:</p>
           {order.characters.map((char) => renderCharacterImages(char, true))}
         </div>
       )}
 
-      {/* ── Step 4: Download ZIP ── */}
-      {(isProcessing || isReady) && allSelected && (
-        <div className="admin-ai-step bg-green-50 border border-green-200 rounded-xl p-3">
-          <span className="admin-step-label text-green-800">🎉 כל {totalChars} הדמויות נבחרו — מוכן להדפסה!</span>
-          <div className="flex gap-2">
-            <Button
-              variant="brand" size="sm"
-              onClick={handleDownloadPdf}
-              disabled={!!loading}
-            >
-              {loading === 'pdf' ? '⏳ מכין PDF...' : '🖨 הורד PDF להדפסה'}
-            </Button>
-            <Button
-              variant="brand-outline" size="sm"
-              onClick={handleDownloadZip}
-              disabled={!!loading}
-            >
-              {loading === 'zip' ? '⏳ מכין ZIP...' : '📦 הורד ZIP'}
-            </Button>
-          </div>
-        </div>
-      )}
-
       {error && <p className="text-sm text-red-500">{error}</p>}
 
-      {/* Lightbox — double-click an image to view full size */}
+      {/* Lightbox */}
       {lightboxUrl && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 cursor-zoom-out"

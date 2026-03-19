@@ -859,3 +859,11 @@ body {
 .admin-step-label { font-size: 0.85rem; font-weight: 600; color: var(--c-mid); flex: 1; }
 .admin-gen-thumb { width: 120px; height: 80px; object-fit: cover; border-radius: 10px; cursor: pointer; transition: transform 0.15s; border: 1.5px solid var(--c-border); }
 .admin-gen-thumb:hover { transform: scale(1.05); }
+
+/* ── Admin Tabs ─────────────────────────────────────────────────────────────── */
+.admin-tabs-bar { display: flex; gap: 0; border-bottom: 2px solid var(--c-border); margin-bottom: 0; }
+.admin-tab { position: relative; padding: 0.65rem 1.25rem; font-size: 0.9rem; font-weight: 600; color: var(--c-muted); border: none; background: transparent; cursor: pointer; transition: color 0.15s; border-bottom: 2px solid transparent; margin-bottom: -2px; }
+.admin-tab:hover { color: var(--c-brand); }
+.admin-tab--active { color: var(--c-brand); border-bottom-color: var(--c-brand); }
+.admin-tab-dot { position: absolute; top: 0.5rem; right: 0.5rem; width: 6px; height: 6px; border-radius: 50%; background: #16a34a; }
+.admin-tab-content { background: white; border: 1px solid var(--c-border); border-top: none; border-radius: 0 0 16px 16px; padding: 1.5rem; }
