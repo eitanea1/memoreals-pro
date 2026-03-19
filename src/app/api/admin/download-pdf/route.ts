@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
 
 export const maxDuration = 60;
 
@@ -132,21 +132,28 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // No rotation — keep person upright.
-    // Scale by height to fill page vertically, then center-crop horizontally.
-    // The landscape image (1424×1024) has the subject centered horizontally.
-    const scale = PAGE_H / embedded.height; // fill page height exactly
-    const scaledW = embedded.width * scale; // wider than PAGE_W → crops sides
-    const dx = (PAGE_W - scaledW) / 2;      // negative → image extends past sides (clipped)
+    // Rotate 90° CW: landscape (1424×1024) → portrait, person upright, nothing cropped.
+    // After CW rotation: embedded.height → displayed width, embedded.width → displayed height.
+    // Aspect ratios are nearly identical (1024/1424≈0.719 vs 63/89≈0.708) so stretch is <1%.
+    const scale = Math.max(PAGE_W / embedded.height, PAGE_H / embedded.width);
+    const drawW = embedded.width * scale;   // pre-rotation width  → displayed height after CW
+    const drawH = embedded.height * scale;  // pre-rotation height → displayed width after CW
+
+    // With rotate: degrees(-90) (CW), drawImage at (x,y) places the image so:
+    //   displayed x: [x, x+drawH],  displayed y: [y-drawW, y]
+    // Centre on page:
+    const imgX = (PAGE_W - drawH) / 2;
+    const imgY = (PAGE_H + drawW) / 2;
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
       page.drawImage(embedded, {
-        x: dx,
-        y: 0,
-        width: scaledW,
-        height: PAGE_H,
+        x: imgX,
+        y: imgY,
+        width: drawW,
+        height: drawH,
+        rotate: degrees(-90),
       });
     }
   }
