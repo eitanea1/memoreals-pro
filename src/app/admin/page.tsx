@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AdminOrderRow from './AdminOrderRow';
+import AdminDeleteOrder from './AdminDeleteOrder';
 
 const STATUS_HEBREW: Record<string, string> = {
   RECEIVED: 'התקבלה',
@@ -81,6 +82,7 @@ export default async function AdminPage() {
                 <span>גיל {order.subjectAge} · {GENDER_HEBREW[order.subjectGender]}</span>
                 <span>·</span>
                 <span>{new Date(order.createdAt).toLocaleDateString('he-IL')}</span>
+                <AdminDeleteOrder orderId={order.id} />
               </div>
             </div>
           </CardHeader>

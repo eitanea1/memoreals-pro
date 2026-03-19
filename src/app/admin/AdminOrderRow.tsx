@@ -131,6 +131,15 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
     } catch {}
   }
 
+  async function handleDeleteImage(imageId: string) {
+    try {
+      await post('/api/admin/delete-image', { imageId });
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה במחיקת תמונה');
+    }
+  }
+
   async function handleDownloadZip() {
     setLoading('zip');
     try {
@@ -235,6 +244,13 @@ export default function AdminOrderRow({ order }: { order: OrderData }) {
                 <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
                   {img.variation}
                 </span>
+                <button
+                  className="absolute top-1 left-1 bg-red-600/80 hover:bg-red-600 text-white text-[10px] rounded px-1 py-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => { e.stopPropagation(); handleDeleteImage(img.id); }}
+                  title="מחק תמונה"
+                >
+                  🗑
+                </button>
               </div>
             ))}
           </div>
