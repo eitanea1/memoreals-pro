@@ -89,27 +89,47 @@ export async function GET(req: NextRequest) {
 
   // ── Character pages (each image × 2) ────────────────────────────────────────
   for (const img of selectedImages) {
-    let imageBytes: ArrayBuffer;
+    let imageBytes: Uint8Array;
+    let contentType = '';
     try {
-      const res = await fetch(img.imageUrl);
-      if (!res.ok) continue;
-      imageBytes = await res.arrayBuffer();
+      const res = await fetch(img.imageUrl, { redirect: 'follow' });
+      if (!res.ok) {
+        console.error(`[download-pdf] HTTP ${res.status} for image ${img.id}`);
+        continue;
+      }
+      contentType = res.headers.get('content-type') ?? '';
+      imageBytes = new Uint8Array(await res.arrayBuffer());
     } catch (err) {
       console.error(`[download-pdf] Failed to fetch image ${img.id}:`, err);
       continue;
     }
 
-    // Embed image — try JPEG first, fall back to PNG
+    // Detect format from content-type or magic bytes
+    const isPng =
+      contentType.includes('png') ||
+      (imageBytes[0] === 0x89 && imageBytes[1] === 0x50);
+    const isJpeg =
+      contentType.includes('jpeg') ||
+      contentType.includes('jpg') ||
+      (imageBytes[0] === 0xff && imageBytes[1] === 0xd8);
+
     let embedded;
     try {
-      embedded = await pdf.embedJpg(imageBytes);
-    } catch {
-      try {
+      if (isPng) {
         embedded = await pdf.embedPng(imageBytes);
-      } catch (err2) {
-        console.error(`[download-pdf] Could not embed image ${img.id}:`, err2);
-        continue;
+      } else if (isJpeg) {
+        embedded = await pdf.embedJpg(imageBytes);
+      } else {
+        // Unknown format — try JPEG then PNG
+        try {
+          embedded = await pdf.embedJpg(imageBytes);
+        } catch {
+          embedded = await pdf.embedPng(imageBytes);
+        }
       }
+    } catch (err2) {
+      console.error(`[download-pdf] Could not embed image ${img.id} (type: ${contentType}):`, err2);
+      continue;
     }
 
     // Draw the image TWICE (memory game pair)
