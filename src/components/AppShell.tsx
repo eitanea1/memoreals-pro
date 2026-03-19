@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -9,7 +10,14 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
     <div className="app">
       <header className="app-header" onClick={() => router.push('/')}>
         <div className="header-inner">
-          <div className="brand-mark">M</div>
+          <Image
+            src="/logo.svg"
+            alt="MemoReals Logo"
+            width={42}
+            height={42}
+            className="header-logo-img"
+            priority
+          />
           <div className="brand-text">
             <span className="brand-logo">MemoReals</span>
             <span className="brand-slogan">זיכרונות אמיתיים בגרסה דמיונית</span>
@@ -20,7 +28,10 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
       <footer className="app-footer">
-        <p>© 2025 MemoReals · כל הזכויות שמורות</p>
+        <div className="footer-inner">
+          <Image src="/logo.svg" alt="" width={22} height={22} className="footer-logo" />
+          <span>© 2025 MemoReals · כל הזכויות שמורות</span>
+        </div>
       </footer>
     </div>
   );

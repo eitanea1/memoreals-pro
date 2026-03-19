@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 const HOW_IT_WORKS = [
   {
@@ -10,7 +11,7 @@ const HOW_IT_WORKS = [
   {
     num: '02',
     icon: '📸',
-    title: 'מעלים 10–20 תמונות פנים',
+    title: 'מעלים 15 תמונות פנים',
     body: 'מעלים תמונות ברורות של הפנים, ה-AI לומד את הפנים של הילד ויוצר דמויות שנראות ממש כמוהו.',
   },
   {
@@ -29,7 +30,7 @@ const WHY_ITEMS = [
   },
   {
     icon: '🖨️',
-    title: 'הדפסה פרימיום',
+    title: 'הדפסת פרימיום',
     body: 'קלפים עמידים בגודל 8.9×6.4 ס"מ, מצולמים בסגנון קולנועי. מתנה שתישאר בתיבה לשנים.',
   },
   {
@@ -40,7 +41,7 @@ const WHY_ITEMS = [
   {
     icon: '🎁',
     title: 'המתנה המושלמת',
-    body: 'יום הולדת, חנוכה, פסח — או סתם כי אפשר. מתנה שאי-אפשר לקנות בחנות.',
+    body: 'יום הולדת, חנוכה, פסח — או סתם כי אפשר. מתנה שאי-אפשר לקנות בשום חנות.',
   },
 ];
 
@@ -59,6 +60,9 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero-section">
+        <div className="hero-logo-mark">
+          <Image src="/logo.svg" alt="MemoReals" width={42} height={42} priority />
+        </div>
         <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
         <h1 className="hero-headline">
           הילד שלך<br />
@@ -76,9 +80,9 @@ export default function HomePage() {
 
       {/* ── Gallery ── */}
       <section className="gallery-section">
-        <div className="section-label">הקלפים שלנו</div>
+        <div className="section-eyebrow">הקלפים שלנו</div>
         <h2 className="section-title">כך נראית המתנה</h2>
-        <p className="section-subtitle">כל קלף בגודל 8.9×6.4 ס"מ — איכות הדפסה פרימיום</p>
+        <p className="section-sub">כל קלף בגודל 8.9×6.4 ס&quot;מ — הדפסת פרימיום, סגנון קולנועי</p>
         <div className="gallery-grid">
           {GALLERY_IMAGES.map((img) => (
             <div key={img.src} className="gallery-card">
@@ -91,7 +95,7 @@ export default function HomePage() {
 
       {/* ── How it works ── */}
       <section className="how-section">
-        <div className="section-label">איך זה עובד</div>
+        <div className="section-eyebrow">איך זה עובד</div>
         <h2 className="section-title">שלושה צעדים פשוטים</h2>
         <div className="how-grid">
           {HOW_IT_WORKS.map((step) => (
@@ -107,7 +111,7 @@ export default function HomePage() {
 
       {/* ── Why ── */}
       <section className="why-section">
-        <div className="section-label">למה MemoReals</div>
+        <div className="section-eyebrow">למה MemoReals</div>
         <h2 className="section-title">לא סתם מתנה</h2>
         <div className="why-grid">
           {WHY_ITEMS.map((item) => (
@@ -122,6 +126,7 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
+        <Image src="/logo.svg" alt="" width={52} height={52} className="cta-logo" />
         <h2 className="cta-title">מוכנים להפתיע?</h2>
         <p className="cta-sub">תהליך ההזמנה לוקח פחות מ-5 דקות</p>
         <Link href="/details" className="btn-hero-cta">
