@@ -33,7 +33,7 @@ async function generateForCharacterVariation(params: {
       prompt,
       loras: [{ path: params.loraUrl, scale: 1.0 }],
       num_images: 1,
-      num_inference_steps: 40,
+      num_inference_steps: 28,
       guidance_scale: 3.5,
       enable_safety_checker: false,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
