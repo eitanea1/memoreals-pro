@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export const maxDuration = 60;
 
@@ -132,31 +132,21 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // After -90° rotation: image's 1424px maps to page height, 1024px to page width.
-    // Use cover mode (scale by max) to fill page without stretching.
-    // The draw origin for rotate(-90°) is (x, y), and:
-    //   horizontal coverage = height param, vertical coverage = width param.
-    const visW = embedded.height; // visual width after rotation (1024px)
-    const visH = embedded.width;  // visual height after rotation (1424px)
-    const scale = Math.max(PAGE_W / visW, PAGE_H / visH);
-    const scaledW = visW * scale; // horizontal span on page
-    const scaledH = visH * scale; // vertical span on page
-    // Center: negative offsets mean image bleeds past page edges (that's fine — we have 3mm bleed)
-    const dx = (PAGE_W - scaledW) / 2; // ≤ 0
-    const dy = (PAGE_H - scaledH) / 2; // ≤ 0
+    // No rotation — keep person upright.
+    // Scale by height to fill page vertically, then center-crop horizontally.
+    // The landscape image (1424×1024) has the subject centered horizontally.
+    const scale = PAGE_H / embedded.height; // fill page height exactly
+    const scaledW = embedded.width * scale; // wider than PAGE_W → crops sides
+    const dx = (PAGE_W - scaledW) / 2;      // negative → image extends past sides (clipped)
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
-      // With rotate(-90°) around (dx, dy + scaledH):
-      //   height param controls horizontal span → scaledW
-      //   width param controls vertical span   → scaledH
       page.drawImage(embedded, {
         x: dx,
-        y: dy + scaledH,
-        width: scaledH,
-        height: scaledW,
-        rotate: degrees(-90),
+        y: 0,
+        width: scaledW,
+        height: PAGE_H,
       });
     }
   }
