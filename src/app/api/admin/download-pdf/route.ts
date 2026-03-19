@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export const maxDuration = 60;
 
@@ -132,28 +132,21 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // Rotate 90° CW: landscape (1424×1024) → portrait, person upright, nothing cropped.
-    // After CW rotation: embedded.height → displayed width, embedded.width → displayed height.
-    // Aspect ratios are nearly identical (1024/1424≈0.719 vs 63/89≈0.708) so stretch is <1%.
-    const scale = Math.max(PAGE_W / embedded.height, PAGE_H / embedded.width);
-    const drawW = embedded.width * scale;   // pre-rotation width  → displayed height after CW
-    const drawH = embedded.height * scale;  // pre-rotation height → displayed width after CW
-
-    // With rotate: degrees(-90) (CW), drawImage at (x,y) places the image so:
-    //   displayed x: [x, x+drawH],  displayed y: [y-drawW, y]
-    // Centre on page:
-    const imgX = (PAGE_W - drawH) / 2;
-    const imgY = (PAGE_H + drawW) / 2;
+    // Images are generated as portrait (768×1024). Scale to cover the card, centre-crop.
+    const scale = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
+    const scaledW = embedded.width * scale;
+    const scaledH = embedded.height * scale;
+    const dx = (PAGE_W - scaledW) / 2;
+    const dy = (PAGE_H - scaledH) / 2;
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
       page.drawImage(embedded, {
-        x: imgX,
-        y: imgY,
-        width: drawW,
-        height: drawH,
-        rotate: degrees(-90),
+        x: dx,
+        y: dy,
+        width: scaledW,
+        height: scaledH,
       });
     }
   }
