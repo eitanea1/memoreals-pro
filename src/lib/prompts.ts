@@ -6,7 +6,7 @@ export type PromptVariation = (typeof VARIATIONS)[number];
 const CHARACTER_PROMPTS: Record<string, string> = {
   // ── Superheroes ──
   'Spider-Man':
-    'Spider-Man, swings between glowing skyscrapers at dusk, his ultra-realistic suit showcasing detailed webbing and vibrant red and blue colors. His pose emphasizes his agility as the spotlight reflects off his suit, and magical glowing webs leave shimmering trails in the air.',
+    'Spider-Man, mask off face fully visible, swings between glowing skyscrapers at dusk, his ultra-realistic suit showcasing detailed webbing and vibrant red and blue colors. His pose emphasizes his agility as the spotlight reflects off his suit, and magical glowing webs leave shimmering trails in the air.',
 
   'Iron Man':
     'Iron Man, hovers in mid-air with his arms extended, glowing repulsors charging in his hands. His ultra-realistic red and gold suit shines with reflective metallic textures, and sparks of magical energy surround him.',
@@ -24,7 +24,7 @@ const CHARACTER_PROMPTS: Record<string, string> = {
     'Superman, soars above a magical valley bathed in golden sunlight. His ultra-realistic suit glows faintly with reflective details, and his red cape flows powerfully behind him.',
 
   'Batman':
-    'Batman, stands on a glowing rooftop overlooking a fantastical Gotham City. His ultra-realistic armored suit reflects the faint glow of the Bat-Signal shining in the sky.',
+    'Batman, mask off face fully visible, stands on a glowing rooftop overlooking a fantastical Gotham City. His ultra-realistic armored suit reflects the faint glow of the Bat-Signal shining in the sky.',
 
   'The Flash':
     'Flash, runs through a futuristic street surrounded by glowing lightning trails. His ultra-realistic red suit features golden lightning bolts that pulse with energy.',
