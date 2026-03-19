@@ -318,7 +318,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
       )}
 
       {/* Full set results */}
-      {(isProcessing || isReady) && hasFullSet && (
+      {(isProcessing || isReady) && (
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-between bg-[#f7fafc] rounded-xl p-3">
             <span className="text-sm font-semibold text-[#4a5568]">
