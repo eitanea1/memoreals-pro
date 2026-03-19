@@ -136,14 +136,16 @@ export async function GET(req: NextRequest) {
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
 
-      // Source is landscape (width > height) → rotate 90° CW to fill portrait page
-      // pdf-lib rotation is counter-clockwise, so -90° = 90° CW.
-      // With rotate(-90°), the image origin shifts: use x=PAGE_W, y=0
+      // Rotate landscape image 90° CW to fill portrait page.
+      // pdf-lib rotates around the draw origin (x, y).
+      // With rotate(-90°) around (0, PAGE_H), corners map to:
+      //   (0, PAGE_H)→top-left  (PAGE_H, PAGE_H)→(0,0)  (0,0)→(PAGE_W,PAGE_H)
+      // → image fills the full page.
       page.drawImage(embedded, {
-        x: PAGE_W,
-        y: 0,
-        width: PAGE_H,   // landscape width maps to portrait height
-        height: PAGE_W,  // landscape height maps to portrait width
+        x: 0,
+        y: PAGE_H,
+        width: PAGE_H,   // landscape width fills portrait height
+        height: PAGE_W,  // landscape height fills portrait width
         rotate: degrees(-90),
       });
     }
