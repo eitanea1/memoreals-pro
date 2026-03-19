@@ -1,37 +1,56 @@
 import Link from 'next/link';
-import { Card, CardContent } from '@/components/ui/card';
 
-const brandXl =
-  'inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent ' +
-  'bg-gradient-to-br from-[#667eea] to-[#764ba2] text-white shadow-md ' +
-  'h-12 px-8 text-base font-semibold ' +
-  'transition-all hover:opacity-90 active:opacity-80 select-none outline-none';
-
-const GALLERY_IMAGES = [
-  { src: '/example (1).jpg', alt: 'דוגמה לקלף משחק זיכרון 1' },
-  { src: '/example (2).jpg', alt: 'דוגמה לקלף משחק זיכרון 2' },
-  { src: '/example (3).jpg', alt: 'דוגמה לקלף משחק זיכרון 3' },
-  { src: '/example (4).jpg', alt: 'דוגמה לקלף משחק זיכרון 4' },
-  { src: '/example (5).png', alt: 'דוגמה לקלף משחק זיכרון 5' },
-  { src: '/example (6).png', alt: 'דוגמה לקלף משחק זיכרון 6' },
+const HOW_IT_WORKS = [
+  {
+    num: '01',
+    icon: '🧒',
+    title: 'מזינים פרטים ובוחרים דמויות',
+    body: 'בוחרים שם, גיל ומין — ואז בוחרים 20 דמויות שאהובות על הילד: גיבורי-על, מקצועות, דמויות מסרטים ועוד.',
+  },
+  {
+    num: '02',
+    icon: '📸',
+    title: 'מעלים 10–20 תמונות פנים',
+    body: 'מעלים תמונות ברורות של הפנים, ה-AI לומד את הפנים של הילד ויוצר דמויות שנראות ממש כמוהו.',
+  },
+  {
+    num: '03',
+    icon: '✨',
+    title: 'מקבלים קלפים מדהימים',
+    body: 'ה-AI מייצר תמונות קולנועיות באיכות גבוהה, ואנחנו מדפיסים את הקלפים ושולחים אליכם הביתה.',
+  },
 ];
 
 const WHY_ITEMS = [
   {
-    emoji: '😂',
+    icon: '🎭',
+    title: 'הפנים שלו — על הגיבורים שלו',
+    body: 'ה-AI לומד את הפנים של הילד ומרכיב אותן על גיבורי-על, מלכות ומקצועות בצורה שנראית אמיתית לגמרי.',
+  },
+  {
+    icon: '🖨️',
+    title: 'הדפסה פרימיום',
+    body: 'קלפים עמידים בגודל 8.9×6.4 ס"מ, מצולמים בסגנון קולנועי. מתנה שתישאר בתיבה לשנים.',
+  },
+  {
+    icon: '😂',
     title: 'צחוק מובטח',
-    body: 'כי לראות את סבא לוחם סומו זה משהו שלא שוכחים. כל קלף הוא הפתעה חדשה.',
+    body: 'לראות את הילד כספיידרמן, כאסטרונאוט או כשף? זה משחק שמצחיק ומרגש בכל פעם מחדש.',
   },
   {
-    emoji: '⭐',
-    title: 'הילד הוא הכוכב',
-    body: 'תחפושות שקמות לתחייה בעזרת ה-AI הכי מתקדם בעולם — כל תמונה מותאמת אישית.',
+    icon: '🎁',
+    title: 'המתנה המושלמת',
+    body: 'יום הולדת, חנוכה, פסח — או סתם כי אפשר. מתנה שאי-אפשר לקנות בחנות.',
   },
-  {
-    emoji: '🏆',
-    title: 'איכות פרימיום',
-    body: 'קלפי משחק עמידים שיישארו איתכם שנים. מתנה שאי אפשר לשכוח.',
-  },
+];
+
+const GALLERY_IMAGES = [
+  { src: '/example (1).jpg', alt: 'קלף משחק זיכרון 1' },
+  { src: '/example (2).jpg', alt: 'קלף משחק זיכרון 2' },
+  { src: '/example (3).jpg', alt: 'קלף משחק זיכרון 3' },
+  { src: '/example (4).jpg', alt: 'קלף משחק זיכרון 4' },
+  { src: '/example (5).png', alt: 'קלף משחק זיכרון 5' },
+  { src: '/example (6).png', alt: 'קלף משחק זיכרון 6' },
 ];
 
 export default function HomePage() {
@@ -40,43 +59,61 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero-section">
-        <h2 className="hero-headline">
-          להפוך את אבא לאסטרונאוט<br />ואת הילד לקוסם
-        </h2>
-        <p className="hero-sub">הכירו את <span className="hero-brand">MemoReals</span></p>
+        <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
+        <h1 className="hero-headline">
+          הילד שלך<br />
+          <span className="hero-headline-accent">כגיבור אמיתי</span>
+        </h1>
         <p className="hero-hook">
-          משחק הזיכרון האישי שלכם מעולם לא נראה ככה.<br />
-          המתנה המושלמת לימי הולדת, חגים, או פשוט כדי לצחוק ביחד.
+          משחק זיכרון מותאם אישית — הפנים שלו, על כל דמות שיבחר.<br />
+          ספיידרמן, אסטרונאוט, שף, קפטן אמריקה — הכל בהדפסת פרימיום.
         </p>
-        <Link href="/details" className={brandXl}>
-          צרו את המשחק שלכם ←
+        <Link href="/details" className="btn-hero-cta">
+          צרו את המשחק שלכם &larr;
         </Link>
+        <p className="hero-note">מתאים לגילאים 2–99 · משלוח לכל הארץ</p>
       </section>
 
       {/* ── Gallery ── */}
       <section className="gallery-section">
-        <h3 className="gallery-title">כך נראים הקלפים שלנו</h3>
-        <p className="gallery-subtitle">כל משחק מותאם אישית — לאדם שלכם, בדמויות שבחרתם</p>
+        <div className="section-label">הקלפים שלנו</div>
+        <h2 className="section-title">כך נראית המתנה</h2>
+        <p className="section-subtitle">כל קלף בגודל 8.9×6.4 ס"מ — איכות הדפסה פרימיום</p>
         <div className="gallery-grid">
           {GALLERY_IMAGES.map((img) => (
-            <Card key={img.src} className="gallery-card overflow-hidden border-0 shadow-md rounded-2xl hover:shadow-xl hover:-translate-y-1 hover:scale-[1.02] transition-all duration-300 aspect-square">
-              <CardContent className="p-0 w-full h-full">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={img.src} alt={img.alt} loading="lazy" className="w-full h-full object-cover block" />
-              </CardContent>
-            </Card>
+            <div key={img.src} className="gallery-card">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={img.src} alt={img.alt} loading="lazy" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── How it works ── */}
+      <section className="how-section">
+        <div className="section-label">איך זה עובד</div>
+        <h2 className="section-title">שלושה צעדים פשוטים</h2>
+        <div className="how-grid">
+          {HOW_IT_WORKS.map((step) => (
+            <div key={step.num} className="how-card">
+              <div className="how-num">{step.num}</div>
+              <div className="how-icon">{step.icon}</div>
+              <h3 className="how-title">{step.title}</h3>
+              <p className="how-body">{step.body}</p>
+            </div>
           ))}
         </div>
       </section>
 
       {/* ── Why ── */}
       <section className="why-section">
-        <h3 className="why-title">למה MemoReals?</h3>
+        <div className="section-label">למה MemoReals</div>
+        <h2 className="section-title">לא סתם מתנה</h2>
         <div className="why-grid">
           {WHY_ITEMS.map((item) => (
             <div key={item.title} className="why-card">
-              <span className="why-emoji">{item.emoji}</span>
-              <h4 className="why-card-title">{item.title}</h4>
+              <div className="why-icon">{item.icon}</div>
+              <h3 className="why-card-title">{item.title}</h3>
               <p className="why-card-body">{item.body}</p>
             </div>
           ))}
@@ -85,9 +122,10 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <p className="cta-text">מוכנים להפוך זיכרון למציאות?</p>
-        <Link href="/details" className={brandXl}>
-          התחילו עכשיו — בחינם ←
+        <h2 className="cta-title">מוכנים להפתיע?</h2>
+        <p className="cta-sub">תהליך ההזמנה לוקח פחות מ-5 דקות</p>
+        <Link href="/details" className="btn-hero-cta">
+          התחילו עכשיו &larr;
         </Link>
       </section>
 
