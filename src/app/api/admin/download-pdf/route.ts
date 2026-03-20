@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PDFDocument, degrees, rgb, StandardFonts } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
 export const maxDuration = 60;
 
@@ -17,11 +17,9 @@ export const maxDuration = 60;
  */
 
 const MM = 2.8346; // 1mm in PDF points
-const BLEED = 3 * MM;
-const CARD_W = 63 * MM; // 178.6 pt
-const CARD_H = 89 * MM; // 252.3 pt
-const PAGE_W = CARD_W + BLEED * 2; // 195.6 pt
-const PAGE_H = CARD_H + BLEED * 2; // 269.3 pt
+// Card 63×89mm played LANDSCAPE → page is 89mm wide × 63mm tall + 3mm bleed each side
+const PAGE_W = (89 + 6) * MM; // 269.3 pt
+const PAGE_H = (63 + 6) * MM; // 195.6 pt
 
 export async function GET(req: NextRequest) {
   const orderId = req.nextUrl.searchParams.get('orderId');
@@ -132,36 +130,20 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // Landscape images → rotate 90° CW so person is upright in portrait card.
-    // Portrait images → scale directly to fill card.
-    const isLandscape = embedded.width > embedded.height;
+    // Scale to cover the landscape card — no rotation needed.
+    const scale = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
+    const scaledW = embedded.width * scale;
+    const scaledH = embedded.height * scale;
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
-
-      if (isLandscape) {
-        // After CW rotation (-90°): displayed width = drawH, displayed height = drawW
-        // Scale to cover the portrait card based on post-rotation dimensions.
-        const scale = Math.max(PAGE_W / embedded.height, PAGE_H / embedded.width);
-        const drawW = embedded.width * scale;   // → becomes displayed height
-        const drawH = embedded.height * scale;  // → becomes displayed width
-        // Displayed x: [x, x+drawH], displayed y: [y-drawW, y] — centre on page
-        const imgX = (PAGE_W - drawH) / 2;
-        const imgY = (PAGE_H + drawW) / 2;
-        page.drawImage(embedded, { x: imgX, y: imgY, width: drawW, height: drawH, rotate: degrees(-90) });
-      } else {
-        // Already portrait — scale to cover card directly.
-        const scale = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
-        const scaledW = embedded.width * scale;
-        const scaledH = embedded.height * scale;
-        page.drawImage(embedded, {
-          x: (PAGE_W - scaledW) / 2,
-          y: (PAGE_H - scaledH) / 2,
-          width: scaledW,
-          height: scaledH,
-        });
-      }
+      page.drawImage(embedded, {
+        x: (PAGE_W - scaledW) / 2,
+        y: (PAGE_H - scaledH) / 2,
+        width: scaledW,
+        height: scaledH,
+      });
     }
   }
 
