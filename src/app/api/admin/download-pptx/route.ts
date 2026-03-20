@@ -77,10 +77,11 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const pptxBuffer = await pptx.write({ outputType: 'nodebuffer' }) as Buffer;
+  const pptxResult = await pptx.write({ outputType: 'nodebuffer' });
+  const pptxBytes = Buffer.from(pptxResult as unknown as ArrayBuffer);
   const safeName = order.subjectName.replace(/[^a-zA-Z0-9\u0590-\u05FF]/g, '_');
 
-  return new NextResponse(pptxBuffer, {
+  return new NextResponse(pptxBytes.buffer as ArrayBuffer, {
     headers: {
       'Content-Type': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
       'Content-Disposition': `attachment; filename="MemoReals-${safeName}.pptx"`,
