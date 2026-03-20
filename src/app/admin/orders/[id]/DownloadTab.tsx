@@ -14,12 +14,18 @@ export default function DownloadTab({
   totalChars: number;
   allSelected: boolean;
 }) {
-  const [loading, setLoading] = useState<'pdf' | 'zip' | null>(null);
+  const [loading, setLoading] = useState<'pdf' | 'pptx' | 'zip' | null>(null);
 
   function handleDownloadPdf() {
     setLoading('pdf');
     window.open(`/api/admin/download-pdf?orderId=${orderId}`, '_blank');
     setTimeout(() => setLoading(null), 1500);
+  }
+
+  function handleDownloadPptx() {
+    setLoading('pptx');
+    window.open(`/api/admin/download-pptx?orderId=${orderId}`, '_blank');
+    setTimeout(() => setLoading(null), 3000);
   }
 
   function handleDownloadZip() {
@@ -73,6 +79,27 @@ export default function DownloadTab({
           className="w-full sm:w-auto"
         >
           {loading === 'pdf' ? '⏳ מכין PDF...' : '📄 הורד PDF להדפסה'}
+        </Button>
+      </div>
+
+      {/* PowerPoint download */}
+      <div className="rounded-2xl border border-[#e7e0d5] bg-white p-6 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">📊</span>
+          <div>
+            <p className="font-semibold text-[#2d3748]">PowerPoint להדפסה</p>
+            <p className="text-xs text-[#718096] mt-0.5">
+              שקופית לכל קלף, 95×69מ״מ עם bleed 3מ״מ. כל תמונה מופיעה פעמיים.
+            </p>
+          </div>
+        </div>
+        <Button
+          variant="brand-outline"
+          onClick={handleDownloadPptx}
+          disabled={!!loading}
+          className="w-full sm:w-auto"
+        >
+          {loading === 'pptx' ? '⏳ מכין PPTX...' : '📊 הורד PowerPoint'}
         </Button>
       </div>
 
