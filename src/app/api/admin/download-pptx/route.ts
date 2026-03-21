@@ -4,9 +4,9 @@ import PptxGenJS from 'pptxgenjs';
 
 export const maxDuration = 60;
 
-// Card 89×63mm landscape + 3mm bleed on all sides = 95×69mm
-const SLIDE_W_MM = 95;
-const SLIDE_H_MM = 69;
+// Card 63×89mm portrait + 3mm bleed on all sides = 69×95mm
+const SLIDE_W_MM = 69;
+const SLIDE_H_MM = 95;
 
 export async function GET(req: NextRequest) {
   const orderId = req.nextUrl.searchParams.get('orderId');
