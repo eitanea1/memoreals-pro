@@ -67,12 +67,12 @@ export async function GET(req: NextRequest) {
     // Add the slide TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const slide = pptx.addSlide();
+      // Fill the entire slide — stretch to exact slide dimensions (ratio diff <3%)
       slide.addImage({
         data: imageData,
         x: 0, y: 0,
         w: SLIDE_W_MM / 25.4,
         h: SLIDE_H_MM / 25.4,
-        sizing: { type: 'cover', w: SLIDE_W_MM / 25.4, h: SLIDE_H_MM / 25.4 },
       });
     }
   }
