@@ -32,6 +32,7 @@ model Order {
   trainingFailed Boolean     @default(false)
   falRequestId   String?     // fal.ai queue request_id for webhook correlation
   loraUrl        String?
+  loraTrigger    String?     // trigger word used during LoRA training
   aiOverride     String      @default("")
 
   userId         String?

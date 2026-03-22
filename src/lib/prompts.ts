@@ -143,19 +143,29 @@ const CHARACTER_PROMPTS: Record<string, string> = {
 };
 
 // ── Trigger word used during LoRA training ────────────────────────────────────
-export const LORA_TRIGGER = 'MEMRLS';
+export const LORA_TRIGGER = 'MRLSSUBJ';
+
+// ── Angle/composition per variation ──────────────────────────────────────────
+const VARIATION_ANGLES: Record<PromptVariation, string> = {
+  variation_a: 'full body shot, facing camera directly, centered in frame, face clearly visible',
+  variation_b: 'upper body portrait, facing camera directly, centered in frame, face prominently visible',
+};
 
 // ── Build a full prompt for a single character + variation ─────────────────────
 export function buildPrompt(params: {
   characterName: string;
   aiLabel: string;        // e.g. "5-year-old boy" from computeAiLabel()
   aiOverride?: string;    // admin global override
+  loraTrigger?: string;   // per-order trigger word (falls back to LORA_TRIGGER)
   variation?: PromptVariation;
   customPrompt?: string;  // fully custom prompt (overrides everything)
 }): string {
   if (params.customPrompt?.trim()) {
     return params.customPrompt.trim();
   }
+
+  const trigger = params.loraTrigger?.trim() || LORA_TRIGGER;
+  const angle = params.variation ? VARIATION_ANGLES[params.variation] : VARIATION_ANGLES.variation_a;
 
   const scene = CHARACTER_PROMPTS[params.characterName]
     ?? `${params.characterName}, in a cinematic ultra-realistic scene with dramatic lighting and golden sparks.`;
@@ -164,7 +174,7 @@ export function buildPrompt(params: {
     ? ` ${params.aiOverride.trim()}`
     : '';
 
-  return `${LORA_TRIGGER}, a ${params.aiLabel} ${scene}${override}`;
+  return `${trigger}, a ${params.aiLabel} ${scene} ${angle}${override}`;
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────

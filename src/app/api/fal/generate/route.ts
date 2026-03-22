@@ -13,6 +13,7 @@ async function generateForCharacterVariation(params: {
   characterName: string;
   characterIndex: number;
   loraUrl: string;
+  loraTrigger: string;
   aiLabel: string;
   aiOverride: string;
   orderId: string;
@@ -24,6 +25,7 @@ async function generateForCharacterVariation(params: {
     characterName: params.characterName,
     aiLabel: params.aiLabel,
     aiOverride: params.aiOverride,
+    loraTrigger: params.loraTrigger,
     variation: params.variation,
     customPrompt: params.customPrompt,
   });
@@ -94,6 +96,7 @@ export async function POST(req: NextRequest) {
           characterName: char.name,
           characterIndex: char.position,
           loraUrl: order.loraUrl,
+          loraTrigger: order.loraTrigger ?? LORA_TRIGGER,
           aiLabel: order.aiLabel,
           aiOverride: order.aiOverride,
           orderId: order.id,
@@ -151,6 +154,7 @@ export async function POST(req: NextRequest) {
         characterName:  char.name,
         characterIndex: char.position,
         loraUrl:        order.loraUrl,
+        loraTrigger:    order.loraTrigger ?? LORA_TRIGGER,
         aiLabel:        order.aiLabel,
         aiOverride:     order.aiOverride,
         orderId:        order.id,

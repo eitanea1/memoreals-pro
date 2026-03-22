@@ -83,6 +83,7 @@ export async function POST(req: NextRequest) {
         status: 'TRAINING',
         trainingFailed: false,
         falRequestId: request_id,
+        loraTrigger: LORA_TRIGGER,
       },
     });
 
