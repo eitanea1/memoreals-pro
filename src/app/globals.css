@@ -642,12 +642,33 @@ body {
   opacity: 0.5;
   pointer-events: none;
 }
+/* Hero logo */
+.hero-logo-mark {
+  width: 110px;
+  height: 110px;
+  border-radius: 28px;
+  background: rgba(255,255,255,0.08);
+  border: 2px solid rgba(255,255,255,0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+  position: relative;
+  z-index: 1;
+  box-shadow: 0 8px 32px rgba(91, 33, 182, 0.3);
+  margin-bottom: 0.5rem;
+}
+.hero-logo-mark img {
+  width: 72px;
+  height: 72px;
+  filter: brightness(0) invert(1);
+}
 .hero-headline {
   font-family: 'Newsreader', 'Playfair Display', serif;
   font-style: italic;
-  font-size: 3.5rem;
+  font-size: 5rem;
   font-weight: 700;
-  line-height: 1.1;
+  line-height: 1.08;
   color: #fcf9f4;
   letter-spacing: -0.02em;
   position: relative;
@@ -659,10 +680,10 @@ body {
 }
 .hero-hook {
   font-family: 'Manrope', 'Heebo', sans-serif;
-  font-size: 1.15rem;
+  font-size: 1.3rem;
   color: rgba(211, 187, 255, 0.7);
   line-height: 1.75;
-  max-width: 600px;
+  max-width: 620px;
   position: relative;
   z-index: 1;
   font-weight: 300;
@@ -671,16 +692,16 @@ body {
   background: rgba(255,255,255,0.08);
   border: 1px solid rgba(255,255,255,0.15);
   color: #ddd6fe;
-  font-size: 0.82rem;
+  font-size: 0.95rem;
   font-weight: 600;
-  padding: 0.35rem 1rem;
+  padding: 0.45rem 1.25rem;
   border-radius: 999px;
   backdrop-filter: blur(6px);
   letter-spacing: 0.04em;
   position: relative;
   z-index: 1;
 }
-.hero-note { font-size: 0.85rem; color: rgba(211, 187, 255, 0.5); position: relative; z-index: 1; }
+.hero-note { font-size: 0.95rem; color: rgba(211, 187, 255, 0.5); position: relative; z-index: 1; }
 
 /* Hero product image group */
 .hero-product-group {
@@ -801,7 +822,9 @@ body {
 
 @media (max-width: 700px) {
   .hero-section { padding: 6rem 1.5rem 4rem; min-height: auto; }
-  .hero-headline { font-size: 2.6rem; }
+  .hero-headline { font-size: 3.2rem; }
+  .hero-logo-mark { width: 90px; height: 90px; border-radius: 22px; }
+  .hero-logo-mark img { width: 58px; height: 58px; }
   .hero-cards-row { gap: 0.6rem; }
   .flip-card { width: 80px; height: 112px; }
   .flip-card-front img { width: 36px; height: 36px; }

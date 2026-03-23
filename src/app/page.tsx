@@ -54,6 +54,9 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="hero-section">
         <div className="hero-glow" />
+        <div className="hero-logo-mark">
+          <Image src="/logo.png" alt="MemoReals" width={100} height={100} priority />
+        </div>
         <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
         <h1 className="hero-headline">
           הילד שלך<br />
