@@ -61,7 +61,7 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="hero-section">
         <div className="hero-logo-mark">
-          <Image src="/logo.svg" alt="MemoReals" width={42} height={42} priority />
+          <Image src="/logo.png" alt="MemoReals" width={72} height={72} priority />
         </div>
         <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
         <h1 className="hero-headline">
@@ -72,10 +72,28 @@ export default function HomePage() {
           משחק זיכרון מותאם אישית — הפנים שלו, על כל דמות שיבחר.<br />
           ספיידרמן, אסטרונאוט, שף, קפטן אמריקה — הכל בהדפסת פרימיום.
         </p>
+
+        {/* ── Flipping cards animation ── */}
+        <div className="hero-cards-row">
+          {GALLERY_IMAGES.slice(0, 4).map((img, i) => (
+            <div key={img.src} className="flip-card" style={{ animationDelay: `${i * 0.8}s` }}>
+              <div className="flip-card-inner">
+                <div className="flip-card-front">
+                  <Image src="/logo.png" alt="MemoReals" width={60} height={60} />
+                </div>
+                <div className="flip-card-back">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={img.src} alt={img.alt} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
         <Link href="/details" className="btn-hero-cta">
           צרו את המשחק שלכם &larr;
         </Link>
-        <p className="hero-note">מתאים לגילאים 2–99 · משלוח לכל הארץ</p>
+        <p className="hero-note">350 ₪ כולל משלוח · מתאים לגילאים 2–99</p>
       </section>
 
       {/* ── Gallery ── */}
@@ -126,7 +144,7 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <Image src="/logo.svg" alt="" width={52} height={52} className="cta-logo" />
+        <Image src="/logo.png" alt="" width={52} height={52} className="cta-logo" />
         <h2 className="cta-title">מוכנים להפתיע?</h2>
         <p className="cta-sub">תהליך ההזמנה לוקח פחות מ-5 דקות</p>
         <Link href="/details" className="btn-hero-cta">

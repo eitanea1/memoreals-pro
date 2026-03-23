@@ -11,7 +11,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <header className="app-header" onClick={() => router.push('/')}>
         <div className="header-inner">
           <Image
-            src="/logo.svg"
+            src="/logo.png"
             alt="MemoReals Logo"
             width={42}
             height={42}
@@ -29,7 +29,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       </main>
       <footer className="app-footer">
         <div className="footer-inner">
-          <Image src="/logo.svg" alt="" width={22} height={22} className="footer-logo" />
+          <Image src="/logo.png" alt="" width={22} height={22} className="footer-logo" />
           <span>© 2025 MemoReals · כל הזכויות שמורות</span>
         </div>
       </footer>

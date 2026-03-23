@@ -34,7 +34,23 @@
       "Bash(find C:/Users/Eitan/AmiGoal/node_modules/@react-native -type f -name *.gradle)",
       "Bash(find C:/Users/Eitan/AmiGoal/node_modules -type f -path *templates* -name *.gradle*)",
       "Bash(find C:/Users/Eitan/AmiGoal/node_modules/react-native -maxdepth 3 -name *build* -type f)",
-      "Bash(find C:/Users/Eitan/AmiGoal/node_modules/react-native -name *.gradle -type f)"
+      "Bash(find C:/Users/Eitan/AmiGoal/node_modules/react-native -name *.gradle -type f)",
+      "mcp__gmail__archive_email",
+      "mcp__gmail__search_emails",
+      "mcp__gmail__read_emails",
+      "Read(//c/Users/Eitan/gmail-assistant/**)",
+      "Bash(npm install:*)",
+      "Read(//c/Users/Eitan/**)",
+      "Bash(claude:*)",
+      "mcp__telegram__reply",
+      "WebSearch",
+      "Bash(npx tsc:*)",
+      "Bash(find /c/Users/Eitan/memoreals-pro/src/components -type f -name *.tsx -o -name *.ts)",
+      "Bash(ls c:/Users/Eitan/memoreals-pro/public/logo.*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Eitan\\gmail-assistant",
+      "C:\\Users\\Eitan"
     ]
   }
 }
