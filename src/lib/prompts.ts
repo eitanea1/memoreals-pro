@@ -3,143 +3,144 @@ export const VARIATIONS = ['variation_a', 'variation_b'] as const;
 export type PromptVariation = (typeof VARIATIONS)[number];
 
 // ── Character prompts (without trigger word and age — those are prepended) ───
+// Template: "as {character}, {action + scene}. {outfit}. Looking at camera. {lighting}, 85mm lens, shallow depth of field."
 const CHARACTER_PROMPTS: Record<string, string> = {
   // ── Superheroes ──
   'Spider-Man':
-    'Spider-Man, mask off face fully visible, swings between glowing skyscrapers at dusk, his ultra-realistic suit showcasing detailed webbing and vibrant red and blue colors. His pose emphasizes his agility as the spotlight reflects off his suit, and magical glowing webs leave shimmering trails in the air.',
+    'as Spider-Man, standing on a rooftop ledge above a glowing city at dusk, mask off. Wearing detailed red and blue suit with web pattern. Looking at camera. Golden hour lighting with city lights below, 85mm lens, shallow depth of field.',
 
   'Iron Man':
-    'Iron Man, hovers in mid-air with his arms extended, glowing repulsors charging in his hands. His ultra-realistic red and gold suit shines with reflective metallic textures, and sparks of magical energy surround him.',
+    'as Iron Man, standing with helmet off, one glowing repulsor raised. Wearing red and gold metallic suit with arc reactor glowing on chest. Looking at camera. Cinematic blue-orange lighting with sparks, 85mm lens, shallow depth of field.',
 
   'Captain America':
-    'Captain America, stands on a glowing battlefield, holding a vibranium shield that pulses with a radiant blue glow. His ultra-realistic suit is detailed with subtle metallic accents, and his heroic stance is illuminated by golden light from the setting sun.',
+    'as Captain America, standing on a battlefield holding vibranium shield at his side. Wearing navy blue suit with star emblem and red stripes. Looking at camera. Golden sunset backlighting, 85mm lens, shallow depth of field.',
 
   'Thor':
-    'Thor, stands atop a rocky mountain, gripping a glowing Mjolnir that crackles with vibrant blue lightning. His ultra-realistic Asgardian armor gleams with intricate metallic designs, and his red cape flows majestically behind him.',
+    'as Thor, standing on a rocky cliff gripping Mjolnir with lightning crackling around it. Wearing Asgardian armor with red cape flowing behind. Looking at camera. Dramatic stormy sky lighting, 85mm lens, shallow depth of field.',
 
   'Doctor Strange':
-    'Doctor Strange, hovers mid-air with glowing magical symbols forming around his hands. His ultra-realistic cloak flows dramatically, its edges faintly glowing with golden light.',
+    'as Doctor Strange, standing with glowing orange magical circles forming around hands. Wearing Cloak of Levitation with Eye of Agamotto. Looking at camera. Mystical warm golden lighting, 85mm lens, shallow depth of field.',
 
   'Superman':
-    'Superman, soars above a magical valley bathed in golden sunlight. His ultra-realistic suit glows faintly with reflective details, and his red cape flows powerfully behind him.',
+    'as Superman, standing tall with fists at his sides on a mountain peak above clouds. Wearing blue suit with red cape flowing in the wind. Looking at camera. Warm golden sunlight from behind, 85mm lens, shallow depth of field.',
 
   'Batman':
-    'Batman, mask off face fully visible, stands on a glowing rooftop overlooking a fantastical Gotham City. His ultra-realistic armored suit reflects the faint glow of the Bat-Signal shining in the sky.',
+    'as Batman, standing on a gothic rooftop with Bat-Signal glowing in the sky behind. Cowl off, wearing dark armored batsuit. Looking at camera. Moody blue-gray city night lighting, 85mm lens, shallow depth of field.',
 
   'The Flash':
-    'Flash, runs through a futuristic street surrounded by glowing lightning trails. His ultra-realistic red suit features golden lightning bolts that pulse with energy.',
+    'as The Flash, standing mid-stride with lightning trails behind him on a city street. Wearing red suit with golden lightning bolt emblem. Looking at camera. Dynamic blue-orange speed effect lighting, 85mm lens, shallow depth of field.',
 
   'Green Arrow':
-    'Green Arrow, stands in an enchanted forest filled with glowing plants and magical mist. His ultra-realistic green suit is detailed with leather textures and metallic accents.',
+    'as Green Arrow, standing in a misty forest holding a bow with arrow drawn. Wearing green hooded suit with leather details. Looking at camera. Soft green forest light filtering through trees, 85mm lens, shallow depth of field.',
 
   'Black Panther':
-    'Black Panther, stands in a glowing Wakandan jungle, his ultra-realistic black vibranium suit pulsing with purple energy. Bioluminescent plants glow around him, and energy sparks crackle from his suit.',
+    'as Black Panther, standing in a glowing Wakandan jungle, mask off. Wearing black vibranium suit with purple energy lines. Looking at camera. Bioluminescent purple and blue lighting, 85mm lens, shallow depth of field.',
 
   'Hulk':
-    'Hulk, stands in a destroyed urban landscape, his massive green muscular body ultra-realistically detailed. Fire sparks and embers float everywhere, dust and debris swirl in the air with dramatic sunset backlighting.',
+    'as Hulk, standing powerfully in a destroyed city street with dust and embers floating. Massive green muscular body, torn pants. Looking at camera. Dramatic sunset backlighting with warm orange tones, 85mm lens, shallow depth of field.',
 
   'Aquaman':
-    'Aquaman, stands on a rocky ocean cliff, wearing ultra-realistic orange and green scale armor. He holds a golden trident with energy sparks at its tip. Massive waves crash behind him against a dramatic stormy sky.',
+    'as Aquaman, standing on ocean rocks holding a golden trident, waves crashing behind. Wearing orange and green scale armor. Looking at camera. Stormy dramatic lighting with ocean spray, 85mm lens, shallow depth of field.',
 
   'Wonder Woman':
-    'Wonder Woman, stands in ancient Greek temple ruins at golden hour, wearing ultra-realistic golden tiara, red and gold breastplate, and blue skirt with stars. Her lasso glows at her hip with dust particles and golden embers swirling.',
+    'as Wonder Woman, standing in ancient Greek temple ruins at golden hour. Wearing golden tiara, red and gold armor, blue skirt with stars, lasso at hip. Looking at camera. Warm golden light with dust particles, 85mm lens, shallow depth of field.',
 
   // ── Fantasy & Movies ──
   'Harry Potter':
-    'Harry Potter, stands in the middle of a glowing magical library. His ultra-realistic Hogwarts robe is detailed with fine textures, and his iconic lightning-shaped scar glows faintly on his forehead.',
+    'as Harry Potter, standing in a grand magical library with floating candles and old books. Wearing Hogwarts robe with Gryffindor scarf, holding a wand. Looking at camera. Warm candlelight atmosphere, 85mm lens, shallow depth of field.',
 
   'Aladdin':
-    'Aladdin, stands atop a glowing magic carpet, flying high above a mystical Arabian city. His ultra-realistic outfit is detailed with embroidered patterns and shimmering accents.',
+    'as Aladdin, standing on a magic carpet hovering above a moonlit Arabian city with domed palaces. Wearing white vest and baggy pants with red fez. Looking at camera. Warm moonlight and golden city glow, 85mm lens, shallow depth of field.',
 
   'Jack Sparrow':
-    'Jack Sparrow, stands on the deck of a glowing pirate ship under a starry sky. His ultra-realistic pirate costume features leather textures, a detailed tricorn hat, and shimmering golden details.',
+    'as Jack Sparrow, standing on the deck of a pirate ship under a starry night sky. Wearing weathered pirate coat, tricorn hat, beaded braids. Looking at camera. Moody lantern light on deck, 85mm lens, shallow depth of field.',
 
   'Avatar':
-    'Avatar, stands in a lush glowing forest on Pandora. His ultra-realistic blue skin is detailed with bioluminescent patterns, and his tail and ears move naturally.',
+    'as a Na\'vi Avatar, standing in a bioluminescent forest on Pandora at night. Blue skin with glowing patterns, tribal outfit. Looking at camera. Ethereal blue and purple bioluminescent lighting, 85mm lens, shallow depth of field.',
 
   'Dragon Rider':
-    'dragon rider, sits confidently atop a massive, ultra-realistic dragon from the world of Game of Thrones. He wears detailed leather armor with dragon scales embedded into the design.',
+    'as a dragon rider, sitting atop a massive dragon on a cliff edge with a vast landscape below. Wearing leather armor with dragon scale details. Looking at camera. Epic golden hour lighting with clouds, 85mm lens, shallow depth of field.',
 
   'Peter Pan':
-    'Peter Pan, flies above moonlit London rooftops with Big Ben in the background. His ultra-realistic green tunic and pointy hat with feather are detailed, with a fairy dust trail glowing like golden sparks behind him.',
+    'as Peter Pan, hovering above moonlit London rooftops with Big Ben in the background. Wearing green tunic and pointed hat with feather, fairy dust trail. Looking at camera. Magical moonlight glow, 85mm lens, shallow depth of field.',
 
   // ── Professions ──
   'Pilot':
-    'pilot, stands proudly next to a modern jet on an expansive airfield. He wears a perfectly detailed, ultra-realistic pilot uniform, complete with patches and a helmet under his arm.',
+    'as a pilot, standing next to a modern jet on an airfield at sunrise. Wearing pilot uniform with patches, holding helmet under arm. Looking at camera. Warm sunrise lighting on tarmac, 85mm lens, shallow depth of field.',
 
   'Astronaut':
-    'astronaut, stands proudly on the surface of the moon, wearing an ultra-realistic space suit. His helmet reflects the Earth in the distance, while his hands hold a small flag he planted.',
+    'as an astronaut, standing on the moon surface with Earth visible in the dark sky behind. Wearing detailed white space suit, helmet visor up. Looking at camera. Dramatic space lighting with Earth glow, 85mm lens, shallow depth of field.',
 
   'Firefighter':
-    'firefighter, stands before a massive blazing fire, wearing ultra-realistic yellow turnout coat and helmet with visor. Intense orange flames and sparks reflect off his gear, burning embers swirl in the air.',
+    'as a firefighter, standing in front of a blazing fire with embers floating in the air. Wearing yellow turnout coat and helmet. Looking at camera. Warm orange firelight on face, 85mm lens, shallow depth of field.',
 
   'Chef':
-    'chef, stands in a professional kitchen, wearing ultra-realistic white chef uniform and tall toque hat. Flames and sparks rise dramatically from a pan mid-flip, with copper pots gleaming in warm amber light.',
+    'as a chef, standing in a professional kitchen with flames rising from a pan. Wearing white chef coat and tall toque hat, copper pots in background. Looking at camera. Warm amber kitchen lighting, 85mm lens, shallow depth of field.',
 
   'Police Officer':
-    'police officer, stands by a patrol car at dusk, wearing ultra-realistic dark blue uniform with badge and utility belt. Red and blue lights cast dramatic colored shadows.',
+    'as a police officer, standing by a patrol car at dusk in an urban street. Wearing dark blue uniform with badge and utility belt. Looking at camera. Red and blue light reflections, moody atmosphere, 85mm lens, shallow depth of field.',
 
   'Doctor':
-    'doctor, stands in a modern surgical suite, wearing ultra-realistic white coat with stethoscope. Dramatic blue-green lighting with medical monitors glowing in the background.',
+    'as a doctor, standing in a modern hospital corridor with soft medical lighting. Wearing white coat with stethoscope around neck. Looking at camera. Clean blue-white hospital lighting, 85mm lens, shallow depth of field.',
 
   'Scientist':
-    'scientist, stands in a high-tech laboratory surrounded by glowing equipment and bubbling beakers. He wears an ultra-realistic white lab coat, goggles, and gloves.',
+    'as a scientist, standing in a high-tech laboratory with glowing screens and beakers. Wearing white lab coat and safety goggles on forehead. Looking at camera. Cool blue lab lighting with warm accent, 85mm lens, shallow depth of field.',
 
   'Teacher':
-    'teacher, stands by a large chalkboard covered in equations, wearing ultra-realistic smart professional attire. Warm golden classroom light streams through tall windows.',
+    'as a teacher, standing by a chalkboard covered in equations in a warm classroom. Wearing smart professional attire, holding chalk. Looking at camera. Warm golden light from tall windows, 85mm lens, shallow depth of field.',
 
   'Nurse':
-    'nurse, stands in a modern hospital corridor, wearing ultra-realistic teal medical scrubs with stethoscope around neck. Soft warm light creates a caring atmosphere.',
+    'as a nurse, standing in a modern hospital ward with soft warm lighting. Wearing teal medical scrubs with stethoscope. Looking at camera. Soft caring atmosphere lighting, 85mm lens, shallow depth of field.',
 
   'Engineer':
-    'engineer, stands on a steel skyscraper framework at sunrise, wearing ultra-realistic hard hat and reflective vest, holding blueprints. Welding sparks fly nearby with city skyline below.',
+    'as an engineer, standing on a steel building framework at sunrise with city skyline below. Wearing hard hat and reflective vest, holding blueprints. Looking at camera. Golden sunrise with welding sparks nearby, 85mm lens, shallow depth of field.',
 
   'Veterinarian':
-    'veterinarian, stands in a warm veterinary clinic, wearing ultra-realistic scrubs, gently holding a small animal. Soft golden window light fills the scene.',
+    'as a veterinarian, standing in a warm clinic gently holding a small puppy. Wearing scrubs with stethoscope. Looking at camera. Soft golden window light, 85mm lens, shallow depth of field.',
 
   'Artist':
-    'artist, stands in a sunlit studio with massive canvases, wearing ultra-realistic paint-splattered apron, holding palette and brush. Colorful paint splashes everywhere with golden afternoon light.',
+    'as an artist, standing in a sunlit studio surrounded by large canvases. Wearing paint-splattered apron, holding palette and brush. Looking at camera. Golden afternoon light with colorful paint splashes, 85mm lens, shallow depth of field.',
 
   // ── Sports & Entertainment ──
   'Football Player':
-    'football player, is captured mid-celebration after scoring a goal. He wears an ultra-realistic football jersey, complete with matching shorts and cleats. His arms are raised triumphantly as he runs along the field.',
+    'as a football player, standing on a stadium pitch mid-celebration with arms raised. Wearing team jersey, shorts and cleats, stadium crowd blurred behind. Looking at camera. Dramatic stadium floodlights, 85mm lens, shallow depth of field.',
 
   'Basketball Player':
-    'basketball player, dribbles a basketball on a polished indoor court. He wears an ultra-realistic jersey paired with matching shorts and high-top sneakers. The hardwood floor reflects the gym lights.',
+    'as a basketball player, standing on a polished indoor court holding a basketball. Wearing jersey and high-top sneakers, arena lights above. Looking at camera. Dramatic gym lighting with floor reflections, 85mm lens, shallow depth of field.',
 
   'Rock Singer':
-    'rock singer, is captured from the audience\'s perspective as he performs passionately on stage. He wears an ultra-realistic leather jacket, ripped jeans, and a band t-shirt.',
+    'as a rock singer, standing on a concert stage with spotlights and crowd silhouettes behind. Wearing leather jacket and band t-shirt, holding microphone. Looking at camera. Dramatic stage lighting with colored beams, 85mm lens, shallow depth of field.',
 
   // ── Fairy Tales ──
   'Cinderella':
-    'Cinderella, descends a grand marble staircase wearing a shimmering ultra-realistic light blue ball gown with glass slippers. Magical golden sparkles and fairy dust swirl around.',
+    'as Cinderella, descending a grand marble staircase in a palace ballroom. Wearing shimmering light blue ball gown with glass slippers. Looking at camera. Magical golden sparkle lighting, 85mm lens, shallow depth of field.',
 
   'Snow White':
-    'Snow White, stands in an enchanted forest clearing wearing an ultra-realistic yellow and blue royal gown with red bow headband. Magical golden light particles float like fireflies.',
+    'as Snow White, standing in an enchanted forest clearing with sunbeams breaking through. Wearing yellow and blue royal gown with red bow headband. Looking at camera. Soft fairytale golden light, 85mm lens, shallow depth of field.',
 
   'Little Red Riding Hood':
-    'Little Red Riding Hood, walks through a misty dark forest path wearing a flowing ultra-realistic red hooded cape over white dress, holding a basket. Magical golden light sparks break through tall trees.',
+    'as Little Red Riding Hood, walking through a misty forest path holding a basket. Wearing flowing red hooded cape over white dress. Looking at camera. Atmospheric forest light breaking through trees, 85mm lens, shallow depth of field.',
 
   'Rapunzel':
-    'Rapunzel, stands at a tower window wearing an ultra-realistic purple dress with long flowing golden hair cascading down. Hundreds of floating lanterns rise into the twilight sky like golden sparks.',
+    'as Rapunzel, standing at a tower window with long golden hair flowing down. Wearing purple dress, hundreds of floating lanterns rising in the twilight sky. Looking at camera. Warm lantern glow, 85mm lens, shallow depth of field.',
 
   'Pinocchio':
-    'Pinocchio, stands in an old Italian puppet workshop wearing ultra-realistic tyrolian hat and suspenders with wooden puppet details. Warm candlelight casts golden sparks.',
+    'as Pinocchio, standing in an old Italian puppet workshop surrounded by wooden toys. Wearing Tyrolean hat and suspenders. Looking at camera. Warm candlelight atmosphere, 85mm lens, shallow depth of field.',
 
   'Beauty & the Beast':
-    'Belle, dances in an enchanted castle ballroom wearing an iconic ultra-realistic golden ball gown. A magical rose glows under a glass dome nearby with golden sparks rising from it.',
+    'as Belle, standing in an enchanted castle ballroom with a glowing rose under glass dome nearby. Wearing iconic golden ball gown. Looking at camera. Magical warm golden ballroom lighting, 85mm lens, shallow depth of field.',
 
   'The Little Mermaid':
-    'Ariel, sits on a rocky shore at sunset wearing ultra-realistic mermaid costume with teal sequined tail. Waves crash with golden light sparks on water.',
+    'as Ariel, sitting on rocks by the ocean shore at sunset with waves gently crashing. Wearing mermaid outfit with teal details. Looking at camera. Warm sunset ocean lighting with golden reflections, 85mm lens, shallow depth of field.',
 
   'Sleeping Beauty':
-    'Aurora, stands in an enchanted castle garden wearing a flowing ultra-realistic pink and blue magical gown with golden crown. Roses bloom everywhere with golden fairy sparkles.',
+    'as Aurora, standing in an enchanted castle garden full of blooming roses. Wearing flowing pink and blue gown with golden crown. Looking at camera. Soft dreamy golden light, 85mm lens, shallow depth of field.',
 
   'Hansel & Gretel':
-    'Hansel, stands before a magical gingerbread house in a dark forest wearing ultra-realistic Bavarian folk costume. Candy decorations glow with magical sparks.',
+    'as Hansel, standing before a magical gingerbread house in a dark enchanted forest. Wearing Bavarian folk costume. Looking at camera. Warm magical glow from candy decorations, 85mm lens, shallow depth of field.',
 
   'Jack and the Beanstalk':
-    'Jack, climbs an enormous beanstalk above the clouds wearing ultra-realistic medieval peasant costume. Magical golden sparks and light particles swirl around the beanstalk.',
+    'as Jack, climbing an enormous beanstalk high above the clouds. Wearing medieval peasant tunic. Looking at camera. Epic golden light above clouds, 85mm lens, shallow depth of field.',
 };
 
 // ── Trigger word used during LoRA training ────────────────────────────────────
@@ -147,8 +148,8 @@ export const LORA_TRIGGER = 'MRLSSUBJ';
 
 // ── Angle/composition per variation ──────────────────────────────────────────
 const VARIATION_ANGLES: Record<PromptVariation, string> = {
-  variation_a: 'full body shot, facing camera directly, centered in frame, face clearly visible',
-  variation_b: 'upper body portrait, facing camera directly, centered in frame, face prominently visible',
+  variation_a: 'full body shot',
+  variation_b: 'upper body portrait, close framing',
 };
 
 // ── Build a full prompt for a single character + variation ─────────────────────
@@ -174,7 +175,7 @@ export function buildPrompt(params: {
     ? ` ${params.aiOverride.trim()}`
     : '';
 
-  return `${trigger}, a ${params.aiLabel} ${scene} ${angle}${override}`;
+  return `Cinematic portrait of ${trigger}, a ${params.aiLabel} ${scene} ${angle}.${override}`;
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────
