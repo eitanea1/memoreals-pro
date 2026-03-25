@@ -3,33 +3,29 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
-import StepIndicator from '@/components/shared/StepIndicator';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 
 const ENGLISH_ONLY = /^[A-Za-z\s]+$/;
 
-const GENDER_OPTIONS = [
-  { label: 'זכר', value: 'Male' },
-  { label: 'נקבה', value: 'Female' },
+const STEPS = [
+  { icon: 'edit_note', label: 'פרטים' },
+  { icon: 'auto_fix_high', label: 'בחירת דמויות' },
+  { icon: 'add_a_photo', label: 'העלאת תמונות' },
 ];
 
 export default function PersonalDetailsPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
 
-  const [name, setName]   = useState(state.subjectName);
-  const [age, setAge]     = useState(state.subjectAge);
-  const [gender, setGender]   = useState(state.subjectGender);
+  const [name, setName] = useState(state.subjectName);
+  const [age, setAge] = useState(state.subjectAge);
+  const [gender, setGender] = useState(state.subjectGender);
   const [email, setEmail] = useState(state.customerEmail);
   const [phone, setPhone] = useState(state.customerPhone);
   const [nameTouched, setNameTouched] = useState(false);
 
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
-  const nameError   = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
-  const canProceed  = nameIsValid && age.trim().length > 0 && gender.length > 0 && email.trim().length > 0;
+  const nameError = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
+  const canProceed = nameIsValid && age.trim().length > 0 && gender.length > 0 && email.trim().length > 0;
 
   function handleNext() {
     dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: phone.trim() });
@@ -37,126 +33,155 @@ export default function PersonalDetailsPage() {
   }
 
   return (
-    <div className="page" dir="rtl">
-      <StepIndicator current={0} />
+    <div className="details-premium" dir="rtl">
 
-      <div className="page-header">
-        <h2>פרטי המשתתף/ת</h2>
-      </div>
-
-      <Card className="max-w-xl w-full mx-auto bg-white shadow-sm border-0 ring-0 rounded-2xl">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-lg font-bold text-right">מי משתתף במשחק?</CardTitle>
-          <CardDescription className="text-right">
-            פרטים אלו נדרשים ליצירת תמונות AI מדויקות עבור משחק הזיכרון.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-5">
-
-          {/* Subject Name */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="subject-name" className="font-semibold text-[#2d3748]">
-              שם המשתתף/ת (באנגלית)
-            </Label>
-            <Input
-              id="subject-name"
-              type="text"
-              placeholder="e.g. Emma"
-              value={name}
-              dir="ltr"
-              onChange={(e) => setName(e.target.value)}
-              onBlur={() => setNameTouched(true)}
-              aria-invalid={nameError}
-              autoFocus
-              className="h-11 text-base rounded-xl border-[#e2e8f0] focus-visible:border-[#667eea]"
-            />
-            {nameError && (
-              <p className="text-sm text-red-500">
-                יש להזין את השם באנגלית בלבד (עבור עיצובי ה-AI)
-              </p>
-            )}
-          </div>
-
-          {/* Age */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="subject-age" className="font-semibold text-[#2d3748]">גיל</Label>
-            <Input
-              id="subject-age"
-              type="number"
-              placeholder="לדוגמה: 7"
-              min={1}
-              max={120}
-              value={age}
-              dir="ltr"
-              onChange={(e) => setAge(e.target.value)}
-              className="h-11 text-base rounded-xl border-[#e2e8f0] focus-visible:border-[#667eea]"
-            />
-          </div>
-
-          {/* Gender */}
-          <div className="flex flex-col gap-1.5">
-            <Label className="font-semibold text-[#2d3748]">מין</Label>
-            <div className="flex gap-3">
-              {GENDER_OPTIONS.map(({ label, value }) => (
-                <button
-                  key={value}
-                  type="button"
-                  className={`gender-btn ${gender === value ? 'selected' : ''}`}
-                  onClick={() => setGender(value)}
-                >
-                  {label}
-                </button>
-              ))}
+      {/* ── Journey Tracker ── */}
+      <div className="journey-tracker">
+        <div className="journey-line" />
+        {STEPS.map((step, i) => (
+          <div key={step.label} className="journey-step">
+            <div className={`journey-dot ${i === 0 ? 'active' : ''}`}>
+              <span className="material-symbols-outlined">{step.icon}</span>
             </div>
+            <span className={`journey-label ${i === 0 ? 'active' : ''}`}>{step.label}</span>
           </div>
-
-          {/* Divider */}
-          <hr className="border-[#e2e8f0]" />
-          <p className="text-sm font-semibold text-[#4a5568]">פרטי יצירת קשר</p>
-
-          {/* Email */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="customer-email" className="font-semibold text-[#2d3748]">
-              אימייל <span className="text-red-400">*</span>
-            </Label>
-            <Input
-              id="customer-email"
-              type="email"
-              placeholder="your@email.com"
-              value={email}
-              dir="ltr"
-              onChange={(e) => setEmail(e.target.value)}
-              className="h-11 text-base rounded-xl border-[#e2e8f0] focus-visible:border-[#667eea]"
-            />
-          </div>
-
-          {/* Phone */}
-          <div className="flex flex-col gap-1.5">
-            <Label htmlFor="customer-phone" className="font-semibold text-[#2d3748]">
-              טלפון <span className="text-[#a0aec0] text-xs font-normal">(אופציונלי)</span>
-            </Label>
-            <Input
-              id="customer-phone"
-              type="tel"
-              placeholder="05X-XXXXXXX"
-              value={phone}
-              dir="ltr"
-              onChange={(e) => setPhone(e.target.value)}
-              className="h-11 text-base rounded-xl border-[#e2e8f0] focus-visible:border-[#667eea]"
-            />
-          </div>
-
-        </CardContent>
-      </Card>
-
-      <div className="nav-buttons">
-        <Button variant="brand" size="xl" disabled={!canProceed} onClick={handleNext}>
-          המשך ←
-        </Button>
+        ))}
       </div>
-      {!canProceed && (
-        <p className="hint">יש למלא שם, גיל, מין ואימייל כדי להמשיך</p>
-      )}
+
+      {/* ── Content Grid ── */}
+      <div className="details-grid">
+
+        {/* Form Card */}
+        <div className="details-form-card">
+          <h1 className="details-title">פרטי המשתתף/ת</h1>
+          <p className="details-subtitle">בואו נתחיל את הקסם. ספרו לנו קצת על הגיבור או הגיבורה של הסיפור.</p>
+
+          <form className="details-form" onSubmit={(e) => e.preventDefault()}>
+
+            {/* Name */}
+            <div className="field-group">
+              <label className="field-label" htmlFor="child-name">שם הילד/ה (באנגלית)</label>
+              <input
+                id="child-name"
+                type="text"
+                className={`field-input ${nameError ? 'error' : ''}`}
+                placeholder="e.g. Emma"
+                value={name}
+                dir="ltr"
+                onChange={(e) => setName(e.target.value)}
+                onBlur={() => setNameTouched(true)}
+                autoFocus
+              />
+              {nameError && (
+                <p className="field-error">יש להזין את השם באנגלית בלבד (עבור עיצובי ה-AI)</p>
+              )}
+            </div>
+
+            {/* Gender */}
+            <div className="field-group">
+              <span className="field-label">מגדר הגיבור/ה</span>
+              <div className="gender-grid">
+                <label className="gender-card-label">
+                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Male'} onChange={() => setGender('Male')} />
+                  <div className={`gender-card ${gender === 'Male' ? 'selected' : ''}`}>
+                    <span className="material-symbols-outlined gender-icon">face</span>
+                    <span className="gender-text">זכר</span>
+                  </div>
+                </label>
+                <label className="gender-card-label">
+                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Female'} onChange={() => setGender('Female')} />
+                  <div className={`gender-card ${gender === 'Female' ? 'selected' : ''}`}>
+                    <span className="material-symbols-outlined gender-icon">face_3</span>
+                    <span className="gender-text">נקבה</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Age */}
+            <div className="field-group field-short">
+              <label className="field-label" htmlFor="child-age">גיל הילד/ה</label>
+              <input
+                id="child-age"
+                type="number"
+                className="field-input"
+                placeholder="לדוגמה: 7"
+                min={1}
+                max={120}
+                value={age}
+                dir="ltr"
+                onChange={(e) => setAge(e.target.value)}
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="form-divider" />
+
+            {/* Email */}
+            <div className="field-group">
+              <label className="field-label" htmlFor="customer-email">
+                אימייל <span className="required">*</span>
+              </label>
+              <input
+                id="customer-email"
+                type="email"
+                className="field-input"
+                placeholder="your@email.com"
+                value={email}
+                dir="ltr"
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Phone */}
+            <div className="field-group">
+              <label className="field-label" htmlFor="customer-phone">
+                טלפון <span className="optional">(אופציונלי)</span>
+              </label>
+              <input
+                id="customer-phone"
+                type="tel"
+                className="field-input"
+                placeholder="05X-XXXXXXX"
+                value={phone}
+                dir="ltr"
+                onChange={(e) => setPhone(e.target.value)}
+              />
+            </div>
+
+            {/* CTA */}
+            <div className="details-cta-wrap">
+              <button
+                type="button"
+                className="details-cta"
+                disabled={!canProceed}
+                onClick={handleNext}
+              >
+                בואו נבחר את הדמויות
+                <span className="material-symbols-outlined cta-arrow">arrow_back</span>
+              </button>
+              {!canProceed && (
+                <p className="details-hint">יש למלא שם, גיל, מין ואימייל כדי להמשיך</p>
+              )}
+            </div>
+          </form>
+        </div>
+
+        {/* Hero Illustration (Desktop) */}
+        <div className="details-hero-side">
+          <div className="details-hero-glow-1" />
+          <div className="details-hero-glow-2" />
+          <div className="details-hero-img-wrap">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/example (1).jpg" alt="דוגמה לקלף" className="details-hero-img" />
+            <div className="details-hero-overlay" />
+          </div>
+          <div className="details-floating-quote">
+            <p>&ldquo;כל ילד הוא גיבור בסיפור משלו&rdquo;</p>
+          </div>
+        </div>
+
+      </div>
     </div>
   );
 }
