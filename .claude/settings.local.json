@@ -46,7 +46,9 @@
       "WebSearch",
       "Bash(npx tsc:*)",
       "Bash(find /c/Users/Eitan/memoreals-pro/src/components -type f -name *.tsx -o -name *.ts)",
-      "Bash(ls c:/Users/Eitan/memoreals-pro/public/logo.*)"
+      "Bash(ls c:/Users/Eitan/memoreals-pro/public/logo.*)",
+      "Bash(npx next:*)",
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx next build)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

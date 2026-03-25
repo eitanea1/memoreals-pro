@@ -6,20 +6,23 @@ import { useApp } from '@/context/AppContext';
 import { SUPERHEROES, PROFESSIONS, FAIRY_TALES } from '@/lib/data/characters';
 import CategoryList from '@/components/character/CategoryList';
 import StepIndicator from '@/components/shared/StepIndicator';
-import { Button } from '@/components/ui/button';
 import type { Character } from '@/lib/types';
 
 const CUSTOM_SLOTS = 5;
 
-const CATEGORY_LABELS: Record<string, string> = {
-  Superheroes: 'גיבורי על',
-  Professions: 'מקצועות',
-  'Fairy Tales': 'אגדות',
-};
+type CategoryFilter = 'all' | 'superheroes' | 'professions' | 'fairytales';
+
+const TABS: { key: CategoryFilter; label: string }[] = [
+  { key: 'all', label: 'הכל' },
+  { key: 'superheroes', label: 'גיבורי על' },
+  { key: 'professions', label: 'מקצועות' },
+  { key: 'fairytales', label: 'אגדות' },
+];
 
 export default function CharacterSelectPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
+  const [filter, setFilter] = useState<CategoryFilter>('all');
 
   const [customInputs, setCustomInputs] = useState<string[]>(() => {
     const existing = state.selectedCharacters
@@ -30,6 +33,8 @@ export default function CharacterSelectPage() {
 
   const selectedIds = new Set(state.selectedCharacters.map((c) => c.id));
   const total = state.selectedCharacters.length;
+  const isComplete = total === 20;
+  const progress = (total / 20) * 100;
 
   function handleToggle(character: Character) {
     if (selectedIds.has(character.id)) {
@@ -65,75 +70,167 @@ export default function CharacterSelectPage() {
   }
 
   return (
-    <div className="page" dir="rtl">
-      <StepIndicator current={1} />
-      <div className="page-header">
-        <h2>בחירת דמויות</h2>
-        <div className={`selection-counter ${total === 20 ? 'complete' : ''}`}>
-          {total} / 20 נבחרו
+    <div className="min-h-screen pb-40" dir="rtl">
+      <div className="max-w-5xl mx-auto px-4 pt-4">
+        <StepIndicator current={1} />
+
+        {/* Header */}
+        <div className="text-center mb-6 mt-4">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-[var(--c-brand-text)] mb-2" style={{ fontFamily: 'var(--font-playfair)' }}>
+            בחרו 20 דמויות קסומות
+          </h1>
+          <p className="text-sm text-[var(--c-mid)] max-w-md mx-auto">
+            הדמויות שתבחרו יהפכו לקלפים המיוחדים שלכם. כל דמות היא סיפור חדש.
+          </p>
         </div>
-      </div>
-      <div className="categories-wrapper">
-        <CategoryList
-          title={CATEGORY_LABELS['Superheroes']}
-          characters={SUPERHEROES}
-          selectedIds={selectedIds}
-          totalSelected={total}
-          onToggle={handleToggle}
-        />
-        <CategoryList
-          title={CATEGORY_LABELS['Professions']}
-          characters={PROFESSIONS}
-          selectedIds={selectedIds}
-          totalSelected={total}
-          onToggle={handleToggle}
-        />
-        <CategoryList
-          title={CATEGORY_LABELS['Fairy Tales']}
-          characters={FAIRY_TALES}
-          selectedIds={selectedIds}
-          totalSelected={total}
-          onToggle={handleToggle}
-        />
-      </div>
-      <div className="custom-characters-section">
-        <h3 className="category-title">דמויות לבחירה חופשית (עד {CUSTOM_SLOTS})</h3>
-        <p className="custom-characters-hint">הזינו שמות דמויות שאינן ברשימה — לדוגמה: &quot;ספיידרמן&quot;, &quot;אנה ואלסה&quot;</p>
-        <div className="custom-characters-grid">
-          {customInputs.map((val, i) => {
-            const id = `custom-${i}`;
-            const isSelected = selectedIds.has(id);
-            const isFull = total >= 20 && !isSelected;
-            return (
-              <div key={i} className={`custom-character-input-wrap ${isSelected ? 'selected' : ''}`}>
-                <span className="custom-char-num">{i + 1}</span>
-                <input
-                  type="text"
-                  className="custom-character-input"
-                  placeholder={`דמות ${i + 1}`}
-                  value={val}
-                  disabled={isFull && !val}
-                  onChange={(e) => handleCustomChange(i, e.target.value)}
-                  dir="rtl"
-                />
-                {isSelected && <span className="check-mark">✓</span>}
-              </div>
-            );
-          })}
+
+        {/* Category Tabs */}
+        <nav className="flex justify-center gap-2 mb-6 overflow-x-auto py-1">
+          {TABS.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setFilter(tab.key)}
+              className={`
+                px-5 py-2 rounded-full text-sm font-bold transition-all whitespace-nowrap
+                ${filter === tab.key
+                  ? 'bg-[var(--c-brand)] text-white shadow-lg'
+                  : 'bg-[var(--c-brand-light)] text-[var(--c-brand-text)] hover:bg-[#ddd6fe]'}
+              `}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+
+        {/* Character Grid */}
+        {(filter === 'all' || filter === 'superheroes') && (
+          <CategoryList
+            title="גיבורי על"
+            characters={SUPERHEROES}
+            selectedIds={selectedIds}
+            totalSelected={total}
+            onToggle={handleToggle}
+          />
+        )}
+        {(filter === 'all' || filter === 'professions') && (
+          <CategoryList
+            title="מקצועות"
+            characters={PROFESSIONS}
+            selectedIds={selectedIds}
+            totalSelected={total}
+            onToggle={handleToggle}
+          />
+        )}
+        {(filter === 'all' || filter === 'fairytales') && (
+          <CategoryList
+            title="אגדות"
+            characters={FAIRY_TALES}
+            selectedIds={selectedIds}
+            totalSelected={total}
+            onToggle={handleToggle}
+          />
+        )}
+
+        {/* Custom characters */}
+        <div className="mb-6">
+          <h3 className="text-sm font-bold text-[var(--c-brand-text)] mb-3 pr-1">
+            דמויות לבחירה חופשית (עד {CUSTOM_SLOTS})
+          </h3>
+          <p className="text-xs text-[var(--c-mid)] mb-3 pr-1">
+            הזינו שמות דמויות שאינן ברשימה
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+            {customInputs.map((val, i) => {
+              const id = `custom-${i}`;
+              const isSelected = selectedIds.has(id);
+              const isFull = total >= 20 && !isSelected;
+              return (
+                <div
+                  key={i}
+                  className={`
+                    relative flex items-center gap-2 rounded-2xl px-3 py-2 transition-all
+                    ${isSelected
+                      ? 'bg-[var(--c-brand-light)] ring-2 ring-[var(--c-brand)]'
+                      : 'bg-white'}
+                  `}
+                >
+                  <span className="text-xs font-bold text-[var(--c-muted)]">{i + 1}</span>
+                  <input
+                    type="text"
+                    className="flex-1 bg-transparent text-sm outline-none placeholder:text-[var(--c-muted)]"
+                    placeholder={`דמות ${i + 1}`}
+                    value={val}
+                    disabled={isFull && !val}
+                    onChange={(e) => handleCustomChange(i, e.target.value)}
+                    dir="rtl"
+                  />
+                  {isSelected && (
+                    <div className="w-4 h-4 bg-[var(--c-brand)] rounded-full flex items-center justify-center">
+                      <svg width="8" height="8" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
       </div>
 
-      <div className="nav-buttons">
-        <Button variant="brand" size="xl" disabled={total !== 20} onClick={() => router.push('/upload')}>
-          המשך ←
-        </Button>
-        <Button variant="brand-outline" size="xl" onClick={() => router.push('/details')}>
-          → חזור
-        </Button>
+      {/* Sticky Bottom Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/80 backdrop-blur-xl border-t border-[var(--c-border)] shadow-[0_-4px_20px_rgba(0,0,0,0.06)]">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between gap-4" dir="rtl">
+          {/* Progress circle + text */}
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 flex items-center justify-center">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="transparent" stroke="#e7e0d5" strokeWidth="4" />
+                <circle
+                  cx="24" cy="24" r="20" fill="transparent"
+                  stroke={isComplete ? '#16a34a' : '#5b21b6'}
+                  strokeWidth="4"
+                  strokeDasharray={2 * Math.PI * 20}
+                  strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)}
+                  strokeLinecap="round"
+                  className="transition-all duration-300"
+                />
+              </svg>
+              <span className={`absolute text-xs font-bold ${isComplete ? 'text-green-600' : 'text-[var(--c-brand)]'}`}>
+                {total}/20
+              </span>
+            </div>
+            <div>
+              <p className={`text-sm font-bold ${isComplete ? 'text-green-600' : 'text-[var(--c-brand-text)]'}`}>
+                {total} / 20 נבחרו
+              </p>
+              <p className="text-xs text-[var(--c-mid)]">
+                {isComplete ? 'מוכן להמשיך!' : `בחרו עוד ${20 - total} דמויות`}
+              </p>
+            </div>
+          </div>
+
+          {/* Navigation buttons */}
+          <div className="flex gap-2">
+            <button
+              onClick={() => router.push('/details')}
+              className="px-4 py-2.5 rounded-full text-sm font-bold text-[var(--c-brand)] border border-[var(--c-brand)] hover:bg-[var(--c-brand-light)] transition-all"
+            >
+              חזור
+            </button>
+            <button
+              onClick={() => router.push('/upload')}
+              disabled={!isComplete}
+              className={`
+                px-6 py-2.5 rounded-full text-sm font-bold transition-all
+                ${isComplete
+                  ? 'bg-[var(--c-brand)] text-white shadow-lg hover:opacity-90'
+                  : 'bg-[var(--c-border)] text-[var(--c-muted)] cursor-not-allowed'}
+              `}
+            >
+              בואו נעלה תמונות
+            </button>
+          </div>
+        </div>
       </div>
-      {total !== 20 && (
-        <p className="hint">יש לבחור בדיוק 20 דמויות כדי להמשיך (נותרו {20 - total})</p>
-      )}
     </div>
   );
 }
