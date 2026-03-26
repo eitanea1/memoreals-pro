@@ -13,9 +13,16 @@ interface Props {
 
 export default function CategoryList({ title, characters, selectedIds, totalSelected, onToggle }: Props) {
   return (
-    <div className="mb-6">
-      <h3 className="text-sm font-bold text-[var(--c-brand-text)] mb-3 pr-1">{title}</h3>
-      <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-2">
+    <section className="py-8 first:pt-0">
+      {/* Category header */}
+      <div className="flex items-center gap-4 mb-6">
+        <h3 className="text-xl font-extrabold text-[var(--c-brand-text)] whitespace-nowrap">{title}</h3>
+        <div className="flex-1 h-px bg-gradient-to-l from-transparent via-[var(--c-border)] to-transparent" />
+        <span className="text-xs font-semibold text-[var(--c-muted)]">{characters.length} דמויות</span>
+      </div>
+
+      {/* Grid — 2 on mobile, 3 on sm, 4 on md, 5 on lg */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5 md:gap-6">
         {characters.map((c) => {
           const selected = selectedIds.has(c.id);
           const disabled = totalSelected >= 20 && !selected;
@@ -30,6 +37,6 @@ export default function CategoryList({ title, characters, selectedIds, totalSele
           );
         })}
       </div>
-    </div>
+    </section>
   );
 }
