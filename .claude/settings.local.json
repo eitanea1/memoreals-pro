@@ -51,7 +51,9 @@
       "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx next build)",
       "Bash(node scripts/generate-thumbnails.mjs)",
       "Bash(node scripts/generate-boys.mjs)",
-      "Bash(node scripts/generate-girls.mjs)"
+      "Bash(node scripts/generate-girls.mjs)",
+      "Bash(node scripts/generate-men.mjs)",
+      "Bash(node scripts/generate-women.mjs)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",
