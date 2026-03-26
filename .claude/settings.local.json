@@ -48,7 +48,10 @@
       "Bash(find /c/Users/Eitan/memoreals-pro/src/components -type f -name *.tsx -o -name *.ts)",
       "Bash(ls c:/Users/Eitan/memoreals-pro/public/logo.*)",
       "Bash(npx next:*)",
-      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx next build)"
+      "Bash(NODE_OPTIONS=\"--max-old-space-size=4096\" npx next build)",
+      "Bash(node scripts/generate-thumbnails.mjs)",
+      "Bash(node scripts/generate-boys.mjs)",
+      "Bash(node scripts/generate-girls.mjs)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

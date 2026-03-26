@@ -2,7 +2,8 @@ export interface Character {
   id: string;
   name: string;        // English — used for AI prompt / saved to order
   displayName: string; // Hebrew — shown in the UI
-  category: 'superheroes' | 'professions' | 'fairytales';
+  category: 'superheroes' | 'professions' | 'fairytales' | 'anime' | 'adventures' | 'premium';
+  thumbnail?: string; // path to thumbnail image
 }
 
 export interface UploadedPhoto {
