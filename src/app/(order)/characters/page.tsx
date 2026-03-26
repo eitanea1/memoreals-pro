@@ -28,7 +28,7 @@ export default function CharacterSelectPage() {
   const router = useRouter();
   const [filter, setFilter] = useState<CategoryFilter>('all');
 
-  const isBoy = state.subjectGender === 'male';
+  const isBoy = state.subjectGender.toLowerCase() !== 'female';
   const heroes = isBoy ? BOYS_HEROES : GIRLS_HEROES;
   const anime = isBoy ? BOYS_ANIME : GIRLS_ANIME;
   const adventures = isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES;
