@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { useApp } from '@/context/AppContext';
 import {
   BOYS_HEROES, BOYS_ANIME, BOYS_ADVENTURES, BOYS_PREMIUM,
@@ -112,19 +113,47 @@ export default function CharacterSelectPage() {
           ))}
         </nav>
 
-        {/* Character Grids */}
-        {(filter === 'all' || filter === 'superheroes') && (
-          <CategoryList title="גיבורי על" characters={heroes} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
-        )}
-        {(filter === 'all' || filter === 'anime') && (
-          <CategoryList title="אגדות ואנימה" characters={anime} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
-        )}
-        {(filter === 'all' || filter === 'adventures') && (
-          <CategoryList title="הרפתקאות" characters={adventures} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
-        )}
-        {(filter === 'all' || filter === 'premium') && (
-          <CategoryList title="פרימיום" characters={premium} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
-        )}
+        {/* Main content: Grid + Side Banner */}
+        <div className="flex gap-6">
+          {/* Character Grids */}
+          <div className="flex-1 min-w-0">
+            {(filter === 'all' || filter === 'superheroes') && (
+              <CategoryList title="גיבורי על" characters={heroes} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            )}
+            {(filter === 'all' || filter === 'anime') && (
+              <CategoryList title="אגדות ואנימה" characters={anime} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            )}
+            {(filter === 'all' || filter === 'adventures') && (
+              <CategoryList title="הרפתקאות" characters={adventures} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            )}
+            {(filter === 'all' || filter === 'premium') && (
+              <CategoryList title="פרימיום" characters={premium} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            )}
+          </div>
+
+          {/* Side Hero Banner — desktop only */}
+          <div className="hidden lg:flex flex-col w-52 shrink-0 sticky top-24 self-start gap-4">
+            <div className="relative rounded-3xl overflow-hidden shadow-xl">
+              <Image
+                src={isBoy ? '/characters/boys/superman.jpg' : '/characters/girls/wonder-woman.jpg'}
+                alt="Hero"
+                width={400}
+                height={300}
+                className="w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[var(--c-brand)]/90 via-transparent to-transparent flex flex-col items-center justify-end p-4 text-center">
+                <p className="text-white font-extrabold text-lg leading-tight" style={{ fontFamily: 'var(--font-playfair)' }}>
+                  {isBoy ? 'הגיבור שלך' : 'הגיבורה שלך'}
+                </p>
+                <p className="text-white/80 text-xs mt-1">מחכה להיחשף</p>
+              </div>
+            </div>
+            <div className="bg-[var(--c-brand-light)] rounded-2xl p-4 text-center">
+              <p className="text-[var(--c-brand-text)] font-bold text-sm mb-1">20 קלפים מותאמים</p>
+              <p className="text-[var(--c-mid)] text-xs">כל דמות שתבחרו תהפוך לקלף עם הפנים של הילד/ה שלכם</p>
+            </div>
+          </div>
+        </div>
 
         {/* Custom characters */}
         <div className="mb-6">
