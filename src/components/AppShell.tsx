@@ -16,8 +16,8 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
           <Image
             src="/logo.png"
             alt="MemoReals Logo"
-            width={42}
-            height={42}
+            width={64}
+            height={64}
             className="header-logo-img"
             priority
           />

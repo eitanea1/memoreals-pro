@@ -45,7 +45,8 @@ export default function HomePage() {
       <section className="hero-section">
         <div className="hero-glow" />
         <div className="hero-logo-mark">
-          <Image src="/logo.png" alt="MemoReals" width={100} height={100} priority />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/logo.png" alt="MemoReals" />
         </div>
         <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
         <h1 className="hero-headline">
@@ -63,7 +64,8 @@ export default function HomePage() {
             <div key={img.src} className="flip-card" style={{ animationDelay: `${i * 0.8}s` }}>
               <div className="flip-card-inner">
                 <div className="flip-card-front">
-                  <Image src="/logo.png" alt="MemoReals" width={60} height={60} />
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/logo.png" alt="MemoReals" />
                 </div>
                 <div className="flip-card-back">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
