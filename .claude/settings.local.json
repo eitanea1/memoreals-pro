@@ -53,7 +53,9 @@
       "Bash(node scripts/generate-boys.mjs)",
       "Bash(node scripts/generate-girls.mjs)",
       "Bash(node scripts/generate-men.mjs)",
-      "Bash(node scripts/generate-women.mjs)"
+      "Bash(node scripts/generate-women.mjs)",
+      "Bash(mkdir -p \"C:/Users/Eitan/AmiGoal/android/app/src/main/res/raw\")",
+      "Bash(cp \"C:/Users/Eitan/AmiGoal/mixkit-classic-alarm-995.wav\" \"C:/Users/Eitan/AmiGoal/android/app/src/main/res/raw/alarm.wav\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",
