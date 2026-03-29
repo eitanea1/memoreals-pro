@@ -656,10 +656,9 @@ body {
   margin-bottom: 1.5rem;
 }
 .hero-logo-mark img {
-  width: 200px;
+  width: 220px;
   height: auto;
-  border-radius: 50%;
-  box-shadow: 0 8px 40px rgba(91, 33, 182, 0.3);
+  filter: invert(1);
 }
 .hero-headline {
   font-family: 'Heebo', sans-serif;

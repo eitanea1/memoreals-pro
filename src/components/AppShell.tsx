@@ -2,6 +2,7 @@
 
 import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -14,7 +15,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
       <header className="app-header" onClick={() => router.push('/')}>
         <div className="header-inner">
           <Image
-            src="/logo.png"
+            src="/logo-clean.png"
             alt="MemoReals Logo"
             width={64}
             height={64}
@@ -37,16 +38,17 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             <>
               <div className="footer-brand">MemoReals</div>
               <div className="footer-links">
-                <a href="#">מדיניות פרטיות</a>
-                <a href="#">תנאי שימוש</a>
-                <a href="#">צרו קשר</a>
+                <Link href="/about">אודות</Link>
+                <Link href="/privacy">מדיניות פרטיות</Link>
+                <Link href="/terms">תנאי שימוש</Link>
+                <Link href="/contact">צרו קשר</Link>
               </div>
-              <span className="footer-copy">© 2025 MemoReals · כל הזכויות שמורות</span>
+              <span className="footer-copy">© 2026 MemoReals · כל הזכויות שמורות</span>
             </>
           ) : (
             <>
-              <Image src="/logo.png" alt="" width={22} height={22} className="footer-logo" />
-              <span>© 2025 MemoReals · כל הזכויות שמורות</span>
+              <Image src="/logo-clean.png" alt="" width={22} height={22} className="footer-logo" />
+              <span>© 2026 MemoReals · כל הזכויות שמורות</span>
             </>
           )}
         </div>
