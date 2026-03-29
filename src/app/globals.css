@@ -84,7 +84,7 @@
 }
 
 @theme inline {
-  --font-sans: 'Heebo', 'Segoe UI', sans-serif;
+  --font-sans: 'Heebo', 'Arial', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -134,8 +134,11 @@
 /* box-sizing only — Tailwind preflight handles the rest */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { width: 100%; min-height: 100vh; }
+h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label, input, textarea, select, button, div {
+  font-family: 'Heebo', sans-serif !important;
+}
 body {
-  font-family: 'Heebo', 'Segoe UI', sans-serif !important;
+  font-family: 'Heebo', sans-serif !important;
   background: var(--c-bg);
   color: var(--c-dark);
   line-height: 1.55;
@@ -177,7 +180,7 @@ body {
 }
 .brand-text { display: flex; flex-direction: column; gap: 0.05rem; }
 .brand-logo {
-  font-family: 'Playfair Display', 'Heebo', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1.5rem;
   font-weight: 800;
   letter-spacing: -0.01em;
@@ -231,7 +234,7 @@ body {
   margin: 0 auto;
 }
 .footer-brand {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1.3rem;
   font-weight: 700;
   color: white;
@@ -305,7 +308,7 @@ body {
 
 /* ── Page Header ── */
 .page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-.page-header h2 { font-size: 1.7rem; font-weight: 800; font-family: 'Playfair Display', serif; color: var(--c-dark); }
+.page-header h2 { font-size: 1.7rem; font-weight: 800; font-family: 'Heebo', sans-serif; color: var(--c-dark); }
 
 /* ── Selection Counter ── */
 .selection-counter {
@@ -566,7 +569,7 @@ body {
   justify-content: center;
 }
 .conf-check { font-size: 2rem; color: var(--c-success); font-weight: 900; }
-.conf-title { font-size: 1.8rem; font-weight: 800; color: var(--c-dark); font-family: 'Playfair Display', serif; }
+.conf-title { font-size: 1.8rem; font-weight: 800; color: var(--c-dark); font-family: 'Heebo', sans-serif; }
 .conf-body { color: var(--c-mid); font-size: 0.97rem; line-height: 1.7; }
 .conf-text { display: flex; flex-direction: column; gap: 0.5rem; }
 .conf-email-box {
@@ -613,8 +616,8 @@ body {
 }
 
 /* Font families */
-.font-headline { font-family: 'Newsreader', 'Playfair Display', serif; }
-.font-body { font-family: 'Manrope', 'Heebo', sans-serif; }
+.font-headline { font-family: 'Heebo', sans-serif; }
+.font-body { font-family: 'Heebo', sans-serif; }
 
 /* ── Hero ── */
 .hero-section {
@@ -645,24 +648,22 @@ body {
 }
 /* Hero logo */
 .hero-logo-mark {
-  width: 110px;
-  height: 110px;
-  border-radius: 28px;
-  background: #fff;
+  width: 120px;
+  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
-  box-shadow: 0 8px 32px rgba(91, 33, 182, 0.35);
   margin-bottom: 0.5rem;
 }
 .hero-logo-mark img {
-  width: 80px;
-  height: 80px;
+  width: 120px;
+  height: 120px;
+  filter: invert(1);
 }
 .hero-headline {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-style: italic;
   font-size: 5rem;
   font-weight: 700;
@@ -677,7 +678,7 @@ body {
   display: block;
 }
 .hero-hook {
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1.3rem;
   color: rgba(211, 187, 255, 0.7);
   line-height: 1.75;
@@ -782,9 +783,8 @@ body {
   justify-content: center;
 }
 .flip-card-front {
-  background: #fff;
+  background: linear-gradient(135deg, var(--c-brand) 0%, var(--c-brand-mid) 100%);
   box-shadow: 0 6px 24px rgba(91, 33, 182, 0.4);
-  border: 2px solid var(--c-brand-light);
 }
 .flip-card-back {
   transform: rotateY(180deg);
@@ -792,7 +792,7 @@ body {
   box-shadow: 0 6px 24px rgba(0,0,0,0.25);
 }
 .flip-card-back img { width: 100%; height: 100%; object-fit: cover; }
-.flip-card-front img { width: 50px; height: 50px; }
+.flip-card-front img { width: 50px; height: 50px; filter: invert(1); }
 
 /* Hero CTA */
 .btn-hero-cta {
@@ -810,7 +810,7 @@ body {
   transition: all 0.3s;
   position: relative;
   z-index: 1;
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   border: none;
   cursor: pointer;
 }
@@ -842,7 +842,7 @@ body {
 .gallery-inner { max-width: 1100px; margin: 0 auto; }
 .section-eyebrow {
   display: inline-block;
-  font-family: 'Manrope', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.15em;
@@ -851,7 +851,7 @@ body {
   margin-bottom: 1rem;
 }
 .section-title {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 2.5rem;
   font-weight: 700;
   color: #1c1c19;
@@ -859,7 +859,7 @@ body {
   margin-bottom: 0.5rem;
 }
 .section-sub {
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1rem;
   color: #4a4453;
   line-height: 1.7;
@@ -897,7 +897,7 @@ body {
 .gallery-card:hover img { transform: scale(1.05); }
 .gallery-card-body { padding: 1.5rem; text-align: right; }
 .gallery-card-body h3 {
-  font-family: 'Newsreader', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1.4rem;
   color: #420093;
   margin-bottom: 0.5rem;
@@ -926,7 +926,7 @@ body {
   margin-bottom: 4rem;
 }
 .how-header h2 {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 2.5rem;
   font-weight: 700;
   color: #1c1c19;
@@ -954,7 +954,7 @@ body {
   position: absolute;
   top: 1rem;
   left: 1rem;
-  font-family: 'Newsreader', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 5rem;
   font-weight: 200;
   color: rgba(66, 0, 147, 0.05);
@@ -1027,7 +1027,7 @@ body {
 }
 .why-content { flex: 1; text-align: right; }
 .why-content h2 {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 2.5rem;
   font-weight: 700;
   line-height: 1.15;
@@ -1084,7 +1084,7 @@ body {
   border-radius: 0;
 }
 .cta-title {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 2.5rem;
   font-weight: 700;
   color: #fcf9f4;
@@ -1112,7 +1112,7 @@ body {
 /* ─────────────────────────────────────────────────────────────────────────── */
 .admin-page { display: flex; flex-direction: column; gap: 1.5rem; padding: 2rem; max-width: 1400px; margin: 0 auto; }
 .admin-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-.admin-title { font-size: 1.8rem; font-weight: 800; color: var(--c-dark); font-family: 'Playfair Display', serif; }
+.admin-title { font-size: 1.8rem; font-weight: 800; color: var(--c-dark); font-family: 'Heebo', sans-serif; }
 .admin-count { background: var(--c-brand-light); color: var(--c-brand-text); padding: 0.4rem 1rem; border-radius: 999px; font-weight: 700; font-size: 0.92rem; }
 
 .admin-table-wrap { background: white; border-radius: 16px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: auto; border: 1px solid var(--c-border); }
@@ -1157,7 +1157,7 @@ body {
   max-width: 1100px;
   margin: 0 auto;
   padding: 2rem 1.5rem 4rem;
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   background: radial-gradient(circle at top right, #f3e8ff 0%, #fcf9f4 100%);
   min-height: 80vh;
 }
@@ -1232,7 +1232,7 @@ body {
   border: 1px solid rgba(204, 195, 213, 0.15);
 }
 .details-title {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 2.2rem;
   font-weight: 700;
   color: #420093;
@@ -1273,7 +1273,7 @@ body {
   border: 2px solid transparent;
   border-radius: 0.75rem;
   padding: 0.85rem 1.25rem;
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-size: 1rem;
   color: #1c1c19;
   outline: none;
@@ -1341,7 +1341,7 @@ body {
   border: none;
   padding: 1.1rem 2rem;
   border-radius: 0.75rem;
-  font-family: 'Manrope', 'Heebo', sans-serif;
+  font-family: 'Heebo', sans-serif;
   font-weight: 700;
   font-size: 1.05rem;
   cursor: pointer;
@@ -1426,7 +1426,7 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.6);
 }
 .details-floating-quote p {
-  font-family: 'Newsreader', 'Playfair Display', serif;
+  font-family: 'Heebo', sans-serif;
   font-style: italic;
   font-weight: 700;
   font-size: 1.05rem;

@@ -56,7 +56,13 @@
       "Bash(node scripts/generate-women.mjs)",
       "Bash(mkdir -p \"C:/Users/Eitan/AmiGoal/android/app/src/main/res/raw\")",
       "Bash(cp \"C:/Users/Eitan/AmiGoal/mixkit-classic-alarm-995.wav\" \"C:/Users/Eitan/AmiGoal/android/app/src/main/res/raw/alarm.wav\")",
-      "Bash(npx expo:*)"
+      "Bash(npx expo:*)",
+      "Bash(node -e \"try { require\\(''@babel/parser''\\).parse\\(require\\(''fs''\\).readFileSync\\(''src/screens/DaySummaryScreen.tsx'',''utf8''\\), {sourceType:''module'',plugins:[''typescript'',''jsx'']}\\); console.log\\(''OK''\\); } catch\\(e\\) { console.log\\(e.message\\); }\")",
+      "Bash(script -q -c \"npx expo export --platform android\" /dev/null)",
+      "Bash(node -e \"console.log\\(''test''\\)\")",
+      "Bash(powershell -Command \"Remove-Item -Recurse -Force ''c:\\\\Users\\\\Eitan\\\\memoreals-pro\\\\.next'' -ErrorAction SilentlyContinue; Write-Output ''done''\")",
+      "Bash(git -C \"c:/Users/Eitan/memoreals-pro\" status)",
+      "Bash(git -C \"c:\\\\Users\\\\Eitan\\\\memoreals-pro\" status)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",
