@@ -648,22 +648,17 @@ body {
 }
 /* Hero logo */
 .hero-logo-mark {
-  width: 120px;
-  height: 120px;
   display: flex;
   align-items: center;
   justify-content: center;
   position: relative;
   z-index: 1;
-  margin-bottom: 0.5rem;
-  background: white;
-  border-radius: 28px;
-  padding: 10px;
+  margin-bottom: 1.5rem;
 }
 .hero-logo-mark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
+  width: 220px;
+  height: auto;
+  filter: invert(1) brightness(2);
 }
 .hero-headline {
   font-family: 'Heebo', sans-serif;
@@ -825,8 +820,7 @@ body {
 @media (max-width: 700px) {
   .hero-section { padding: 6rem 1.5rem 4rem; min-height: auto; }
   .hero-headline { font-size: 3.2rem; }
-  .hero-logo-mark { width: 90px; height: 90px; border-radius: 22px; }
-  .hero-logo-mark img { width: 58px; height: 58px; }
+  .hero-logo-mark img { width: 160px; }
   .hero-cards-row { gap: 0.6rem; }
   .flip-card { width: 80px; height: 112px; }
   .flip-card-front img { width: 36px; height: 36px; }
