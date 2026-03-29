@@ -134,7 +134,7 @@
 /* box-sizing only — Tailwind preflight handles the rest */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { width: 100%; min-height: 100vh; }
-h1, h2, h3, h4, h5, h6, p, span, a, li, td, th, label, input, textarea, select, button, div {
+h1, h2, h3, h4, h5, h6, p, span:not(.material-symbols-outlined), a, li, td, th, label, input, textarea, select, button, div {
   font-family: 'Heebo', sans-serif !important;
 }
 body {
