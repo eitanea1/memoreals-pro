@@ -23,7 +23,7 @@ const TABS: { key: CategoryFilter; label: string }[] = [
   { key: 'superheroes', label: 'גיבורי על' },
   { key: 'anime', label: 'אגדות ואנימה' },
   { key: 'adventures', label: 'הרפתקאות' },
-  { key: 'premium', label: 'פרימיום' },
+  { key: 'premium', label: 'מקצועות/אחר' },
 ];
 
 export default function CharacterSelectPage() {
