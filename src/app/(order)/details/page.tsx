@@ -13,8 +13,6 @@ const STEPS = [
 ];
 
 type GenderOption = 'Male' | 'Female';
-type AgeGroup = 'child' | 'adult';
-
 export default function PersonalDetailsPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
@@ -22,7 +20,6 @@ export default function PersonalDetailsPage() {
   const [name, setName] = useState(state.subjectName);
   const [age, setAge] = useState(state.subjectAge);
   const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
-  const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('');
   const [email, setEmail] = useState(state.customerEmail);
   const [nameTouched, setNameTouched] = useState(false);
 
@@ -30,7 +27,7 @@ export default function PersonalDetailsPage() {
   const nameError = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
   const ageNum = parseInt(age, 10);
   const ageIsValid = age.trim().length > 0 && ageNum >= 1 && ageNum <= 120;
-  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && ageGroup.length > 0 && email.trim().length > 0;
+  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && email.trim().length > 0;
 
   function handleNext() {
     dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: '' });
@@ -103,29 +100,6 @@ export default function PersonalDetailsPage() {
               </div>
             </div>
 
-            {/* Age Group (sub-category) */}
-            {gender && (
-              <div className="field-group">
-                <span className="field-label">קבוצת גיל</span>
-                <div className="gender-grid">
-                  <label className="gender-card-label">
-                    <input type="radio" name="ageGroup" className="sr-only" checked={ageGroup === 'child'} onChange={() => setAgeGroup('child')} />
-                    <div className={`gender-card ${ageGroup === 'child' ? 'selected' : ''}`}>
-                      <span className="material-symbols-outlined gender-icon">child_care</span>
-                      <span className="gender-text">{gender === 'Male' ? 'ילד' : 'ילדה'}</span>
-                    </div>
-                  </label>
-                  <label className="gender-card-label">
-                    <input type="radio" name="ageGroup" className="sr-only" checked={ageGroup === 'adult'} onChange={() => setAgeGroup('adult')} />
-                    <div className={`gender-card ${ageGroup === 'adult' ? 'selected' : ''}`}>
-                      <span className="material-symbols-outlined gender-icon">person</span>
-                      <span className="gender-text">{gender === 'Male' ? 'איש' : 'אישה'}</span>
-                    </div>
-                  </label>
-                </div>
-              </div>
-            )}
-
             {/* Age */}
             <div className="field-group field-short">
               <label className="field-label" htmlFor="child-age">גיל</label>
@@ -173,7 +147,7 @@ export default function PersonalDetailsPage() {
                 <span className="material-symbols-outlined cta-arrow">arrow_back</span>
               </button>
               {!canProceed && (
-                <p className="details-hint">יש למלא שם, מגדר, קבוצת גיל, גיל ואימייל כדי להמשיך</p>
+                <p className="details-hint">יש למלא שם, מגדר, גיל ואימייל כדי להמשיך</p>
               )}
             </div>
           </form>
