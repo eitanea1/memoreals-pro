@@ -22,7 +22,6 @@ const HOW_IT_WORKS = [
   },
 ];
 
-// Example images for each package
 const KIDS_EXAMPLES = [
   { src: '/characters/boys/spider-man.jpg', alt: 'ספיידרמן' },
   { src: '/characters/girls/elsa.jpg', alt: 'אלזה' },
@@ -44,93 +43,125 @@ export default function HomePage() {
       {/* ── Hero ── */}
       <section className="hero-section">
         <div className="hero-glow" />
-        <div className="hero-logo-mark">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/logo-clean.png" alt="MemoReals" />
-        </div>
-        <div className="hero-badge">✨ מופעל על ידי AI מתקדם</div>
-        <h1 className="hero-headline">
-          מתנת יום הולדת<br />
-          <span className="hero-headline-accent">יצירתית עם צחוק</span>
-        </h1>
-        <p className="hero-hook">
-          משחק זיכרון מותאם אישית עם AI — לילדים ולמבוגרים.<br />
-          הפנים שלכם על כל דמות. הדפסת פרימיום בקופסה ממותגת.
-        </p>
+        <div className="hero-glow-secondary" />
 
-        {/* ── Flipping cards animation ── */}
-        <div className="hero-cards-row">
-          {[...KIDS_EXAMPLES.slice(0, 2), ...WHATIF_EXAMPLES.slice(0, 2)].map((img, i) => (
-            <div key={img.src} className="flip-card" style={{ animationDelay: `${i * 0.8}s` }}>
-              <div className="flip-card-inner">
-                <div className="flip-card-front">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src="/logo-clean.png" alt="MemoReals" />
-                </div>
-                <div className="flip-card-back">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={img.src} alt={img.alt} />
-                </div>
-              </div>
-            </div>
+        {/* Floating particles */}
+        <div className="hero-particles">
+          {[...Array(6)].map((_, i) => (
+            <div key={i} className={`hero-particle hero-particle-${i + 1}`} />
           ))}
         </div>
 
-        <p className="hero-note">350 ₪ כולל משלוח · מחיר השקה</p>
+        <div className="hero-content">
+          <div className="hero-badge">
+            <span className="hero-badge-dot" />
+            מופעל על ידי AI מתקדם
+          </div>
+
+          <h1 className="hero-headline">
+            הילד שלכם.
+            <br />
+            <span className="hero-headline-accent">הגיבור של הסיפור.</span>
+          </h1>
+
+          <p className="hero-hook">
+            משחק זיכרון מותאם אישית שבו הפנים שלכם הופכות לדמויות קסומות.
+            <br />
+            טכנולוגיית AI מתקדמת. הדפסת פרימיום. קופסה ממותגת עד הבית.
+          </p>
+
+          <div className="hero-cta-group">
+            <Link href="/details" className="btn-hero-primary">
+              <span>התחילו ליצור</span>
+              <span className="btn-arrow">&larr;</span>
+            </Link>
+            <span className="hero-price-tag">350 ₪ כולל משלוח</span>
+          </div>
+        </div>
+
+        {/* ── Showcase cards ── */}
+        <div className="hero-showcase">
+          {[...KIDS_EXAMPLES.slice(0, 2), ...WHATIF_EXAMPLES.slice(0, 2)].map((img, i) => (
+            <div key={img.src} className={`showcase-card showcase-card-${i + 1}`}>
+              <Image src={img.src} alt={img.alt} width={280} height={380} className="showcase-card-img" />
+              <div className="showcase-card-glow" />
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Trust Bar ── */}
+      <section className="trust-bar">
+        <div className="trust-bar-inner">
+          <div className="trust-item">
+            <span className="material-symbols-outlined">verified</span>
+            <span>הדפסת פרימיום</span>
+          </div>
+          <div className="trust-item">
+            <span className="material-symbols-outlined">local_shipping</span>
+            <span>משלוח חינם</span>
+          </div>
+          <div className="trust-item">
+            <span className="material-symbols-outlined">auto_awesome</span>
+            <span>AI מתקדם</span>
+          </div>
+          <div className="trust-item">
+            <span className="material-symbols-outlined">favorite</span>
+            <span>בעבודת יד</span>
+          </div>
+        </div>
       </section>
 
       {/* ── Packages ── */}
-      <section className="py-16 px-4 md:px-8">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-12">
-            <span className="inline-block px-4 py-1.5 rounded-full bg-[var(--c-brand-light)] text-[var(--c-brand-text)] text-xs font-bold mb-4">בחרו את החבילה שלכם</span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-[var(--c-brand-text)] mb-3">שני עולמות, קסם אחד</h2>
-            <p className="text-[var(--c-mid)] max-w-lg mx-auto">כל חבילה כוללת 20 זוגות קלפים (40 קלפים), קופסה ממותגת ומשלוח עד הבית.</p>
+      <section className="packages-section">
+        <div className="packages-inner">
+          <div className="section-header">
+            <span className="section-tag">בחרו את החבילה שלכם</span>
+            <h2 className="section-heading">שני עולמות, קסם אחד</h2>
+            <p className="section-desc">כל חבילה כוללת 20 זוגות קלפים (40 קלפים), קופסה ממותגת ומשלוח עד הבית.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8">
+          <div className="packages-grid">
             {/* Package 1 — Kids */}
-            <div className="group relative rounded-3xl overflow-hidden border border-[var(--c-border)] bg-white shadow-sm hover:shadow-2xl transition-all duration-300 hover:border-[var(--c-brand-mid)]/40">
-              {/* Image grid */}
-              <div className="grid grid-cols-4 gap-0.5 p-1.5">
+            <div className="package-card">
+              <div className="package-images">
                 {KIDS_EXAMPLES.map((img) => (
-                  <div key={img.src} className="aspect-[4/3] rounded-xl overflow-hidden">
-                    <Image src={img.src} alt={img.alt} width={300} height={225} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div key={img.src} className="package-img-wrap">
+                    <Image src={img.src} alt={img.alt} width={300} height={225} className="package-img" />
                   </div>
                 ))}
               </div>
-              {/* Content */}
-              <div className="p-6 text-center">
-                <div className="inline-block px-3 py-1 rounded-full bg-[var(--c-brand-light)] text-[var(--c-brand)] text-xs font-bold mb-3">לגילאי 4–12</div>
-                <h3 className="text-2xl font-extrabold text-[var(--c-brand-text)] mb-2">ילדים מהאגדות</h3>
-                <p className="text-[var(--c-mid)] text-sm mb-5">הילד/ה שלכם כגיבור אמיתי — 20 דמויות קסומות בקלפי זיכרון מודפסים</p>
-                <Link href="/details" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-[var(--c-brand)] text-white font-bold text-sm shadow-[0_4px_20px_rgba(91,33,182,0.3)] hover:shadow-[0_6px_28px_rgba(91,33,182,0.45)] hover:scale-[1.02] transition-all">
-                  הזמינו עכשיו ←
+              <div className="package-body">
+                <span className="package-badge package-badge-kids">לגילאי 4-12</span>
+                <h3 className="package-title">ילדים מהאגדות</h3>
+                <p className="package-desc">הילד/ה שלכם כגיבור אמיתי — 20 דמויות קסומות בקלפי זיכרון מודפסים</p>
+                <Link href="/details" className="package-cta">
+                  הזמינו עכשיו
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
                 </Link>
-                <p className="text-xs text-[var(--c-muted)] mt-3">350 ₪ כולל משלוח</p>
+                <p className="package-price">350 ₪ כולל משלוח</p>
               </div>
             </div>
 
             {/* Package 2 — What If */}
-            <div className="group relative rounded-3xl overflow-hidden border border-[var(--c-border)] bg-white shadow-sm hover:shadow-2xl transition-all duration-300 hover:border-[var(--c-brand-mid)]/40">
-              {/* Image grid */}
-              <div className="grid grid-cols-4 gap-0.5 p-1.5">
+            <div className="package-card">
+              <div className="package-images">
                 {WHATIF_EXAMPLES.map((img) => (
-                  <div key={img.src} className="aspect-[4/3] rounded-xl overflow-hidden">
-                    <Image src={img.src} alt={img.alt} width={300} height={225} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div key={img.src} className="package-img-wrap">
+                    <Image src={img.src} alt={img.alt} width={300} height={225} className="package-img" />
                   </div>
                 ))}
               </div>
-              {/* Content */}
-              <div className="p-6 text-center">
-                <div className="inline-block px-3 py-1 rounded-full bg-amber-50 text-amber-700 text-xs font-bold mb-3">למבוגרים</div>
-                <h3 className="text-2xl font-extrabold text-[var(--c-brand-text)] mb-2">מה אם...?</h3>
-                <p className="text-[var(--c-mid)] text-sm mb-1">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית?</p>
-                <p className="text-[var(--c-brand-text)] text-sm font-bold mb-5">משחק שיצחיק גם את סבא וסבתא.</p>
-                <Link href="/details" className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-gradient-to-l from-[var(--c-brand)] to-[var(--c-brand-mid)] text-white font-bold text-sm shadow-[0_4px_20px_rgba(91,33,182,0.3)] hover:shadow-[0_6px_28px_rgba(91,33,182,0.45)] hover:scale-[1.02] transition-all">
-                  הזמינו עכשיו ←
+              <div className="package-body">
+                <span className="package-badge package-badge-adults">למבוגרים</span>
+                <h3 className="package-title">מה אם...?</h3>
+                <p className="package-desc">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית?</p>
+                <p className="package-highlight">משחק שיצחיק גם את סבא וסבתא.</p>
+                <Link href="/details" className="package-cta package-cta-gradient">
+                  הזמינו עכשיו
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
                 </Link>
-                <p className="text-xs text-[var(--c-muted)] mt-3">350 ₪ כולל משלוח</p>
+                <p className="package-price">350 ₪ כולל משלוח</p>
               </div>
             </div>
           </div>
@@ -140,9 +171,9 @@ export default function HomePage() {
       {/* ── How it works ── */}
       <section className="how-section">
         <div className="how-inner">
-          <div className="how-header">
-            <h2>שלושה צעדים פשוטים</h2>
-            <div className="how-header-line" />
+          <div className="section-header">
+            <span className="section-tag">איך זה עובד?</span>
+            <h2 className="section-heading">שלושה צעדים פשוטים</h2>
           </div>
           <div className="how-grid">
             {HOW_IT_WORKS.map((step) => (
@@ -160,10 +191,10 @@ export default function HomePage() {
       </section>
 
       {/* ── FAQ ── */}
-      <section className="py-16 px-4 md:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-extrabold text-[var(--c-brand-text)] mb-3">שאלות נפוצות</h2>
+      <section className="faq-section">
+        <div className="faq-inner">
+          <div className="section-header">
+            <h2 className="section-heading">שאלות נפוצות</h2>
           </div>
           {[
             { q: 'כמה עולה?', a: '350 ₪ למשחק כולל משלוח — מחיר השקה.' },
@@ -172,12 +203,12 @@ export default function HomePage() {
             { q: 'אפשר איסוף עצמי?', a: 'כן, ניתן איסוף עצמי מקדימה.' },
             { q: 'מה כלול במשחק?', a: '20 זוגות קלפים (40 קלפים), קופסה ממותגת ומשלוח עד הבית.' },
           ].map((faq) => (
-            <details key={faq.q} className="group mb-3 rounded-2xl border border-[var(--c-border)] bg-white overflow-hidden">
-              <summary className="flex items-center justify-between p-5 cursor-pointer font-bold text-[var(--c-brand-text)] hover:bg-[var(--c-brand-light)]/30 transition-colors">
+            <details key={faq.q} className="faq-item">
+              <summary className="faq-question">
                 {faq.q}
-                <span className="material-symbols-outlined text-[var(--c-muted)] group-open:rotate-180 transition-transform">expand_more</span>
+                <span className="material-symbols-outlined faq-chevron">expand_more</span>
               </summary>
-              <div className="px-5 pb-5 text-sm text-[var(--c-mid)] leading-relaxed">{faq.a}</div>
+              <div className="faq-answer">{faq.a}</div>
             </details>
           ))}
         </div>
@@ -185,10 +216,16 @@ export default function HomePage() {
 
       {/* ── CTA ── */}
       <section className="cta-section">
+        <div className="cta-glow" />
         <h2 className="cta-title">מוכנים להפתיע?</h2>
-        <p className="cta-sub">תהליך ההזמנה לוקח פחות מ-5 דקות.<br />מתנת יום הולדת יצירתית עם צחוק לכל המשפחה.</p>
-        <Link href="/details" className="btn-hero-cta">
-          התחילו עכשיו &larr;
+        <p className="cta-sub">
+          תהליך ההזמנה לוקח פחות מ-5 דקות.
+          <br />
+          מתנת יום הולדת יצירתית עם צחוק לכל המשפחה.
+        </p>
+        <Link href="/details" className="btn-hero-primary btn-hero-primary-light">
+          <span>התחילו עכשיו</span>
+          <span className="btn-arrow">&larr;</span>
         </Link>
       </section>
 
