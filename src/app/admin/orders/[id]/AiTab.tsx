@@ -19,11 +19,13 @@ interface GeneratedImage {
 export default function AiTab({ order }: { order: SerializedOrder }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
+  const [aiLabel, setAiLabel] = useState(order.aiLabel);
   const [override, setOverride] = useState(order.aiOverride);
   const [error, setError] = useState('');
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
   const [charPrompts, setCharPrompts] = useState<Record<string, Record<string, string>>>({});
+  const [showPromptPreview, setShowPromptPreview] = useState(false);
 
   // Group generated images by character
   const imagesByChar: Record<string, GeneratedImage[]> = {};
@@ -49,9 +51,18 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   const isShipped    = order.status === 'SHIPPED';
 
   const VARIATION_LABELS: Record<string, string> = {
-    variation_a: 'וריאציה A',
-    variation_b: 'וריאציה B',
+    variation_a: 'וריאציה A — גוף מלא',
+    variation_b: 'וריאציה B — פורטרט קרוב',
   };
+
+  // Generate preview prompt for first character
+  const previewChar = order.characters[0]?.name ?? 'Spider-Man';
+  const previewPrompt = buildPrompt({
+    characterName: previewChar,
+    aiLabel: aiLabel,
+    aiOverride: override,
+    variation: 'variation_a',
+  });
 
   async function post(url: string, body: object) {
     const res = await fetch(url, {
@@ -76,10 +87,10 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     } finally { setLoading(null); }
   }
 
-  async function handleSaveOverride() {
-    setLoading('override'); setError('');
+  async function handleSaveSettings() {
+    setLoading('settings'); setError('');
     try {
-      await post('/api/admin/override', { orderId: order.id, aiOverride: override });
+      await post('/api/admin/override', { orderId: order.id, aiOverride: override, aiLabel: aiLabel });
       router.refresh();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'שגיאה בשמירה');
@@ -141,8 +152,8 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   function getDefaultPrompt(charName: string, variation: PromptVariation): string {
     return buildPrompt({
       characterName: charName,
-      aiLabel: order.aiLabel,
-      aiOverride: order.aiOverride,
+      aiLabel: aiLabel,
+      aiOverride: override,
       variation,
     });
   }
@@ -244,9 +255,9 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Step 1: Train */}
+      {/* ── Step 1: Train ── */}
       <div className="admin-ai-step">
-        <span className="admin-step-label">שלב 1 — אימון LoRA</span>
+        <span className="admin-step-label">שלב 1 — אימון מודל</span>
         <Button
           variant="brand" size="sm"
           disabled={!!loading || isTraining || isSampling || isProcessing || isReady || isShipped}
@@ -262,30 +273,69 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
         </Button>
       </div>
 
-      {/* AI Override */}
+      {/* ── Step 2: Edit Prompt Settings ── */}
       {(isSampling || isProcessing || isReady) && (
-        <div className="admin-ai-step flex-col !items-start gap-2">
-          <span className="admin-step-label">הנחיות AI גלובליות (אופציונלי)</span>
-          <div className="flex gap-2 w-full">
+        <div className="rounded-xl border border-[var(--c-border)] bg-white p-4 flex flex-col gap-4">
+          <h3 className="text-sm font-bold text-[var(--c-brand-text)]">שלב 2 — הגדרות פרומפט</h3>
+
+          {/* aiLabel — editable */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[var(--c-mid)]">תיאור הדמות (aiLabel) — משפיע על כל הפרומפטים</label>
+            <input
+              type="text"
+              value={aiLabel}
+              onChange={(e) => setAiLabel(e.target.value)}
+              placeholder='לדוגמה: "7-year-old boy" או "young looking 30-year-old man"'
+              className="h-9 px-3 text-sm border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)]"
+              dir="ltr"
+            />
+            <p className="text-[10px] text-[var(--c-muted)]">ברירת מחדל אוטומטית: {order.aiLabel} — שנה אם הפנים לא מתאימות לגיל/מראה</p>
+          </div>
+
+          {/* aiOverride — global instructions */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[var(--c-mid)]">הנחיות נוספות (מתווספות לסוף כל פרומפט)</label>
             <input
               type="text"
               value={override}
               onChange={(e) => setOverride(e.target.value)}
-              placeholder='לדוגמה: "keep him bald, he looks 40 years old"'
-              className="flex-1 h-9 px-3 text-sm border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)]"
+              placeholder='לדוגמה: "bald head, thick beard, wearing glasses"'
+              className="h-9 px-3 text-sm border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)]"
               dir="ltr"
             />
-            <Button variant="brand-outline" size="sm" onClick={handleSaveOverride} disabled={loading === 'override'}>
-              {loading === 'override' ? '...' : 'שמור'}
+          </div>
+
+          {/* Save + Preview buttons */}
+          <div className="flex gap-2">
+            <Button variant="brand" size="sm" onClick={handleSaveSettings} disabled={loading === 'settings'}>
+              {loading === 'settings' ? '⏳ שומר...' : '💾 שמור הגדרות'}
+            </Button>
+            <Button variant="brand-outline" size="sm" onClick={() => setShowPromptPreview(!showPromptPreview)}>
+              {showPromptPreview ? 'הסתר תצוגה מקדימה' : '👁 תצוגה מקדימה'}
             </Button>
           </div>
+
+          {/* Prompt Preview */}
+          {showPromptPreview && (
+            <div className="rounded-lg bg-[var(--c-bg)] p-3 border border-[var(--c-border)]">
+              <p className="text-xs font-semibold text-[var(--c-mid)] mb-2">
+                פרומפט לדוגמה — {previewChar} (variation A):
+              </p>
+              <pre className="text-xs font-mono text-[var(--c-dark)] whitespace-pre-wrap leading-relaxed bg-white rounded-lg p-3 border border-[var(--c-border)]" dir="ltr">
+                {previewPrompt}
+              </pre>
+              <p className="text-[10px] text-[var(--c-muted)] mt-2">
+                ⚡ כל דמות מקבלת פרומפט דומה עם סצנה ייחודית. סגנון: אולטרה-ריאליסטי, glow, ניצוצות, פנים אמיתיות, גוף מלא.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
-      {/* Step 2: Samples */}
+      {/* ── Step 3: Samples ── */}
       {isSampling && (
         <div className="admin-ai-step">
-          <span className="admin-step-label">שלב 2 — 5 דגימות (5 דמויות × 2 וריאציות)</span>
+          <span className="admin-step-label">שלב 3 — ג׳נרט 5 דגימות (5 דמויות × 2 וריאציות)</span>
           <Button
             variant="brand" size="sm"
             disabled={!!loading || hasSamples}
@@ -303,10 +353,10 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
         </div>
       )}
 
-      {/* Step 3: Full set */}
+      {/* ── Step 4: Full set ── */}
       {isSampling && hasSamples && (
         <div className="admin-ai-step">
-          <span className="admin-step-label">שלב 3 — סט מלא ({totalChars} דמויות × 2 וריאציות)</span>
+          <span className="admin-step-label">שלב 4 — סט מלא ({totalChars} דמויות × 2 וריאציות)</span>
           <Button
             variant="brand" size="sm"
             disabled={!!loading || hasFullSet}
@@ -324,7 +374,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
             <span className="text-sm font-semibold text-[var(--c-mid)]">
               נבחרו: {selectedCount}/{totalChars} דמויות
             </span>
-            <div className="w-48 h-2 bg-[#e2e8f0] rounded-full overflow-hidden">
+            <div className="w-48 h-2 bg-[var(--c-border)] rounded-full overflow-hidden">
               <div
                 className="h-full bg-[var(--c-brand-mid)] rounded-full transition-all duration-300"
                 style={{ width: `${(selectedCount / totalChars) * 100}%` }}
