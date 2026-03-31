@@ -78,7 +78,10 @@
       "Bash(cp -r c:/Users/Eitan/memoreals-pro/src c:/Users/Eitan/memoreals-pro/backups/version_pre_ui_ux_skill/src)",
       "Bash(cp c:/Users/Eitan/memoreals-pro/src/app/globals.css c:/Users/Eitan/memoreals-pro/backups/version_pre_ui_ux_skill/globals.css)",
       "Bash(cp c:/Users/Eitan/memoreals-pro/src/app/layout.tsx c:/Users/Eitan/memoreals-pro/backups/version_pre_ui_ux_skill/layout.tsx)",
-      "Bash(cp c:/Users/Eitan/memoreals-pro/src/app/page.tsx c:/Users/Eitan/memoreals-pro/backups/version_pre_ui_ux_skill/page.tsx)"
+      "Bash(cp c:/Users/Eitan/memoreals-pro/src/app/page.tsx c:/Users/Eitan/memoreals-pro/backups/version_pre_ui_ux_skill/page.tsx)",
+      "Bash(mkdir -p backups/pre_full_redesign)",
+      "Bash(cp -r src backups/pre_full_redesign/src)",
+      "Bash(find src/app/admin -name \"*.tsx\" -exec sed -i 's/text-\\\\[#2d3748\\\\]/text-[var\\(--c-dark\\)]/g; s/text-\\\\[#4a5568\\\\]/text-[var\\(--c-mid\\)]/g; s/text-\\\\[#718096\\\\]/text-[var\\(--c-muted\\)]/g; s/text-\\\\[#a8a29e\\\\]/text-[var\\(--c-muted\\)]/g; s/text-\\\\[#5b21b6\\\\]/text-[var\\(--c-brand\\)]/g; s/hover:text-\\\\[#4c1d95\\\\]/hover:text-[var\\(--c-brand-text\\)]/g; s/border-\\\\[#e2e8f0\\\\]/border-[var\\(--c-border\\)]/g; s/border-\\\\[#e7e0d5\\\\]/border-[var\\(--c-border\\)]/g; s/bg-\\\\[#f7fafc\\\\]/bg-[var\\(--c-bg\\)]/g; s/bg-\\\\[#667eea\\\\]/bg-[var\\(--c-brand-mid\\)]/g; s/ring-\\\\[#667eea\\\\]/ring-[var\\(--c-brand-mid\\)]/g; s/hover:ring-\\\\[#a0aec0\\\\]/hover:ring-[var\\(--c-border-mid\\)]/g; s/focus:border-\\\\[#667eea\\\\]/focus:border-[var\\(--c-brand-mid\\)]/g' {} +)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

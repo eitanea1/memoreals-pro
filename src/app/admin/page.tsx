@@ -55,7 +55,7 @@ export default async function AdminPage() {
       )}
 
       {orders?.length === 0 && (
-        <div className="rounded-2xl bg-white shadow-sm p-12 text-center text-[#718096]">
+        <div className="rounded-2xl bg-white shadow-sm p-12 text-center text-[var(--c-muted)]">
           אין הזמנות עדיין.
         </div>
       )}
@@ -80,7 +80,7 @@ export default async function AdminPage() {
                 return (
                   <tr key={order.id}>
                     <td>
-                      <span className="font-semibold text-[#2d3748]">{order.subjectName}</span>
+                      <span className="font-semibold text-[var(--c-dark)]">{order.subjectName}</span>
                       <span className="admin-sub block">{order.characters.length} דמויות</span>
                     </td>
                     <td>
@@ -107,7 +107,7 @@ export default async function AdminPage() {
                       )}
                     </td>
                     <td>
-                      <span className="font-semibold text-[#5b21b6]">
+                      <span className="font-semibold text-[var(--c-brand)]">
                         {order.generatedImages.length}/{order.characters.length}
                       </span>
                     </td>
@@ -120,7 +120,7 @@ export default async function AdminPage() {
                     <td>
                       <Link
                         href={`/admin/orders/${order.id}`}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[#5b21b6] text-white hover:bg-[#4c1d95] transition-colors whitespace-nowrap"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg bg-[var(--c-brand)] text-white hover:bg-[var(--c-brand-text)] transition-colors whitespace-nowrap"
                       >
                         פתח →
                       </Link>

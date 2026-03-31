@@ -50,7 +50,7 @@ export default function OrderDetailTabs({ order }: { order: SerializedOrder }) {
       {/* Back link */}
       <Link
         href="/admin"
-        className="inline-flex items-center gap-1 text-sm text-[#5b21b6] hover:text-[#4c1d95] font-medium w-fit"
+        className="inline-flex items-center gap-1 text-sm text-[var(--c-brand)] hover:text-[var(--c-brand-text)] font-medium w-fit"
       >
         ← חזרה לרשימה
       </Link>
@@ -64,7 +64,7 @@ export default function OrderDetailTabs({ order }: { order: SerializedOrder }) {
         {order.trainingFailed && (
           <Badge className="bg-red-100 text-red-700 border-0">⚠ אימון נכשל</Badge>
         )}
-        <span className="text-sm text-[#718096]">
+        <span className="text-sm text-[var(--c-muted)]">
           גיל {order.subjectAge} · {GENDER_HEBREW[order.subjectGender]}
         </span>
       </div>

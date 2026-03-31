@@ -107,7 +107,7 @@ export default function HomePage() {
           </div>
           <div className="trust-item">
             <span className="material-symbols-outlined">favorite</span>
-            <span>בעבודת יד</span>
+            <span>בהתאמה אישית</span>
           </div>
         </div>
       </section>

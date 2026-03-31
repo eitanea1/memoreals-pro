@@ -40,7 +40,7 @@ export default function DetailsTab({
       {/* Uploaded photos */}
       {order.uploads.length > 0 && (
         <div>
-          <p className="text-sm font-semibold text-[#718096] mb-2">
+          <p className="text-sm font-semibold text-[var(--c-muted)] mb-2">
             תמונות שהועלו ({order.uploads.length})
           </p>
           <div className="flex flex-wrap gap-2">
@@ -50,7 +50,7 @@ export default function DetailsTab({
                 <img
                   src={u.storageUrl}
                   alt={u.originalName}
-                  className="w-20 h-20 object-cover rounded-xl border border-[#e7e0d5] hover:scale-105 transition-transform"
+                  className="w-20 h-20 object-cover rounded-xl border border-[var(--c-border)] hover:scale-105 transition-transform"
                 />
               </a>
             ))}
@@ -60,7 +60,7 @@ export default function DetailsTab({
 
       {/* Characters list */}
       <div>
-        <p className="text-sm font-semibold text-[#718096] mb-2">
+        <p className="text-sm font-semibold text-[var(--c-muted)] mb-2">
           דמויות ({order.characters.length})
         </p>
         <div className="flex flex-wrap gap-2">
@@ -73,7 +73,7 @@ export default function DetailsTab({
       </div>
 
       {/* Delete */}
-      <div className="pt-2 border-t border-[#e7e0d5]">
+      <div className="pt-2 border-t border-[var(--c-border)]">
         <AdminDeleteOrder orderId={order.id} onSuccess={onDelete} />
       </div>
     </div>
@@ -91,8 +91,8 @@ function InfoField({
 }) {
   return (
     <div>
-      <p className="text-xs font-semibold text-[#a8a29e] uppercase tracking-wide mb-0.5">{label}</p>
-      <p className={`text-sm text-[#2d3748] ${mono ? 'font-mono text-xs break-all' : 'font-medium'}`}>
+      <p className="text-xs font-semibold text-[var(--c-muted)] uppercase tracking-wide mb-0.5">{label}</p>
+      <p className={`text-sm text-[var(--c-dark)] ${mono ? 'font-mono text-xs break-all' : 'font-medium'}`}>
         {value}
       </p>
     </div>

@@ -167,9 +167,9 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean) {
     const imgs = imagesByChar[char.name] ?? [];
     return (
-      <div key={char.name} className="mb-6 border border-[#e2e8f0] rounded-xl p-3">
+      <div key={char.name} className="mb-6 border border-[var(--c-border)] rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm font-semibold text-[#4a5568]">
+          <p className="text-sm font-semibold text-[var(--c-mid)]">
             {char.displayName}
             {selectedCharacters.has(char.name) && <span className="text-green-600 mr-2">✓ נבחרה</span>}
           </p>
@@ -199,14 +199,14 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
                   alt={img.characterName}
                   className={`admin-gen-thumb cursor-pointer transition-all ${
                     img.isSelected
-                      ? 'ring-3 ring-[#667eea] shadow-lg scale-105'
-                      : 'hover:ring-2 hover:ring-[#a0aec0]'
+                      ? 'ring-3 ring-[var(--c-brand-mid)] shadow-lg scale-105'
+                      : 'hover:ring-2 hover:ring-[var(--c-border-mid)]'
                   }`}
                   onClick={() => handleSelectImage(img.id)}
                   onDoubleClick={(e) => { e.stopPropagation(); setLightboxUrl(img.imageUrl); }}
                 />
                 {img.isSelected && (
-                  <span className="absolute top-1 right-1 bg-[#667eea] text-white text-xs rounded-full px-1.5 py-0.5">✓</span>
+                  <span className="absolute top-1 right-1 bg-[var(--c-brand-mid)] text-white text-xs rounded-full px-1.5 py-0.5">✓</span>
                 )}
                 <span className="absolute bottom-1 left-1 bg-black/60 text-white text-[10px] rounded px-1">
                   {img.variation}
@@ -224,14 +224,14 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
         )}
 
         {expandedChar === char.name && (
-          <div className="flex flex-col gap-2 mt-3 p-3 bg-[#f7fafc] rounded-lg">
+          <div className="flex flex-col gap-2 mt-3 p-3 bg-[var(--c-bg)] rounded-lg">
             {VARIATIONS.map((v) => (
               <div key={v} className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-[#718096]">{VARIATION_LABELS[v] ?? v}</label>
+                <label className="text-xs font-semibold text-[var(--c-muted)]">{VARIATION_LABELS[v] ?? v}</label>
                 <textarea
                   value={charPrompts[char.name]?.[v] ?? ''}
                   onChange={(e) => updateCharPrompt(char.name, v, e.target.value)}
-                  className="w-full h-20 px-2 py-1 text-xs border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#667eea] font-mono"
+                  className="w-full h-20 px-2 py-1 text-xs border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)] font-mono"
                   dir="ltr"
                 />
               </div>
@@ -272,7 +272,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
               value={override}
               onChange={(e) => setOverride(e.target.value)}
               placeholder='לדוגמה: "keep him bald, he looks 40 years old"'
-              className="flex-1 h-9 px-3 text-sm border border-[#e2e8f0] rounded-lg focus:outline-none focus:border-[#667eea]"
+              className="flex-1 h-9 px-3 text-sm border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)]"
               dir="ltr"
             />
             <Button variant="brand-outline" size="sm" onClick={handleSaveOverride} disabled={loading === 'override'}>
@@ -298,7 +298,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
 
       {isSampling && hasSamples && (
         <div className="flex flex-col gap-2">
-          <p className="text-sm text-[#718096]">בחר תמונה מועדפת לכל דמות (לבדיקת איכות):</p>
+          <p className="text-sm text-[var(--c-muted)]">בחר תמונה מועדפת לכל דמות (לבדיקת איכות):</p>
           {sampleChars.map((char) => renderCharacterImages(char, true))}
         </div>
       )}
@@ -320,18 +320,18 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
       {/* Full set results */}
       {(isProcessing || isReady) && (
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-between bg-[#f7fafc] rounded-xl p-3">
-            <span className="text-sm font-semibold text-[#4a5568]">
+          <div className="flex items-center justify-between bg-[var(--c-bg)] rounded-xl p-3">
+            <span className="text-sm font-semibold text-[var(--c-mid)]">
               נבחרו: {selectedCount}/{totalChars} דמויות
             </span>
             <div className="w-48 h-2 bg-[#e2e8f0] rounded-full overflow-hidden">
               <div
-                className="h-full bg-[#667eea] rounded-full transition-all duration-300"
+                className="h-full bg-[var(--c-brand-mid)] rounded-full transition-all duration-300"
                 style={{ width: `${(selectedCount / totalChars) * 100}%` }}
               />
             </div>
           </div>
-          <p className="text-sm text-[#718096]">בחר תמונה מנצחת לכל דמות:</p>
+          <p className="text-sm text-[var(--c-muted)]">בחר תמונה מנצחת לכל דמות:</p>
           {order.characters.map((char) => renderCharacterImages(char, true))}
         </div>
       )}

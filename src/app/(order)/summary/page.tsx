@@ -73,7 +73,7 @@ export default function SummaryPage() {
       {/* Personal details */}
       <Card className="bg-white border-0 shadow-sm rounded-2xl ring-0">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-bold text-right text-[#2d3748]">פרטי המשתתף/ת</CardTitle>
+          <CardTitle className="text-base font-bold text-right text-[var(--c-dark)]">פרטי המשתתף/ת</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="personal-details-summary">
@@ -96,7 +96,7 @@ export default function SummaryPage() {
       {/* Characters */}
       <Card className="bg-white border-0 shadow-sm rounded-2xl ring-0">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-bold text-right text-[#2d3748]">
+          <CardTitle className="text-base font-bold text-right text-[var(--c-dark)]">
             דמויות שנבחרו ({state.selectedCharacters.length})
           </CardTitle>
         </CardHeader>
@@ -107,7 +107,7 @@ export default function SummaryPage() {
                 <h4 className="summary-cat-title">{CATEGORY_HEBREW[cat]}</h4>
                 <div className="flex flex-wrap gap-2">
                   {grouped[cat].map((c) => (
-                    <Badge key={c.id} variant="secondary" className="bg-[#ebf4ff] text-[#434190] hover:bg-[#ebf4ff] text-sm px-3 py-1">
+                    <Badge key={c.id} variant="secondary" className="bg-[var(--c-brand-light)] text-[var(--c-brand-text)] hover:bg-[var(--c-brand-light)] text-sm px-3 py-1">
                       {c.displayName}
                     </Badge>
                   ))}
@@ -121,7 +121,7 @@ export default function SummaryPage() {
       {/* Photos */}
       <Card className="bg-white border-0 shadow-sm rounded-2xl ring-0">
         <CardHeader className="pb-2">
-          <CardTitle className="text-base font-bold text-right text-[#2d3748]">
+          <CardTitle className="text-base font-bold text-right text-[var(--c-dark)]">
             תמונות ({validPhotos.length})
           </CardTitle>
         </CardHeader>
