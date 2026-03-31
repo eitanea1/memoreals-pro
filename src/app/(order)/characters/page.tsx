@@ -7,6 +7,8 @@ import { useApp } from '@/context/AppContext';
 import {
   BOYS_HEROES, BOYS_ANIME, BOYS_ADVENTURES, BOYS_PREMIUM,
   GIRLS_HEROES, GIRLS_ANIME, GIRLS_ADVENTURES, GIRLS_PREMIUM,
+  MEN_HEROES, MEN_ADVENTURES, MEN_PROFESSIONS,
+  WOMEN_HEROES, WOMEN_ADVENTURES, WOMEN_PROFESSIONS,
 } from '@/lib/data/characters';
 import CategoryList from '@/components/character/CategoryList';
 import StepIndicator from '@/components/shared/StepIndicator';
@@ -30,10 +32,13 @@ export default function CharacterSelectPage() {
   const [filter, setFilter] = useState<CategoryFilter>('all');
 
   const isBoy = state.subjectGender.toLowerCase() !== 'female';
-  const heroes = isBoy ? BOYS_HEROES : GIRLS_HEROES;
-  const anime = isBoy ? BOYS_ANIME : GIRLS_ANIME;
-  const adventures = isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES;
-  const premium = isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM;
+  const age = parseInt(state.subjectAge, 10) || 0;
+  const isAdult = age >= 13;
+
+  const heroes = isAdult ? (isBoy ? MEN_HEROES : WOMEN_HEROES) : (isBoy ? BOYS_HEROES : GIRLS_HEROES);
+  const anime = isAdult ? [] : (isBoy ? BOYS_ANIME : GIRLS_ANIME);
+  const adventures = isAdult ? (isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES) : (isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES);
+  const premium = isAdult ? (isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS) : (isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM);
 
   const [customInputs, setCustomInputs] = useState<string[]>(() => {
     const existing = state.selectedCharacters

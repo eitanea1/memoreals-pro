@@ -110,6 +110,121 @@ export const GIRLS_PREMIUM: Character[] = [
   { id: 'gp-20', name: 'Ninja Girl',           displayName: 'נינג\'ה',          category: 'premium', thumbnail: '/characters/girls/ninja.jpg' },
 ];
 
+// ── MEN (Adults) ─────────────────────────────────────────────────────────────
+
+export const MEN_HEROES: Character[] = [
+  { id: 'mh-01', name: 'Spider-Man',       displayName: 'ספיידרמן',        category: 'superheroes', thumbnail: '/characters/men/spider-man.jpg' },
+  { id: 'mh-02', name: 'Iron Man',         displayName: 'איירון מן',       category: 'superheroes', thumbnail: '/characters/men/iron-man.jpg' },
+  { id: 'mh-03', name: 'Batman',           displayName: 'באטמן',           category: 'superheroes', thumbnail: '/characters/men/batman.jpg' },
+  { id: 'mh-04', name: 'Superman',         displayName: 'סופרמן',          category: 'superheroes', thumbnail: '/characters/men/superman.jpg' },
+  { id: 'mh-05', name: 'Thor',             displayName: 'ת\'ור',           category: 'superheroes', thumbnail: '/characters/men/thor.jpg' },
+  { id: 'mh-06', name: 'Captain America',  displayName: 'קפטן אמריקה',     category: 'superheroes', thumbnail: '/characters/men/captain-america.jpg' },
+  { id: 'mh-07', name: 'Hulk',             displayName: 'הענק הירוק',      category: 'superheroes', thumbnail: '/characters/men/hulk.jpg' },
+  { id: 'mh-08', name: 'The Flash',        displayName: 'הפלאש',           category: 'superheroes', thumbnail: '/characters/men/the-flash.jpg' },
+  { id: 'mh-09', name: 'Aquaman',          displayName: 'אקוומן',          category: 'superheroes', thumbnail: '/characters/men/aquaman.jpg' },
+];
+
+export const MEN_ADVENTURES: Character[] = [
+  { id: 'ma-01', name: 'Jack Sparrow',     displayName: 'ג\'ק ספארו',       category: 'adventures', thumbnail: '/characters/men/jack-sparrow.jpg' },
+  { id: 'ma-02', name: 'Indiana Jones',    displayName: 'אינדיאנה ג\'ונס', category: 'adventures', thumbnail: '/characters/men/indiana-jones.jpg' },
+  { id: 'ma-03', name: 'Robin Hood',       displayName: 'רובין הוד',        category: 'adventures', thumbnail: '/characters/men/robin-hood.jpg' },
+  { id: 'ma-04', name: 'James Bond',       displayName: 'ג\'יימס בונד',    category: 'adventures', thumbnail: '/characters/men/james-bond.jpg' },
+  { id: 'ma-05', name: 'Drunk Pirate',     displayName: 'פיראט שיכור',      category: 'adventures', thumbnail: '/characters/men/drunk-pirate.jpg' },
+];
+
+export const MEN_PROFESSIONS: Character[] = [
+  { id: 'mp-01', name: 'Chef',              displayName: 'שף',              category: 'premium', thumbnail: '/characters/men/chef.jpg' },
+  { id: 'mp-02', name: 'Doctor',            displayName: 'רופא',            category: 'premium', thumbnail: '/characters/men/doctor.jpg' },
+  { id: 'mp-03', name: 'Pilot',             displayName: 'טייס',            category: 'premium', thumbnail: '/characters/men/pilot.jpg' },
+  { id: 'mp-04', name: 'Firefighter',       displayName: 'כבאי',            category: 'premium', thumbnail: '/characters/men/firefighter.jpg' },
+  { id: 'mp-05', name: 'Police Officer',    displayName: 'שוטר',            category: 'premium', thumbnail: '/characters/men/police-officer.jpg' },
+  { id: 'mp-06', name: 'Lawyer',            displayName: 'עורך דין',        category: 'premium', thumbnail: '/characters/men/lawyer.jpg' },
+  { id: 'mp-07', name: 'Professor',         displayName: 'פרופסור',         category: 'premium', thumbnail: '/characters/men/professor.jpg' },
+  { id: 'mp-08', name: 'DJ',                displayName: 'DJ',              category: 'premium', thumbnail: '/characters/men/dj.jpg' },
+  { id: 'mp-09', name: 'Bartender',         displayName: 'ברמן',            category: 'premium', thumbnail: '/characters/men/bartender.jpg' },
+  { id: 'mp-10', name: 'Barber',            displayName: 'ספר',             category: 'premium', thumbnail: '/characters/men/barber.jpg' },
+  { id: 'mp-11', name: 'Photographer',      displayName: 'צלם',             category: 'premium', thumbnail: '/characters/men/photographer.jpg' },
+  { id: 'mp-12', name: 'Jazz Musician',     displayName: 'מוזיקאי ג\'אז',  category: 'premium', thumbnail: '/characters/men/jazz-musician.jpg' },
+  { id: 'mp-13', name: 'Architect',         displayName: 'אדריכל',          category: 'premium', thumbnail: '/characters/men/architect.jpg' },
+  { id: 'mp-14', name: 'Archaeologist',     displayName: 'ארכיאולוג',       category: 'premium', thumbnail: '/characters/men/archaeologist.jpg' },
+  { id: 'mp-15', name: 'Winemaker',         displayName: 'יינן',            category: 'premium', thumbnail: '/characters/men/winemaker.jpg' },
+  { id: 'mp-16', name: 'Fitness Trainer',   displayName: 'מאמן כושר',       category: 'premium', thumbnail: '/characters/men/fitness-trainer.jpg' },
+  { id: 'mp-17', name: 'Golf Pro',          displayName: 'שחקן גולף',       category: 'premium', thumbnail: '/characters/men/golf-pro.jpg' },
+  { id: 'mp-18', name: 'Yacht Captain',     displayName: 'קברניט יאכטה',    category: 'premium', thumbnail: '/characters/men/yacht-captain.jpg' },
+  { id: 'mp-19', name: 'Mountain Climber',  displayName: 'מטפס הרים',       category: 'premium', thumbnail: '/characters/men/mountain-climber.jpg' },
+  { id: 'mp-20', name: 'SWAT Operator',     displayName: 'לוחם יח"מ',       category: 'premium', thumbnail: '/characters/men/swat.jpg' },
+  { id: 'mp-21', name: 'Boxer',             displayName: 'מתאגרף',          category: 'premium', thumbnail: '/characters/men/boxer.jpg' },
+  { id: 'mp-22', name: 'Secret Agent',      displayName: 'סוכן חשאי',       category: 'premium', thumbnail: '/characters/men/secret-agent.jpg' },
+  { id: 'mp-23', name: 'Race Driver',       displayName: 'נהג מירוצים',     category: 'premium', thumbnail: '/characters/men/race-driver.jpg' },
+  { id: 'mp-24', name: 'Football Star',     displayName: 'כוכב כדורגל',     category: 'premium', thumbnail: '/characters/men/football-star.jpg' },
+  { id: 'mp-25', name: 'Motorcycle Rider',  displayName: 'רוכב אופנוע',     category: 'premium', thumbnail: '/characters/men/motorcycle-rider.jpg' },
+  { id: 'mp-26', name: 'Surfer',            displayName: 'גולש גלים',       category: 'premium', thumbnail: '/characters/men/surfer.jpg' },
+  { id: 'mp-27', name: 'Cowboy Mustache',   displayName: 'קאובוי עם שפם',   category: 'premium', thumbnail: '/characters/men/cowboy-mustache.jpg' },
+  { id: 'mp-28', name: 'Gladiator',         displayName: 'גלדיאטור',        category: 'premium', thumbnail: '/characters/men/gladiator.jpg' },
+  { id: 'mp-29', name: 'Samurai',           displayName: 'סמוראי',          category: 'premium', thumbnail: '/characters/men/samurai.jpg' },
+  { id: 'mp-30', name: 'Viking',            displayName: 'ויקינג',          category: 'premium', thumbnail: '/characters/men/viking.jpg' },
+  { id: 'mp-31', name: 'Kung Fu Master',    displayName: 'מאסטר קונג פו',   category: 'premium', thumbnail: '/characters/men/kung-fu-master.jpg' },
+  { id: 'mp-32', name: 'Sumo Wrestler',     displayName: 'מתאבק סומו',      category: 'premium', thumbnail: '/characters/men/sumo-wrestler.jpg' },
+  { id: 'mp-33', name: 'Male Ballerina',    displayName: 'רקדן בלט',        category: 'premium', thumbnail: '/characters/men/male-ballerina.jpg' },
+];
+
+// ── WOMEN (Adults) ───────────────────────────────────────────────────────────
+
+export const WOMEN_HEROES: Character[] = [
+  { id: 'wh-01', name: 'Wonder Woman',     displayName: 'וונדר וומן',      category: 'superheroes', thumbnail: '/characters/women/wonder-woman.jpg' },
+  { id: 'wh-02', name: 'Captain Marvel',   displayName: 'קפטן מארוול',     category: 'superheroes', thumbnail: '/characters/women/captain-marvel.jpg' },
+  { id: 'wh-03', name: 'Black Widow',      displayName: 'האלמנה השחורה',   category: 'superheroes', thumbnail: '/characters/women/black-widow.jpg' },
+  { id: 'wh-04', name: 'Batgirl',          displayName: 'באטגירל',         category: 'superheroes', thumbnail: '/characters/women/batgirl.jpg' },
+  { id: 'wh-05', name: 'Storm',            displayName: 'סטורם',           category: 'superheroes', thumbnail: '/characters/women/storm.jpg' },
+  { id: 'wh-06', name: 'Supergirl',        displayName: 'סופרגירל',        category: 'superheroes', thumbnail: '/characters/women/supergirl.jpg' },
+  { id: 'wh-07', name: 'Scarlet Witch',    displayName: 'המכשפה האדומה',   category: 'superheroes', thumbnail: '/characters/women/scarlet-witch.jpg' },
+  { id: 'wh-08', name: 'Valkyrie',         displayName: 'ולקירי',          category: 'superheroes', thumbnail: '/characters/women/valkyrie.jpg' },
+];
+
+export const WOMEN_ADVENTURES: Character[] = [
+  { id: 'wa-01', name: 'Lara Croft',       displayName: 'לארה קרופט',      category: 'adventures', thumbnail: '/characters/women/lara-croft.jpg' },
+  { id: 'wa-02', name: 'Robin Hood',       displayName: 'רובין הוד',       category: 'adventures', thumbnail: '/characters/women/robin-hood.jpg' },
+  { id: 'wa-03', name: 'Spy',              displayName: 'מרגלת',           category: 'adventures', thumbnail: '/characters/women/spy.jpg' },
+  { id: 'wa-04', name: 'Pirate Captain',   displayName: 'קפטנית פיראטים', category: 'adventures', thumbnail: '/characters/women/pirate-captain.jpg' },
+  { id: 'wa-05', name: 'Drunk Pirate',     displayName: 'פיראטית שיכורה', category: 'adventures', thumbnail: '/characters/women/drunk-pirate.jpg' },
+];
+
+export const WOMEN_PROFESSIONS: Character[] = [
+  { id: 'wp-01', name: 'Chef',              displayName: 'שפית',            category: 'premium', thumbnail: '/characters/women/chef.jpg' },
+  { id: 'wp-02', name: 'Doctor',            displayName: 'רופאה',           category: 'premium', thumbnail: '/characters/women/doctor.jpg' },
+  { id: 'wp-03', name: 'Pilot',             displayName: 'טייסת',           category: 'premium', thumbnail: '/characters/women/pilot.jpg' },
+  { id: 'wp-04', name: 'Firefighter',       displayName: 'כבאית',           category: 'premium', thumbnail: '/characters/women/firefighter.jpg' },
+  { id: 'wp-05', name: 'Police Officer',    displayName: 'שוטרת',           category: 'premium', thumbnail: '/characters/women/police-officer.jpg' },
+  { id: 'wp-06', name: 'Lawyer',            displayName: 'עורכת דין',       category: 'premium', thumbnail: '/characters/women/lawyer.jpg' },
+  { id: 'wp-07', name: 'Professor',         displayName: 'פרופסורית',       category: 'premium', thumbnail: '/characters/women/professor.jpg' },
+  { id: 'wp-08', name: 'DJ',                displayName: 'DJ',              category: 'premium', thumbnail: '/characters/women/dj.jpg' },
+  { id: 'wp-09', name: 'Bartender',         displayName: 'ברמנית',          category: 'premium', thumbnail: '/characters/women/bartender.jpg' },
+  { id: 'wp-10', name: 'Barber',            displayName: 'ספרית',           category: 'premium', thumbnail: '/characters/women/barber.jpg' },
+  { id: 'wp-11', name: 'Photographer',      displayName: 'צלמת',            category: 'premium', thumbnail: '/characters/women/photographer.jpg' },
+  { id: 'wp-12', name: 'Jazz Musician',     displayName: 'מוזיקאית ג\'אז', category: 'premium', thumbnail: '/characters/women/jazz-musician.jpg' },
+  { id: 'wp-13', name: 'Architect',         displayName: 'אדריכלית',        category: 'premium', thumbnail: '/characters/women/architect.jpg' },
+  { id: 'wp-14', name: 'Archaeologist',     displayName: 'ארכיאולוגית',     category: 'premium', thumbnail: '/characters/women/archaeologist.jpg' },
+  { id: 'wp-15', name: 'Winemaker',         displayName: 'יננית',           category: 'premium', thumbnail: '/characters/women/winemaker.jpg' },
+  { id: 'wp-16', name: 'Fitness Trainer',   displayName: 'מאמנת כושר',      category: 'premium', thumbnail: '/characters/women/fitness-trainer.jpg' },
+  { id: 'wp-17', name: 'Golf Pro',          displayName: 'שחקנית גולף',     category: 'premium', thumbnail: '/characters/women/golf-pro.jpg' },
+  { id: 'wp-18', name: 'Yacht Captain',     displayName: 'קברניטת יאכטה',   category: 'premium', thumbnail: '/characters/women/yacht-captain.jpg' },
+  { id: 'wp-19', name: 'Mountain Climber',  displayName: 'מטפסת הרים',      category: 'premium', thumbnail: '/characters/women/mountain-climber.jpg' },
+  { id: 'wp-20', name: 'SWAT Operator',     displayName: 'לוחמת יח"מ',      category: 'premium', thumbnail: '/characters/women/swat.jpg' },
+  { id: 'wp-21', name: 'Boxer',             displayName: 'מתאגרפת',         category: 'premium', thumbnail: '/characters/women/boxer.jpg' },
+  { id: 'wp-22', name: 'Secret Agent',      displayName: 'סוכנת חשאית',     category: 'premium', thumbnail: '/characters/women/secret-agent.jpg' },
+  { id: 'wp-23', name: 'Race Driver',       displayName: 'נהגת מירוצים',    category: 'premium', thumbnail: '/characters/women/race-driver.jpg' },
+  { id: 'wp-24', name: 'Football Star',     displayName: 'כוכבת כדורגל',    category: 'premium', thumbnail: '/characters/women/football-star.jpg' },
+  { id: 'wp-25', name: 'Motorcycle Rider',  displayName: 'רוכבת אופנוע',    category: 'premium', thumbnail: '/characters/women/motorcycle-rider.jpg' },
+  { id: 'wp-26', name: 'Surfer',            displayName: 'גולשת גלים',      category: 'premium', thumbnail: '/characters/women/surfer.jpg' },
+  { id: 'wp-27', name: 'Cowgirl Mustache',  displayName: 'קאובויית עם שפם', category: 'premium', thumbnail: '/characters/women/cowgirl-mustache.jpg' },
+  { id: 'wp-28', name: 'Gladiator',         displayName: 'גלדיאטורית',      category: 'premium', thumbnail: '/characters/women/gladiator.jpg' },
+  { id: 'wp-29', name: 'Samurai',           displayName: 'סמוראית',         category: 'premium', thumbnail: '/characters/women/samurai.jpg' },
+  { id: 'wp-30', name: 'Viking',            displayName: 'ויקינגית',        category: 'premium', thumbnail: '/characters/women/viking.jpg' },
+  { id: 'wp-31', name: 'Kung Fu Master',    displayName: 'מאסטרית קונג פו', category: 'premium', thumbnail: '/characters/women/kung-fu-master.jpg' },
+  { id: 'wp-32', name: 'Sumo Wrestler',     displayName: 'מתאבקת סומו',     category: 'premium', thumbnail: '/characters/women/sumo-wrestler.jpg' },
+  { id: 'wp-33', name: 'Funny Ballerina',   displayName: 'בלרינה מצחיקה',   category: 'premium', thumbnail: '/characters/women/ballerina-funny.jpg' },
+];
+
 // ── Legacy exports (backward compat) ──
 export const SUPERHEROES = BOYS_HEROES;
 export const PROFESSIONS = BOYS_PREMIUM;
