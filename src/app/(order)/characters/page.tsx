@@ -77,8 +77,19 @@ export default function CharacterSelectPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4">
         <StepIndicator current={1} />
 
+        {/* ── Back button ── */}
+        <div className="flex justify-start mt-2 mb-4">
+          <button
+            onClick={() => router.push('/details')}
+            className="inline-flex items-center gap-1 text-sm font-bold text-[var(--c-brand)] hover:text-[var(--c-brand-text)] transition-colors"
+          >
+            <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_forward</span>
+            חזרה לפרטים
+          </button>
+        </div>
+
         {/* ── Header ──────────────────────────────────────────────────────── */}
-        <div className="text-center mb-10 mt-6">
+        <div className="text-center mb-10">
           <h1 className="text-3xl md:text-5xl font-extrabold text-[var(--c-brand-text)] mb-3 tracking-tight">
             בחרו 20 דמויות קסומות
           </h1>
@@ -237,12 +248,6 @@ export default function CharacterSelectPage() {
 
           {/* Buttons */}
           <div className="flex gap-3">
-            <button
-              onClick={() => router.push('/details')}
-              className="px-5 py-3 rounded-full text-sm font-bold text-[var(--c-brand)] border border-[var(--c-brand)] hover:bg-[var(--c-brand-light)] transition-all"
-            >
-              חזור
-            </button>
             <button
               onClick={() => router.push('/upload')}
               disabled={!isComplete}
