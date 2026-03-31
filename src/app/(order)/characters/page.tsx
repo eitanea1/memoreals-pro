@@ -32,13 +32,11 @@ export default function CharacterSelectPage() {
   const [filter, setFilter] = useState<CategoryFilter>('all');
 
   const isBoy = state.subjectGender.toLowerCase() !== 'female';
-  const age = parseInt(state.subjectAge, 10) || 0;
-  const isAdult = age >= 13;
 
-  const heroes = isAdult ? (isBoy ? MEN_HEROES : WOMEN_HEROES) : (isBoy ? BOYS_HEROES : GIRLS_HEROES);
-  const anime = isAdult ? [] : (isBoy ? BOYS_ANIME : GIRLS_ANIME);
-  const adventures = isAdult ? (isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES) : (isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES);
-  const premium = isAdult ? (isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS) : (isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM);
+  const heroes = [...(isBoy ? BOYS_HEROES : GIRLS_HEROES), ...(isBoy ? MEN_HEROES : WOMEN_HEROES)];
+  const anime = isBoy ? BOYS_ANIME : GIRLS_ANIME;
+  const adventures = [...(isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES), ...(isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES)];
+  const premium = [...(isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM), ...(isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS)];
 
   const [customInputs, setCustomInputs] = useState<string[]>(() => {
     const existing = state.selectedCharacters
