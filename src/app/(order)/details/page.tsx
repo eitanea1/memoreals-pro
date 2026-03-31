@@ -12,23 +12,28 @@ const STEPS = [
   { icon: 'add_a_photo', label: 'העלאת תמונות' },
 ];
 
+type GenderOption = 'Male' | 'Female';
+type AgeGroup = 'child' | 'adult';
+
 export default function PersonalDetailsPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
 
   const [name, setName] = useState(state.subjectName);
   const [age, setAge] = useState(state.subjectAge);
-  const [gender, setGender] = useState(state.subjectGender);
+  const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
+  const [ageGroup, setAgeGroup] = useState<AgeGroup | ''>('');
   const [email, setEmail] = useState(state.customerEmail);
-  const [phone, setPhone] = useState(state.customerPhone);
   const [nameTouched, setNameTouched] = useState(false);
 
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
   const nameError = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
-  const canProceed = nameIsValid && age.trim().length > 0 && gender.length > 0 && email.trim().length > 0;
+  const ageNum = parseInt(age, 10);
+  const ageIsValid = age.trim().length > 0 && ageNum >= 1 && ageNum <= 120;
+  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && ageGroup.length > 0 && email.trim().length > 0;
 
   function handleNext() {
-    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: phone.trim() });
+    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: '' });
     router.push('/characters');
   }
 
@@ -60,7 +65,7 @@ export default function PersonalDetailsPage() {
 
             {/* Name */}
             <div className="field-group">
-              <label className="field-label" htmlFor="child-name">שם הילד/ה (באנגלית)</label>
+              <label className="field-label" htmlFor="child-name">שם (באנגלית)</label>
               <input
                 id="child-name"
                 type="text"
@@ -79,7 +84,7 @@ export default function PersonalDetailsPage() {
 
             {/* Gender */}
             <div className="field-group">
-              <span className="field-label">מגדר הגיבור/ה</span>
+              <span className="field-label">מגדר</span>
               <div className="gender-grid">
                 <label className="gender-card-label">
                   <input type="radio" name="gender" className="sr-only" checked={gender === 'Male'} onChange={() => setGender('Male')} />
@@ -98,9 +103,32 @@ export default function PersonalDetailsPage() {
               </div>
             </div>
 
+            {/* Age Group (sub-category) */}
+            {gender && (
+              <div className="field-group">
+                <span className="field-label">קבוצת גיל</span>
+                <div className="gender-grid">
+                  <label className="gender-card-label">
+                    <input type="radio" name="ageGroup" className="sr-only" checked={ageGroup === 'child'} onChange={() => setAgeGroup('child')} />
+                    <div className={`gender-card ${ageGroup === 'child' ? 'selected' : ''}`}>
+                      <span className="material-symbols-outlined gender-icon">child_care</span>
+                      <span className="gender-text">{gender === 'Male' ? 'ילד' : 'ילדה'}</span>
+                    </div>
+                  </label>
+                  <label className="gender-card-label">
+                    <input type="radio" name="ageGroup" className="sr-only" checked={ageGroup === 'adult'} onChange={() => setAgeGroup('adult')} />
+                    <div className={`gender-card ${ageGroup === 'adult' ? 'selected' : ''}`}>
+                      <span className="material-symbols-outlined gender-icon">person</span>
+                      <span className="gender-text">{gender === 'Male' ? 'איש' : 'אישה'}</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            )}
+
             {/* Age */}
             <div className="field-group field-short">
-              <label className="field-label" htmlFor="child-age">גיל הילד/ה</label>
+              <label className="field-label" htmlFor="child-age">גיל</label>
               <input
                 id="child-age"
                 type="number"
@@ -133,22 +161,6 @@ export default function PersonalDetailsPage() {
               />
             </div>
 
-            {/* Phone */}
-            <div className="field-group">
-              <label className="field-label" htmlFor="customer-phone">
-                טלפון <span className="optional">(אופציונלי)</span>
-              </label>
-              <input
-                id="customer-phone"
-                type="tel"
-                className="field-input"
-                placeholder="05X-XXXXXXX"
-                value={phone}
-                dir="ltr"
-                onChange={(e) => setPhone(e.target.value)}
-              />
-            </div>
-
             {/* CTA */}
             <div className="details-cta-wrap">
               <button
@@ -161,7 +173,7 @@ export default function PersonalDetailsPage() {
                 <span className="material-symbols-outlined cta-arrow">arrow_back</span>
               </button>
               {!canProceed && (
-                <p className="details-hint">יש למלא שם, גיל, מין ואימייל כדי להמשיך</p>
+                <p className="details-hint">יש למלא שם, מגדר, קבוצת גיל, גיל ואימייל כדי להמשיך</p>
               )}
             </div>
           </form>
@@ -177,7 +189,7 @@ export default function PersonalDetailsPage() {
             <div className="details-hero-overlay" />
           </div>
           <div className="details-floating-quote">
-            <p>&ldquo;כל ילד הוא גיבור בסיפור משלו&rdquo;</p>
+            <p>&ldquo;כל אחד הוא גיבור בסיפור משלו&rdquo;</p>
           </div>
         </div>
 
