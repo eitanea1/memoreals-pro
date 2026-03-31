@@ -79,22 +79,22 @@ export default function PersonalDetailsPage() {
               )}
             </div>
 
-            {/* Gender */}
+            {/* Character Style */}
             <div className="field-group">
-              <span className="field-label">מגדר</span>
+              <span className="field-label">סגנון דמויות</span>
               <div className="gender-grid">
                 <label className="gender-card-label">
                   <input type="radio" name="gender" className="sr-only" checked={gender === 'Male'} onChange={() => setGender('Male')} />
                   <div className={`gender-card ${gender === 'Male' ? 'selected' : ''}`}>
                     <span className="material-symbols-outlined gender-icon">face</span>
-                    <span className="gender-text">זכר</span>
+                    <span className="gender-text">דמויות גבריות</span>
                   </div>
                 </label>
                 <label className="gender-card-label">
                   <input type="radio" name="gender" className="sr-only" checked={gender === 'Female'} onChange={() => setGender('Female')} />
                   <div className={`gender-card ${gender === 'Female' ? 'selected' : ''}`}>
                     <span className="material-symbols-outlined gender-icon">face_3</span>
-                    <span className="gender-text">נקבה</span>
+                    <span className="gender-text">דמויות נשיות</span>
                   </div>
                 </label>
               </div>
@@ -147,7 +147,7 @@ export default function PersonalDetailsPage() {
                 <span className="material-symbols-outlined cta-arrow">arrow_back</span>
               </button>
               {!canProceed && (
-                <p className="details-hint">יש למלא שם, מגדר, גיל ואימייל כדי להמשיך</p>
+                <p className="details-hint">יש למלא שם, סגנון דמויות, גיל ואימייל כדי להמשיך</p>
               )}
             </div>
           </form>
