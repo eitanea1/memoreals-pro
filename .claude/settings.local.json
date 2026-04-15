@@ -93,7 +93,8 @@
       "WebFetch(domain:marketplace.visualstudio.com)",
       "WebFetch(domain:galaxy.ai)",
       "WebFetch(domain:github.com)",
-      "Bash(code --install-extension pablodelucca.pixel-agents)"
+      "Bash(code --install-extension pablodelucca.pixel-agents)",
+      "Bash(shuf -n 5)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",
