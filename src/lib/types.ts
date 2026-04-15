@@ -21,13 +21,14 @@ export interface AppState {
   subjectGender: string;
   customerEmail: string;
   customerPhone: string;
+  customerNote: string;
   selectedCharacters: Character[];
   photos: UploadedPhoto[];
   orderId: string | null;
 }
 
 export type AppAction =
-  | { type: 'SET_PERSONAL_DETAILS'; name: string; age: string; gender: string; email: string; phone: string }
+  | { type: 'SET_PERSONAL_DETAILS'; name: string; age: string; gender: string; email: string; phone: string; note: string }
   | { type: 'SELECT_CHARACTER'; character: Character }
   | { type: 'DESELECT_CHARACTER'; id: string }
   | { type: 'ADD_PHOTO_PENDING'; photo: UploadedPhoto }

@@ -9,6 +9,7 @@ interface PersonalDetails {
   gender: string;
   email: string;
   phone: string;
+  note?: string;
 }
 
 interface OrderPayload extends PersonalDetails {
@@ -42,6 +43,7 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
         aiLabel,
         customerEmail: payload.email,
         customerPhone: payload.phone,
+        customerNote:  payload.note || '',
         userId:        user.id,
         characters: {
           create: payload.characters.map((c, i) => ({

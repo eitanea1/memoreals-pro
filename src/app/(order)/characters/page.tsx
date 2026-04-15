@@ -30,6 +30,15 @@ export default function CharacterSelectPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
   const [filter, setFilter] = useState<CategoryFilter>('all');
+  const [search, setSearch] = useState('');
+
+  function filterBySearch(list: Character[]): Character[] {
+    if (!search.trim()) return list;
+    const q = search.trim().toLowerCase();
+    return list.filter((c) =>
+      c.displayName.toLowerCase().includes(q) || c.name.toLowerCase().includes(q)
+    );
+  }
 
   const isBoy = state.subjectGender.toLowerCase() !== 'female';
 
@@ -99,6 +108,20 @@ export default function CharacterSelectPage() {
           </p>
         </div>
 
+        {/* ── Search ── */}
+        <div className="max-w-md mx-auto mb-6">
+          <div className="relative">
+            <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[var(--c-muted)] pointer-events-none" style={{ fontSize: '20px' }}>search</span>
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="חיפוש דמות... (למשל: ספיידרמן, שף, טייס)"
+              className="w-full pr-12 pl-4 py-3 rounded-full border border-[var(--c-border)] bg-white text-sm outline-none focus:border-[var(--c-brand-mid)] focus:ring-2 focus:ring-[var(--c-brand-mid)]/20 transition-all"
+            />
+          </div>
+        </div>
+
         {/* ── Category Tabs ───────────────────────────────────────────────── */}
         <nav className="flex justify-center gap-2 mb-10 overflow-x-auto py-1 no-scrollbar">
           {TABS.map((tab) => (
@@ -121,17 +144,23 @@ export default function CharacterSelectPage() {
         <div className="flex gap-8">
           {/* Character Grids */}
           <div className="flex-1 min-w-0">
-            {(filter === 'all' || filter === 'superheroes') && (
-              <CategoryList title="גיבורי על" characters={heroes} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            {(filter === 'all' || filter === 'superheroes') && filterBySearch(heroes).length > 0 && (
+              <CategoryList title="גיבורי על" characters={filterBySearch(heroes)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
             )}
-            {(filter === 'all' || filter === 'anime') && (
-              <CategoryList title="אגדות ואנימה" characters={anime} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            {(filter === 'all' || filter === 'anime') && filterBySearch(anime).length > 0 && (
+              <CategoryList title="אגדות ואנימה" characters={filterBySearch(anime)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
             )}
-            {(filter === 'all' || filter === 'adventures') && (
-              <CategoryList title="הרפתקאות" characters={adventures} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            {(filter === 'all' || filter === 'adventures') && filterBySearch(adventures).length > 0 && (
+              <CategoryList title="הרפתקאות" characters={filterBySearch(adventures)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
             )}
-            {(filter === 'all' || filter === 'premium') && (
-              <CategoryList title="פרימיום" characters={premium} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            {(filter === 'all' || filter === 'premium') && filterBySearch(premium).length > 0 && (
+              <CategoryList title="מקצועות/אחר" characters={filterBySearch(premium)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+            )}
+            {search.trim() && filterBySearch(heroes).length === 0 && filterBySearch(anime).length === 0 && filterBySearch(adventures).length === 0 && filterBySearch(premium).length === 0 && (
+              <div className="text-center py-12 text-[var(--c-muted)]">
+                <span className="material-symbols-outlined text-4xl mb-2 block">search_off</span>
+                <p className="text-sm">לא נמצאו דמויות התואמות לחיפוש &ldquo;{search}&rdquo;</p>
+              </div>
             )}
           </div>
 

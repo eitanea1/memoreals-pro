@@ -45,6 +45,7 @@ export default function SummaryPage() {
         gender:     state.subjectGender,
         email:      state.customerEmail,
         phone:      state.customerPhone,
+        note:       state.customerNote,
         characters: state.selectedCharacters.map((c) => ({
           name:        c.name,
           displayName: c.displayName,

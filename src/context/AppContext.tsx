@@ -9,6 +9,7 @@ const initialState: AppState = {
   subjectGender: '',
   customerEmail: '',
   customerPhone: '',
+  customerNote: '',
   selectedCharacters: [],
   photos: [],
   orderId: null,
@@ -17,7 +18,7 @@ const initialState: AppState = {
 function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
     case 'SET_PERSONAL_DETAILS':
-      return { ...state, subjectName: action.name, subjectAge: action.age, subjectGender: action.gender, customerEmail: action.email, customerPhone: action.phone };
+      return { ...state, subjectName: action.name, subjectAge: action.age, subjectGender: action.gender, customerEmail: action.email, customerPhone: action.phone, customerNote: action.note };
 
     case 'SELECT_CHARACTER':
       if (state.selectedCharacters.length >= 20) return state;

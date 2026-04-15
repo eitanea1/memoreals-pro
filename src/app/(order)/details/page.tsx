@@ -21,6 +21,7 @@ export default function PersonalDetailsPage() {
   const [age, setAge] = useState(state.subjectAge);
   const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
   const [email, setEmail] = useState(state.customerEmail);
+  const [notes, setNotes] = useState(state.customerNote || '');
   const [nameTouched, setNameTouched] = useState(false);
 
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
@@ -30,7 +31,7 @@ export default function PersonalDetailsPage() {
   const canProceed = nameIsValid && ageIsValid && gender.length > 0 && email.trim().length > 0;
 
   function handleNext() {
-    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: '' });
+    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: '', note: notes.trim() });
     router.push('/characters');
   }
 
@@ -132,6 +133,22 @@ export default function PersonalDetailsPage() {
                 value={email}
                 dir="ltr"
                 onChange={(e) => setEmail(e.target.value)}
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="field-group">
+              <label className="field-label" htmlFor="customer-notes">
+                הערות ובקשות מיוחדות <span className="optional">(אופציונלי)</span>
+              </label>
+              <textarea
+                id="customer-notes"
+                className="field-input"
+                rows={3}
+                placeholder="לדוגמה: תמונות צנועות בלבד (ללא גופיות/מכנסיים קצרים), פנים עם משקפיים, שיער ארוך..."
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                style={{ resize: 'vertical', minHeight: '80px', fontFamily: 'Heebo, sans-serif' }}
               />
             </div>
 

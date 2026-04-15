@@ -3,8 +3,31 @@ import './globals.css';
 import AppShell from '@/components/AppShell';
 
 export const metadata: Metadata = {
-  title: 'MemoReals — זיכרונות אמיתיים בגרסה דמיונית',
-  description: 'משחק זיכרון מותאם אישית עם AI',
+  metadataBase: new URL('https://memoreals-pro.vercel.app'),
+  title: 'MemoReals — משחק זיכרון אישי עם AI',
+  description: 'הילד שלכם כגיבור אמיתי. משחק זיכרון מותאם אישית עם טכנולוגיית AI מתקדמת. 20 זוגות קלפים, קופסה ממותגת, משלוח עד הבית. 350 ₪.',
+  openGraph: {
+    title: 'MemoReals — משחק זיכרון אישי עם AI',
+    description: 'הילד שלכם כגיבור אמיתי. 20 זוגות קלפים מותאמים אישית, קופסה ממותגת, משלוח עד הבית.',
+    url: 'https://memoreals-pro.vercel.app',
+    siteName: 'MemoReals',
+    images: [
+      {
+        url: '/gallery/product-1.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'MemoReals — משחק זיכרון אישי',
+      },
+    ],
+    locale: 'he_IL',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'MemoReals — משחק זיכרון אישי עם AI',
+    description: 'הילד שלכם כגיבור אמיתי. 350 ₪ כולל משלוח.',
+    images: ['/gallery/product-1.jpg'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
