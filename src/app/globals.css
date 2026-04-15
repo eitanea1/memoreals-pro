@@ -168,9 +168,38 @@ body {
 .header-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.85rem;
   max-width: 1200px;
   margin: 0 auto;
+}
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  cursor: pointer;
+}
+.header-nav {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+.header-nav a {
+  color: var(--c-dark);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+.header-nav a:hover {
+  color: var(--c-brand);
+}
+@media (max-width: 700px) {
+  .header-nav { gap: 1rem; }
+  .header-nav a { font-size: 0.85rem; }
+}
+@media (max-width: 480px) {
+  .header-nav { display: none; }
 }
 .header-logo-img {
   width: 56px;

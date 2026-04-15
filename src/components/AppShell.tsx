@@ -12,20 +12,27 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="app">
       {/* Premium Nav */}
-      <header className="app-header" onClick={() => router.push('/')}>
+      <header className="app-header">
         <div className="header-inner">
-          <Image
-            src="/logo-clean.png"
-            alt="MemoReals Logo"
-            width={64}
-            height={64}
-            className="header-logo-img"
-            priority
-          />
-          <div className="brand-text">
-            <span className="brand-logo">MemoReals</span>
-            {!isHome && <span className="brand-slogan">זיכרונות אמיתיים בגרסה דמיונית</span>}
+          <div className="header-brand" onClick={() => router.push('/')}>
+            <Image
+              src="/logo-clean.png"
+              alt="MemoReals Logo"
+              width={64}
+              height={64}
+              className="header-logo-img"
+              priority
+            />
+            <div className="brand-text">
+              <span className="brand-logo">MemoReals</span>
+              {!isHome && <span className="brand-slogan">זיכרונות אמיתיים בגרסה דמיונית</span>}
+            </div>
           </div>
+          <nav className="header-nav">
+            <Link href="/about">אודות</Link>
+            <Link href="/gallery">גלריה</Link>
+            <Link href="/contact">צרו קשר</Link>
+          </nav>
         </div>
       </header>
       <main className={isHome ? 'app-main-home' : 'app-main'}>
