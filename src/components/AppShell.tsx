@@ -39,6 +39,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               <div className="footer-brand">MemoReals</div>
               <div className="footer-links">
                 <Link href="/about">אודות</Link>
+                <Link href="/gallery">גלריה</Link>
                 <Link href="/privacy">מדיניות פרטיות</Link>
                 <Link href="/terms">תנאי שימוש</Link>
                 <Link href="/contact">צרו קשר</Link>
