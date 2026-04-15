@@ -2,14 +2,10 @@ import Image from 'next/image';
 
 export const metadata = { title: 'גלריה — MemoReals' };
 
-const GALLERY = [
-  { src: '/gallery/product-1.jpg', alt: 'המשחק המלא פרוש על שולחן', caption: 'המשחק המלא — 20 זוגות קלפים בקופסה ממותגת' },
-  { src: '/gallery/product-2.jpg', alt: 'תקריב של קלף איירון מן', caption: 'איכות הדפסה פרימיום — כל פרט מרהיב' },
-  { src: '/gallery/product-3.jpg', alt: 'גב הקלפים עם הלוגו', caption: 'לוגו MemoReals מוטבע על גב כל קלף' },
-  { src: '/gallery/playing-1.jpg', alt: 'ילדים משחקים ביחד', caption: 'זמן איכות משפחתי — בלי מסכים' },
-  { src: '/gallery/playing-2.jpg', alt: 'יד הופכת קלף', caption: 'הרגע שבו הופכים את הקלף ומגלים את הגיבור' },
-  { src: '/gallery/cards-grid.jpg', alt: 'קלפים עם דמויות שונות', caption: 'מאות דמויות לבחירה — לכל ילד, לכל משפחה' },
-];
+const GALLERY = Array.from({ length: 11 }, (_, i) => ({
+  src: `/gallery/product-${i + 1}.jpg`,
+  alt: `MemoReals — תמונה ${i + 1}`,
+}));
 
 export default function GalleryPage() {
   return (
@@ -26,21 +22,17 @@ export default function GalleryPage() {
       </div>
 
       {/* Gallery Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {GALLERY.map((item) => (
           <div key={item.src} className="group relative rounded-2xl overflow-hidden border border-[var(--c-border)] bg-white shadow-sm hover:shadow-2xl transition-all duration-500">
             <div className="aspect-[4/5] relative overflow-hidden">
               <Image
                 src={item.src}
-                alt={item.alt || ''}
+                alt={item.alt}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-700"
                 sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-              <p className="absolute bottom-4 right-4 left-4 text-white font-bold text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                {item.caption}
-              </p>
             </div>
           </div>
         ))}
