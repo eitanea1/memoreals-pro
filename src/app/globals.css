@@ -153,8 +153,8 @@ body {
 /* Header */
 .app-header {
   width: 100%;
-  background: rgba(255,255,255,0.8);
-  backdrop-filter: blur(20px);
+  background: #ffffff;
+  backdrop-filter: none;
   border-bottom: none;
   padding: 1rem 2rem;
   user-select: none;
@@ -227,7 +227,7 @@ body {
 /* Floating WhatsApp button */
 .whatsapp-float {
   position: fixed;
-  bottom: 24px;
+  bottom: 100px;
   left: 24px;
   z-index: 99;
   width: 56px;

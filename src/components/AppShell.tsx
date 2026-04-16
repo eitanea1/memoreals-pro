@@ -25,10 +25,6 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
               className="header-logo-img"
               priority
             />
-            <div className="brand-text">
-              <span className="brand-logo">MemoReals</span>
-              {!isHome && <span className="brand-slogan">זיכרונות אמיתיים בגרסה דמיונית</span>}
-            </div>
           </div>
 
           {/* Desktop Nav */}
