@@ -127,18 +127,33 @@
 [dir="rtl"] [data-slot="label"] { justify-content: flex-end; flex-direction: row-reverse; }
 
 /* ── Reset / Base ── */
-/* box-sizing only — Tailwind preflight handles the rest */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { width: 100%; min-height: 100vh; }
-h1, h2, h3, h4, h5, h6, p, span:not(.material-symbols-outlined), a, li, td, th, label, input, textarea, select, button, div {
-  font-family: 'Heebo', sans-serif !important;
-}
+html { color-scheme: light; }
 body {
-  font-family: 'Heebo', sans-serif !important;
-  background: var(--c-bg);
-  color: var(--c-dark);
+  font-family: 'Heebo', sans-serif;
+  background: var(--bg-1);
+  color: var(--ink-1);
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+h1, h2, h3, h4, h5, h6 { color: var(--ink-1); }
+.material-symbols-outlined {
+  font-family: 'Material Symbols Outlined';
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+/* Reduce motion globally */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -677,11 +692,6 @@ body {
   flex-direction: column;
   padding-bottom: 0;
   gap: 0;
-}
-
-/* Material Symbols helper */
-.material-symbols-outlined {
-  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
 }
 
 /* ── Hero — Warm Handcrafted ── */
@@ -1297,122 +1307,6 @@ body {
   line-height: 1.7;
   margin-bottom: 0.5rem;
 }
-
-/* ── Why ── */
-.why-section {
-  padding: 7rem 1.5rem;
-  background: linear-gradient(135deg, #1c1c19 0%, #130a24 100%);
-  color: white;
-  position: relative;
-  overflow: hidden;
-}
-.why-section .why-glow {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background: radial-gradient(circle, rgba(113, 42, 226, 0.15) 0%, rgba(66, 0, 147, 0) 70%);
-  opacity: 0.2;
-  pointer-events: none;
-}
-.why-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 3rem;
-}
-@media (min-width: 768px) {
-  .why-inner { flex-direction: row; align-items: center; gap: 4rem; }
-}
-.why-content { flex: 1; text-align: right; }
-.why-content h2 {
-  font-family: 'Heebo', sans-serif;
-  font-size: 2.5rem;
-  font-weight: 700;
-  line-height: 1.15;
-  margin-bottom: 1.5rem;
-}
-.why-content h2 .accent { color: #d3bbff; }
-.why-content p {
-  color: rgba(211, 187, 255, 0.7);
-  font-size: 1.05rem;
-  line-height: 1.75;
-  margin-bottom: 2rem;
-}
-.why-features { display: flex; flex-direction: column; gap: 1rem; }
-.why-feature {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-.why-feature .material-symbols-outlined { color: #d3bbff; }
-.why-feature span { font-size: 1.05rem; }
-.why-cards { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
-.why-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(12px);
-  border: 1px solid rgba(211, 187, 255, 0.1);
-  padding: 2rem;
-  border-radius: 1rem;
-}
-.why-card:nth-child(1) { transform: rotate(1deg); }
-.why-card:nth-child(2) { transform: rotate(-2deg); background: rgba(255, 255, 255, 0.05); }
-.why-card h4 {
-  font-size: 1.15rem;
-  font-weight: 700;
-  color: #d3bbff;
-  margin-bottom: 0.5rem;
-}
-.why-card p {
-  font-size: 0.88rem;
-  color: rgba(211, 187, 255, 0.6);
-  line-height: 1.6;
-}
-
-/* ── CTA ── */
-.cta-section {
-  padding: 7rem 2rem;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-  background: linear-gradient(165deg, #0f0a1a 0%, #1a0e2e 40%, #12082a 100%);
-  position: relative;
-  overflow: hidden;
-}
-.cta-glow {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, rgba(124, 58, 237, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.cta-title {
-  font-size: 2.8rem;
-  font-weight: 800;
-  color: #f8fafc;
-  position: relative;
-  z-index: 1;
-  letter-spacing: -0.02em;
-}
-.cta-sub {
-  font-size: 1.1rem;
-  color: rgba(203, 213, 225, 0.7);
-  position: relative;
-  z-index: 1;
-  margin-bottom: 0.5rem;
-  max-width: 500px;
-  line-height: 1.75;
-}
-@media (max-width: 600px) { .cta-title { font-size: 2rem; } }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
 /* ── Admin Dashboard ── */
