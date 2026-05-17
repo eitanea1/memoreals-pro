@@ -42,51 +42,49 @@ export default function HomePage() {
 
       {/* ── Hero ── */}
       <section className="hero-section">
-        <div className="hero-glow" />
-        <div className="hero-glow-secondary" />
+        <div className="hero-inner">
+          <div className="hero-content">
+            <span className="hero-eyebrow">משחק זיכרון אישי</span>
 
-        {/* Floating particles */}
-        <div className="hero-particles">
-          {[...Array(6)].map((_, i) => (
-            <div key={i} className={`hero-particle hero-particle-${i + 1}`} />
-          ))}
-        </div>
+            <h1 className="hero-headline">
+              הילד שלכם.
+              <br />
+              הגיבור של הסיפור.
+            </h1>
 
-        <div className="hero-content">
-          <div className="hero-badge">
-            <span className="hero-badge-dot" />
-            מופעל על ידי AI מתקדם
-          </div>
+            <p className="hero-hook">
+              משחק זיכרון שעשוי במיוחד לילד שלכם. הפנים שלו הופכות לעשרים גיבורות וגיבורים, מודפסים על קלפים עבים בקופסה ממותגת, עד פתח הבית.
+            </p>
 
-          <h1 className="hero-headline">
-            הילד שלכם.
-            <br />
-            <span className="hero-headline-accent">הגיבור של הסיפור.</span>
-          </h1>
-
-          <p className="hero-hook">
-            משחק זיכרון מותאם אישית שבו הפנים שלכם הופכות לדמויות קסומות.
-            <br />
-            טכנולוגיית AI מתקדמת. הדפסת פרימיום. קופסה ממותגת עד הבית.
-          </p>
-
-          <div className="hero-cta-group">
-            <Link href="/details" className="btn-hero-primary">
-              <span>התחילו ליצור</span>
-              <span className="btn-arrow">&larr;</span>
-            </Link>
-            <span className="hero-price-tag">350 ₪ כולל משלוח</span>
-          </div>
-        </div>
-
-        {/* ── Showcase cards ── */}
-        <div className="hero-showcase">
-          {[...KIDS_EXAMPLES.slice(0, 2), ...WHATIF_EXAMPLES.slice(0, 2)].map((img, i) => (
-            <div key={img.src} className={`showcase-card showcase-card-${i + 1}`}>
-              <Image src={img.src} alt={img.alt} width={280} height={380} className="showcase-card-img" />
-              <div className="showcase-card-glow" />
+            <div className="hero-cta-group">
+              <Link href="/details" className="btn-primary-warm">
+                <span>התחילו ליצור</span>
+                <span className="btn-arrow" aria-hidden="true">&larr;</span>
+              </Link>
+              <div className="hero-price-line">
+                <span className="hero-price">350 ₪</span>
+                <span className="hero-price-meta">כולל הדפסה ומשלוח</span>
+              </div>
             </div>
-          ))}
+          </div>
+
+          <div className="hero-media">
+            <div className="hero-photo">
+              <Image
+                src="/gallery/product-1.jpg"
+                alt="קלפי MemoReals אישיים על שולחן"
+                width={720}
+                height={900}
+                priority
+                className="hero-photo-img"
+                sizes="(max-width: 900px) 100vw, 50vw"
+              />
+            </div>
+            <div className="hero-photo-tag">
+              <span className="hero-photo-tag-dot" aria-hidden="true" />
+              מודפס באהבה בישראל
+            </div>
+          </div>
         </div>
       </section>
 
