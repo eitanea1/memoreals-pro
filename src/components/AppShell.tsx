@@ -1,52 +1,50 @@
 'use client';
 
-import { useRouter, usePathname } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const router = useRouter();
   const pathname = usePathname();
   const isHome = pathname === '/';
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="app">
-      {/* Premium Nav */}
       <header className="app-header">
         <div className="header-inner">
-          <div className="header-brand" onClick={() => router.push('/')}>
+          <Link href="/" className="header-brand" aria-label="MemoReals — דף הבית">
             <Image
               src="/logo-clean.png"
-              alt="MemoReals Logo"
+              alt=""
               width={64}
               height={64}
               className="header-logo-img"
               priority
             />
-          </div>
+          </Link>
 
-          {/* Desktop Nav */}
-          <nav className="header-nav">
+          <nav className="header-nav" aria-label="ראשי">
             <Link href="/about">אודות</Link>
             <Link href="/gallery">גלריה</Link>
             <Link href="/contact">צרו קשר</Link>
           </nav>
 
-          {/* Mobile burger */}
           <button
             className="mobile-burger"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label="תפריט"
+            aria-label={mobileMenuOpen ? 'סגירת תפריט' : 'פתיחת תפריט'}
+            aria-expanded={mobileMenuOpen}
           >
-            <span className="material-symbols-outlined">{mobileMenuOpen ? 'close' : 'menu'}</span>
+            <span className="material-symbols-outlined" aria-hidden="true">
+              {mobileMenuOpen ? 'close' : 'menu'}
+            </span>
           </button>
         </div>
 
-        {/* Mobile menu dropdown */}
         {mobileMenuOpen && (
-          <nav className="mobile-menu">
+          <nav className="mobile-menu" aria-label="ניווט נייד">
             <Link href="/about" onClick={() => setMobileMenuOpen(false)}>אודות</Link>
             <Link href="/gallery" onClick={() => setMobileMenuOpen(false)}>גלריה</Link>
             <Link href="/contact" onClick={() => setMobileMenuOpen(false)}>צרו קשר</Link>
@@ -58,40 +56,32 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </main>
 
-      {/* Floating WhatsApp Button */}
       <a
         href="https://wa.me/972555707594?text=היי%2C%20אשמח%20לקבל%20פרטים%20על%20MemoReals"
         target="_blank"
         rel="noopener noreferrer"
         className="whatsapp-float"
-        aria-label="WhatsApp"
+        aria-label="פנייה בוואטסאפ"
       >
-        <svg width="28" height="28" viewBox="0 0 24 24" fill="white">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white" aria-hidden="true">
           <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
         </svg>
       </a>
 
-      {/* Footer */}
-      <footer className={isHome ? 'app-footer-premium' : 'app-footer'}>
-        <div className={isHome ? 'footer-premium-inner' : 'footer-inner'}>
-          {isHome ? (
-            <>
-              <div className="footer-brand">MemoReals</div>
-              <div className="footer-links">
-                <Link href="/about">אודות</Link>
-                <Link href="/gallery">גלריה</Link>
-                <Link href="/privacy">מדיניות פרטיות</Link>
-                <Link href="/terms">תנאי שימוש</Link>
-                <Link href="/contact">צרו קשר</Link>
-              </div>
-              <span className="footer-copy">© 2026 MemoReals · כל הזכויות שמורות</span>
-            </>
-          ) : (
-            <>
-              <Image src="/logo-clean.png" alt="" width={22} height={22} className="footer-logo" />
-              <span>© 2026 MemoReals · כל הזכויות שמורות</span>
-            </>
-          )}
+      <footer className="app-footer-warm">
+        <div className="footer-warm-inner">
+          <div className="footer-warm-top">
+            <Image src="/logo-clean.png" alt="" width={44} height={44} className="footer-warm-logo" aria-hidden="true" />
+            <p className="footer-warm-tag">משחק זיכרון אישי, מודפס באהבה.</p>
+          </div>
+          <nav className="footer-warm-links" aria-label="פוטר">
+            <Link href="/about">אודות</Link>
+            <Link href="/gallery">גלריה</Link>
+            <Link href="/contact">צרו קשר</Link>
+            <Link href="/privacy">פרטיות</Link>
+            <Link href="/terms">תנאי שימוש</Link>
+          </nav>
+          <p className="footer-warm-copy">© 2026 MemoReals · כל הזכויות שמורות</p>
         </div>
       </footer>
     </div>
