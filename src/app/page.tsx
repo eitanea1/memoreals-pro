@@ -92,19 +92,19 @@ export default function HomePage() {
       <section className="trust-bar">
         <div className="trust-bar-inner">
           <div className="trust-item">
-            <span className="material-symbols-outlined">verified</span>
-            <span>הדפסת פרימיום</span>
+            <span className="material-symbols-outlined" aria-hidden="true">verified</span>
+            <span>הדפסה איכותית</span>
           </div>
           <div className="trust-item">
-            <span className="material-symbols-outlined">local_shipping</span>
+            <span className="material-symbols-outlined" aria-hidden="true">local_shipping</span>
             <span>משלוח חינם</span>
           </div>
           <div className="trust-item">
-            <span className="material-symbols-outlined">auto_awesome</span>
-            <span>AI מתקדם</span>
+            <span className="material-symbols-outlined" aria-hidden="true">redeem</span>
+            <span>קופסה ממותגת</span>
           </div>
           <div className="trust-item">
-            <span className="material-symbols-outlined">favorite</span>
+            <span className="material-symbols-outlined" aria-hidden="true">favorite</span>
             <span>בהתאמה אישית</span>
           </div>
         </div>
@@ -114,54 +114,63 @@ export default function HomePage() {
       <section className="packages-section">
         <div className="packages-inner">
           <div className="section-header">
-            <span className="section-tag">בחרו את החבילה שלכם</span>
-            <h2 className="section-heading">שני עולמות, קסם אחד</h2>
-            <p className="section-desc">כל חבילה כוללת 20 זוגות קלפים (40 קלפים), קופסה ממותגת ומשלוח עד הבית.</p>
+            <span className="section-eyebrow-warm">בחרו את החבילה שלכם</span>
+            <h2 className="section-heading-warm">שני עולמות, קסם אחד</h2>
+            <p className="section-desc-warm">כל חבילה כוללת 20 זוגות קלפים, קופסה ממותגת, ומשלוח עד הבית.</p>
           </div>
 
           <div className="packages-grid">
             {/* Package 1 — Kids */}
-            <div className="package-card">
-              <div className="package-images">
-                {KIDS_EXAMPLES.map((img) => (
-                  <div key={img.src} className="package-img-wrap">
-                    <Image src={img.src} alt={img.alt} width={300} height={225} className="package-img" />
-                  </div>
-                ))}
+            <article className="package-card package-card-kids">
+              <div className="package-photo-wrap">
+                <Image
+                  src={KIDS_EXAMPLES[0].src}
+                  alt={KIDS_EXAMPLES[0].alt}
+                  width={520}
+                  height={520}
+                  className="package-photo"
+                  sizes="(max-width: 700px) 100vw, 50vw"
+                />
               </div>
               <div className="package-body">
-                <span className="package-badge package-badge-kids">לגילאי 4-12</span>
+                <span className="package-badge package-badge-kids">לגילאי 4–12</span>
                 <h3 className="package-title">ילדים מהאגדות</h3>
-                <p className="package-desc">הילד/ה שלכם כגיבור אמיתי — 20 דמויות קסומות בקלפי זיכרון מודפסים</p>
-                <Link href="/details" className="package-cta">
-                  הזמינו עכשיו
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
-                </Link>
-                <p className="package-price">350 ₪ כולל משלוח</p>
+                <p className="package-desc">הילד/ה שלכם כגיבור אמיתי. עשרים דמויות קסומות, מודפסות בידי מקצוענים על קלפים עבים.</p>
+                <div className="package-cta-row">
+                  <Link href="/details" className="btn-primary-warm btn-primary-warm-sm">
+                    הזמינו עכשיו
+                    <span className="btn-arrow" aria-hidden="true">&larr;</span>
+                  </Link>
+                  <span className="package-price">350 ₪</span>
+                </div>
               </div>
-            </div>
+            </article>
 
             {/* Package 2 — What If */}
-            <div className="package-card">
-              <div className="package-images">
-                {WHATIF_EXAMPLES.map((img) => (
-                  <div key={img.src} className="package-img-wrap">
-                    <Image src={img.src} alt={img.alt} width={300} height={225} className="package-img" />
-                  </div>
-                ))}
+            <article className="package-card package-card-adults">
+              <div className="package-photo-wrap">
+                <Image
+                  src={WHATIF_EXAMPLES[0].src}
+                  alt={WHATIF_EXAMPLES[0].alt}
+                  width={520}
+                  height={520}
+                  className="package-photo"
+                  sizes="(max-width: 700px) 100vw, 50vw"
+                />
               </div>
               <div className="package-body">
                 <span className="package-badge package-badge-adults">למבוגרים</span>
                 <h3 className="package-title">מה אם...?</h3>
-                <p className="package-desc">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית?</p>
-                <p className="package-highlight">משחק שיצחיק גם את סבא וסבתא.</p>
-                <Link href="/details" className="package-cta package-cta-gradient">
-                  הזמינו עכשיו
-                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
-                </Link>
-                <p className="package-price">350 ₪ כולל משלוח</p>
+                <p className="package-desc">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית? משחק שיצחיק את כל המשפחה.</p>
+                <div className="package-cta-row">
+                  <Link href="/details" className="btn-primary-warm btn-primary-warm-sm">
+                    הזמינו עכשיו
+                    <span className="btn-arrow" aria-hidden="true">&larr;</span>
+                  </Link>
+                  <span className="package-price">350 ₪</span>
+                </div>
               </div>
-            </div>
+            </article>
           </div>
         </div>
       </section>
@@ -170,21 +179,21 @@ export default function HomePage() {
       <section className="how-section">
         <div className="how-inner">
           <div className="section-header">
-            <span className="section-tag">איך זה עובד?</span>
-            <h2 className="section-heading">שלושה צעדים פשוטים</h2>
+            <span className="section-eyebrow-warm">איך זה עובד?</span>
+            <h2 className="section-heading-warm">שלושה צעדים, ארבעה־עשר ימים</h2>
           </div>
-          <div className="how-grid">
-            {HOW_IT_WORKS.map((step) => (
-              <div key={step.num} className="how-card">
-                <div className="how-num">{step.num}</div>
-                <div className="how-icon">
-                  <span className="material-symbols-outlined">{step.icon}</span>
+          <ol className="how-flow">
+            {HOW_IT_WORKS.map((step, i) => (
+              <li key={step.num} className="how-step">
+                <div className="how-step-num" aria-hidden="true">{step.num}</div>
+                <div className="how-step-body">
+                  <h3 className="how-step-title">{step.title}</h3>
+                  <p className="how-step-text">{step.body}</p>
                 </div>
-                <h3 className="how-title">{step.title}</h3>
-                <p className="how-body">{step.body}</p>
-              </div>
+                {i < HOW_IT_WORKS.length - 1 && <div className="how-step-connector" aria-hidden="true" />}
+              </li>
             ))}
-          </div>
+          </ol>
         </div>
       </section>
 
@@ -192,40 +201,40 @@ export default function HomePage() {
       <section className="faq-section">
         <div className="faq-inner">
           <div className="section-header">
-            <h2 className="section-heading">שאלות נפוצות</h2>
+            <span className="section-eyebrow-warm">שאלות נפוצות</span>
+            <h2 className="section-heading-warm">כל מה שכדאי לדעת</h2>
           </div>
-          {[
-            { q: 'כמה זה עולה?', a: 'המחיר למשחק זיכרון אישי ומעוצב הוא 350 ₪. המחיר כולל את תהליך העיצוב המבוסס על מודל מתקדם בהתאמה אישית, הדפסה איכותית, אריזת מתנה ומשלוח מהיר עד פתח הבית (מחיר השקה מוגבל).' },
-            { q: 'כמה זמן לוקח עד שהמשחק אצלי?', a: 'אנחנו משקיעים זמן בכל דמות ודמות כדי להבטיח תוצאה מושלמת. תהליך ה"קסם" – הכולל עיבוד תמונה בטכנולוגיה חדשנית, הדפסה מקצועית ובקרת איכות – לוקח עד 14 ימי עסקים. אנחנו מבטיחים שזה שווה את ההמתנה!' },
-            { q: 'מה בדיוק כוללת הערכה?', a: '40 קלפים קשיחים ועמידים (20 זוגות) עם דמויות ייחודיות שנוצרו במיוחד עבורכם, קופסה ממותגת ואיכותית, הוראות משחק וטיפים לחיזוק הזיכרון, ומשלוח חינם עד הבית.' },
-            { q: 'למה כדאי לבחור ב-MemoReals?', a: 'מעבר למתנה אישית ומרגשת, המשחק שלנו נועד להחזיר את המשפחה לשולחן אחד. זו הזדמנות מושלמת לקחת הפסקה מהמסכים, לחדד את יכולות הזיכרון והקוגניציה של הילדים (וגם של המבוגרים!) ופשוט ליהנות מזמן איכות משותף.' },
-            { q: 'האם ניתן לבטל הזמנה?', a: 'מכיוון שכל משחק מיוצר בייצור מיוחד ואישי עבורכם (Custom Made) ועובר הדפסה ספציפית המבוססת על התמונה שלכם, לא ניתן לבטל את ההזמנה לאחר שהתחלנו בתהליך הייצור.' },
-            { q: 'אפשר לבצע איסוף עצמי?', a: 'בוודאי! ניתן לבצע איסוף עצמי מקדימה-צורן בתיאום מראש. במעמד ההזמנה פשוט בחרו באופציה של "איסוף עצמי".' },
-          ].map((faq) => (
-            <details key={faq.q} className="faq-item">
-              <summary className="faq-question">
-                {faq.q}
-                <span className="material-symbols-outlined faq-chevron">expand_more</span>
-              </summary>
-              <div className="faq-answer">{faq.a}</div>
-            </details>
-          ))}
+          <div className="faq-list">
+            {[
+              { q: 'כמה זה עולה?', a: 'המחיר למשחק זיכרון אישי ומעוצב הוא 350 ₪, כולל את תהליך העיצוב בהתאמה אישית, הדפסה איכותית, אריזת מתנה ומשלוח מהיר עד פתח הבית. מחיר השקה מוגבל.' },
+              { q: 'כמה זמן לוקח עד שהמשחק מגיע?', a: 'אנחנו משקיעים זמן בכל דמות ודמות כדי להבטיח תוצאה מושלמת. התהליך, הכולל עיבוד תמונה, הדפסה מקצועית ובקרת איכות, לוקח עד 14 ימי עסקים. שווה את ההמתנה.' },
+              { q: 'מה בדיוק כוללת הערכה?', a: '40 קלפים קשיחים ועמידים (20 זוגות) עם דמויות ייחודיות שנוצרו במיוחד עבורכם, קופסה ממותגת ואיכותית, הוראות משחק וטיפים לחיזוק הזיכרון, ומשלוח חינם עד הבית.' },
+              { q: 'למה כדאי לבחור ב-MemoReals?', a: 'מעבר למתנה אישית ומרגשת, המשחק שלנו נועד להחזיר את המשפחה לשולחן אחד. הזדמנות מושלמת להפסקה מהמסכים, לחדד את הזיכרון של הילדים, וליהנות מזמן איכות משותף.' },
+              { q: 'האם ניתן לבטל הזמנה?', a: 'כיוון שכל משחק מיוצר בייצור אישי ועובר הדפסה ספציפית, לא ניתן לבטל את ההזמנה לאחר שהתחלנו בתהליך הייצור.' },
+              { q: 'אפשר לבצע איסוף עצמי?', a: 'בוודאי. ניתן לבצע איסוף עצמי מקדימה-צורן בתיאום מראש. במעמד ההזמנה בחרו באופציה של "איסוף עצמי".' },
+            ].map((faq, i) => (
+              <details key={faq.q} className="faq-item" open={i === 0}>
+                <summary className="faq-question">
+                  <span>{faq.q}</span>
+                  <span className="material-symbols-outlined faq-chevron" aria-hidden="true">expand_more</span>
+                </summary>
+                <div className="faq-answer">{faq.a}</div>
+              </details>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* ── CTA ── */}
       <section className="cta-section">
-        <div className="cta-glow" />
-        <h2 className="cta-title">מוכנים להפתיע?</h2>
-        <p className="cta-sub">
-          תהליך ההזמנה לוקח פחות מ-5 דקות.
-          <br />
-          מתנת יום הולדת יצירתית עם צחוק לכל המשפחה.
-        </p>
-        <Link href="/details" className="btn-hero-primary btn-hero-primary-light">
-          <span>התחילו עכשיו</span>
-          <span className="btn-arrow">&larr;</span>
-        </Link>
+        <div className="cta-inner">
+          <h2 className="cta-title">מוכנים להפתיע?</h2>
+          <p className="cta-sub">תהליך ההזמנה לוקח פחות מחמש דקות. מתנת יום הולדת יצירתית, עם צחוק לכל המשפחה.</p>
+          <Link href="/details" className="btn-primary-warm btn-primary-warm-lg">
+            <span>התחילו עכשיו</span>
+            <span className="btn-arrow" aria-hidden="true">&larr;</span>
+          </Link>
+        </div>
       </section>
 
     </div>
