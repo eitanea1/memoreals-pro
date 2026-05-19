@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { SerializedOrder } from './page';
 import AdminDeleteOrder from '@/app/admin/AdminDeleteOrder';
 
@@ -13,6 +14,7 @@ export default function DetailsTab({
   onDelete: () => void;
 }) {
   const date = new Date(order.createdAt);
+  const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
 
   return (
     <div className="flex flex-col gap-6">
@@ -45,14 +47,19 @@ export default function DetailsTab({
           </p>
           <div className="flex flex-wrap gap-2">
             {order.uploads.map((u) => (
-              <a key={u.id} href={u.storageUrl} target="_blank" rel="noopener noreferrer">
+              <button
+                key={u.id}
+                type="button"
+                onClick={() => setLightboxUrl(u.storageUrl)}
+                className="cursor-zoom-in"
+              >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={u.storageUrl}
                   alt={u.originalName}
                   className="w-20 h-20 object-cover rounded-xl border border-[var(--c-border)] hover:scale-105 transition-transform"
                 />
-              </a>
+              </button>
             ))}
           </div>
         </div>
@@ -76,6 +83,30 @@ export default function DetailsTab({
       <div className="pt-2 border-t border-[var(--c-border)]">
         <AdminDeleteOrder orderId={order.id} onSuccess={onDelete} />
       </div>
+
+      {/* Lightbox */}
+      {lightboxUrl && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 cursor-zoom-out"
+          onClick={() => setLightboxUrl(null)}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={lightboxUrl}
+            alt="Full size"
+            className="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          />
+          <button
+            type="button"
+            className="absolute top-4 left-4 text-white text-3xl font-bold bg-black/50 rounded-full w-10 h-10 flex items-center justify-center hover:bg-black/70"
+            onClick={() => setLightboxUrl(null)}
+            aria-label="סגור"
+          >
+            ×
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,7 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useReducer } from 'react';
+import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import type { AppState, AppAction, UploadedPhoto } from '../lib/types';
+
+const STORAGE_KEY = 'memoreals-app-state';
 
 const initialState: AppState = {
   subjectName: '',
@@ -14,6 +16,23 @@ const initialState: AppState = {
   photos: [],
   orderId: null,
 };
+
+function loadPersistedState(): AppState {
+  if (typeof window === 'undefined') return initialState;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return initialState;
+    const saved = JSON.parse(raw) as Partial<AppState>;
+    // Photos with blob previewUrls are dropped — they don't survive page reload anyway
+    return {
+      ...initialState,
+      ...saved,
+      photos: (saved.photos ?? []).filter((p) => !p.previewUrl?.startsWith('blob:')),
+    };
+  } catch {
+    return initialState;
+  }
+}
 
 function reducer(state: AppState, action: AppAction): AppState {
   switch (action.type) {
@@ -63,6 +82,9 @@ function reducer(state: AppState, action: AppAction): AppState {
 
     case 'RESET':
       state.photos.forEach((p) => { if (p.previewUrl) URL.revokeObjectURL(p.previewUrl); });
+      if (typeof window !== 'undefined') {
+        try { localStorage.removeItem(STORAGE_KEY); } catch {}
+      }
       return initialState;
 
     default:
@@ -76,7 +98,15 @@ const AppContext = createContext<{
 } | null>(null);
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [state, dispatch] = useReducer(reducer, initialState, loadPersistedState);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {}
+  }, [state]);
+
   return <AppContext.Provider value={{ state, dispatch }}>{children}</AppContext.Provider>;
 }
 
