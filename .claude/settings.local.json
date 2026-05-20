@@ -111,7 +111,8 @@
       "Bash(gh pr create --title 'Design overhaul — warm handcrafted register' --body ' *)",
       "Bash(git fetch *)",
       "Bash(gh pr *)",
-      "Bash(git pull *)"
+      "Bash(git pull *)",
+      "Bash(Select-String -Pattern \"\\(privacy|terms|legal\\)\")"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

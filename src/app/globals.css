@@ -1635,6 +1635,134 @@ h1, h2, h3, h4, h5, h6 { color: var(--ink-1); }
   line-height: 1.5;
 }
 
+/* Field hint (small explanatory text under input) */
+.field-hint {
+  font-size: 0.82rem;
+  color: var(--ink-3);
+  line-height: 1.5;
+  margin-top: 0.25rem;
+}
+
+/* Consent checkbox row */
+.consent-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.85rem 1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 0.75rem;
+  transition: border-color 0.2s ease-out, background-color 0.2s ease-out;
+}
+.consent-row:hover { border-color: var(--line-strong); }
+.consent-checkbox {
+  width: 18px;
+  height: 18px;
+  margin-top: 0.2rem;
+  accent-color: var(--accent);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.consent-checkbox:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+.consent-text {
+  font-size: 0.92rem;
+  color: var(--ink-2);
+  line-height: 1.6;
+}
+.consent-link {
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.consent-link:hover { color: var(--accent); }
+
+/* Confirmation page — next steps + WhatsApp CTA */
+.conf-next {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  margin: 0.5rem 0;
+}
+.conf-step {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+  text-align: right;
+  padding: 0.95rem 1.1rem;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+}
+.conf-step-num {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: oklch(0.99 0.005 80);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.92rem;
+}
+.conf-step-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.92rem;
+  line-height: 1.55;
+}
+.conf-step-body strong {
+  color: var(--ink-1);
+  font-weight: 700;
+  font-size: 0.97rem;
+}
+.conf-step-body span { color: var(--ink-2); }
+
+.conf-phone-box {
+  background: var(--accent-bg);
+  border: 1px solid oklch(0.84 0.06 50);
+  border-radius: 10px;
+  padding: 0.75rem 1.1rem;
+  font-size: 0.92rem;
+  color: var(--accent-ink);
+  width: 100%;
+  text-align: center;
+}
+.conf-phone-box strong { color: var(--ink-1); font-weight: 700; }
+
+.conf-wa-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  width: 100%;
+  padding: 0.95rem 1.5rem;
+  background: #25d366;
+  color: white;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  transition: background-color 0.2s ease-out, transform 0.2s ease-out;
+  box-shadow: 0 6px 18px oklch(0.62 0.16 145 / 0.25);
+}
+.conf-wa-cta:hover {
+  background: #1ebe5a;
+  transform: translateY(-1px);
+}
+.conf-wa-cta:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
 /* sr-only utility */
 .sr-only {
   position: absolute;

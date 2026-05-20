@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 
 const ENGLISH_ONLY = /^[A-Za-z\s]+$/;
+const PHONE_DIGITS_ONLY = /\D/g;
 
 const STEPS = [
   { icon: 'edit_note', label: 'פרטים' },
@@ -21,17 +23,22 @@ export default function PersonalDetailsPage() {
   const [age, setAge] = useState(state.subjectAge);
   const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
   const [email, setEmail] = useState(state.customerEmail);
+  const [phone, setPhone] = useState(state.customerPhone || '');
   const [notes, setNotes] = useState(state.customerNote || '');
+  const [consent, setConsent] = useState(false);
   const [nameTouched, setNameTouched] = useState(false);
 
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
   const nameError = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
   const ageNum = parseInt(age, 10);
   const ageIsValid = age.trim().length > 0 && ageNum >= 1 && ageNum <= 120;
-  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && email.trim().length > 0;
+  const phoneDigits = phone.replace(PHONE_DIGITS_ONLY, '');
+  const phoneIsValid = phoneDigits.startsWith('0') && phoneDigits.length >= 9 && phoneDigits.length <= 10;
+  const emailIsValid = email.trim().length > 0 && email.includes('@');
+  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && emailIsValid && phoneIsValid && consent;
 
   function handleNext() {
-    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: '', note: notes.trim() });
+    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: phoneDigits, note: notes.trim() });
     router.push('/characters');
   }
 
@@ -136,6 +143,24 @@ export default function PersonalDetailsPage() {
               />
             </div>
 
+            {/* Phone */}
+            <div className="field-group">
+              <label className="field-label" htmlFor="customer-phone">
+                טלפון (לוואטסאפ) <span className="required">*</span>
+              </label>
+              <input
+                id="customer-phone"
+                type="tel"
+                inputMode="tel"
+                className="field-input"
+                placeholder="050-1234567"
+                value={phone}
+                dir="ltr"
+                onChange={(e) => setPhone(e.target.value)}
+              />
+              <p className="field-hint">ניצור איתך קשר בוואטסאפ לאישור התשלום ועדכוני סטטוס.</p>
+            </div>
+
             {/* Notes */}
             <div className="field-group">
               <label className="field-label" htmlFor="customer-notes">
@@ -152,6 +177,25 @@ export default function PersonalDetailsPage() {
               />
             </div>
 
+            {/* Consent */}
+            <div className="field-group">
+              <label className="consent-row">
+                <input
+                  type="checkbox"
+                  className="consent-checkbox"
+                  checked={consent}
+                  onChange={(e) => setConsent(e.target.checked)}
+                />
+                <span className="consent-text">
+                  אני ההורה או האפוטרופוס, ומאשר/ת את העלאת תמונות הילד/ה ל-MemoReals
+                  לצורך יצירת המשחק. קראתי ואני מסכים/ה ל
+                  <Link href="/terms" target="_blank" className="consent-link">תנאי השימוש</Link>
+                  {' '}ול
+                  <Link href="/privacy" target="_blank" className="consent-link">מדיניות הפרטיות</Link>.
+                </span>
+              </label>
+            </div>
+
             {/* CTA */}
             <div className="details-cta-wrap">
               <button
@@ -164,7 +208,7 @@ export default function PersonalDetailsPage() {
                 <span className="material-symbols-outlined cta-arrow">arrow_back</span>
               </button>
               {!canProceed && (
-                <p className="details-hint">יש למלא שם, סגנון דמויות, גיל ואימייל כדי להמשיך</p>
+                <p className="details-hint">יש למלא את כל השדות ולאשר את התנאים כדי להמשיך</p>
               )}
             </div>
           </form>
