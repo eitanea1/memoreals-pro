@@ -3,6 +3,7 @@ export const dynamic = 'force-dynamic';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import { Badge } from '@/components/ui/badge';
+import { formatOrderId } from '@/lib/utils/orderId';
 
 const STATUS_HEBREW: Record<string, string> = {
   RECEIVED:        'התקבלה',
@@ -65,6 +66,7 @@ export default async function AdminPage() {
           <table className="admin-table">
             <thead>
               <tr>
+                <th>מס׳</th>
                 <th>שם</th>
                 <th>סטטוס</th>
                 <th>לקוח</th>
@@ -79,6 +81,9 @@ export default async function AdminPage() {
                 const date = new Date(order.createdAt);
                 return (
                   <tr key={order.id}>
+                    <td>
+                      <span className="font-bold text-[var(--c-brand)] whitespace-nowrap">{formatOrderId(order.displayNumber)}</span>
+                    </td>
                     <td>
                       <span className="font-semibold text-[var(--c-dark)]">{order.subjectName}</span>
                       <span className="admin-sub block">{order.characters.length} דמויות</span>

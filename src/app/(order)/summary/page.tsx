@@ -57,7 +57,7 @@ export default function SummaryPage() {
           originalName: p.originalName,
         })),
       });
-      dispatch({ type: 'SET_ORDER_ID', orderId: result.orderId });
+      dispatch({ type: 'SET_ORDER_ID', orderId: result.orderId, displayNumber: result.displayNumber });
       router.push('/confirmation');
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'שגיאה בשליחת ההזמנה');

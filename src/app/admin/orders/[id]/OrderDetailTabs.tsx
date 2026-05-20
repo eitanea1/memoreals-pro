@@ -57,6 +57,7 @@ export default function OrderDetailTabs({ order }: { order: SerializedOrder }) {
 
       {/* Header */}
       <div className="flex flex-wrap items-center gap-3">
+        <span className="text-base font-bold text-[var(--c-brand)] whitespace-nowrap">MR-{order.displayNumber}</span>
         <h1 className="admin-title">{order.subjectName}</h1>
         <Badge className={`${STATUS_COLOR[order.status]} border-0`}>
           {STATUS_HEBREW[order.status]}

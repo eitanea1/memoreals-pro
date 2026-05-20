@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { formatOrderId } from './utils/orderId';
 
 let _resend: Resend | null = null;
 function getResend(): Resend | null {
@@ -11,6 +12,7 @@ interface OrderEmailPayload {
   to: string;
   subjectName: string;
   orderId: string;
+  displayNumber: number;
   characters: string[];
   photoCount: number;
 }
@@ -56,7 +58,7 @@ function buildOrderEmailHtml(p: OrderEmailPayload): string {
                   <p style="margin:0 0 6px;font-size:13px;color:#a0aec0;font-weight:600;text-transform:uppercase;">שם המשתתף</p>
                   <p style="margin:0 0 16px;font-size:17px;font-weight:700;color:#2d3748;">${p.subjectName}</p>
                   <p style="margin:0 0 6px;font-size:13px;color:#a0aec0;font-weight:600;text-transform:uppercase;">מספר הזמנה</p>
-                  <p style="margin:0 0 16px;font-size:13px;font-family:monospace;color:#667eea;">${p.orderId}</p>
+                  <p style="margin:0 0 16px;font-size:18px;font-weight:700;letter-spacing:0.5px;color:#667eea;">${formatOrderId(p.displayNumber)}</p>
                   <p style="margin:0 0 6px;font-size:13px;color:#a0aec0;font-weight:600;text-transform:uppercase;">תמונות שהועלו</p>
                   <p style="margin:0;font-size:15px;color:#2d3748;">${p.photoCount} תמונות</p>
                 </td>

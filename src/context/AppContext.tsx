@@ -15,6 +15,7 @@ const initialState: AppState = {
   selectedCharacters: [],
   photos: [],
   orderId: null,
+  orderDisplayNumber: null,
 };
 
 function loadPersistedState(): AppState {
@@ -78,7 +79,7 @@ function reducer(state: AppState, action: AppAction): AppState {
     }
 
     case 'SET_ORDER_ID':
-      return { ...state, orderId: action.orderId };
+      return { ...state, orderId: action.orderId, orderDisplayNumber: action.displayNumber };
 
     case 'RESET':
       state.photos.forEach((p) => { if (p.previewUrl) URL.revokeObjectURL(p.previewUrl); });

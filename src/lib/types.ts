@@ -25,6 +25,7 @@ export interface AppState {
   selectedCharacters: Character[];
   photos: UploadedPhoto[];
   orderId: string | null;
+  orderDisplayNumber: number | null;
 }
 
 export type AppAction =
@@ -35,5 +36,5 @@ export type AppAction =
   | { type: 'ADD_PHOTO_SUCCESS'; tempId: string; serverPhoto: Omit<UploadedPhoto, 'uploading'> }
   | { type: 'ADD_PHOTO_ERROR'; id: string; error: string }
   | { type: 'REMOVE_PHOTO'; id: string }
-  | { type: 'SET_ORDER_ID'; orderId: string }
+  | { type: 'SET_ORDER_ID'; orderId: string; displayNumber: number }
   | { type: 'RESET' };

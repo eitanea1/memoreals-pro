@@ -6,6 +6,7 @@ import OrderDetailTabs from './OrderDetailTabs';
 
 export type SerializedOrder = {
   id: string;
+  displayNumber: number;
   subjectName: string;
   subjectAge: string;
   subjectGender: string;
@@ -47,6 +48,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
 
   const serialized: SerializedOrder = {
     id:            order.id,
+    displayNumber: order.displayNumber,
     subjectName:   order.subjectName,
     subjectAge:    order.subjectAge,
     subjectGender: order.subjectGender,

@@ -21,7 +21,7 @@ interface OrderPayload extends PersonalDetails {
  * Saves the full order to Postgres.
  * Falls back gracefully if the DB is unreachable (e.g. Docker not running).
  */
-export async function submitOrder(payload: OrderPayload): Promise<{ orderId: string }> {
+export async function submitOrder(payload: OrderPayload): Promise<{ orderId: string; displayNumber: number }> {
   const aiLabel = computeAiLabel(payload.age, payload.gender);
 
   try {
@@ -68,14 +68,15 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
 
     // Send confirmation email (fire-and-forget — never blocks the order)
     sendOrderConfirmationEmail({
-      to:          payload.email,
-      subjectName: payload.name,
-      orderId:     order.id,
-      characters:  payload.characters.map((c) => c.displayName),
-      photoCount:  payload.photos.length,
+      to:            payload.email,
+      subjectName:   payload.name,
+      orderId:       order.id,
+      displayNumber: order.displayNumber,
+      characters:    payload.characters.map((c) => c.displayName),
+      photoCount:    payload.photos.length,
     });
 
-    return { orderId: order.id };
+    return { orderId: order.id, displayNumber: order.displayNumber };
   } catch (err) {
     console.error('[submitOrder] DB unavailable:', err);
     throw new Error('לא ניתן לשמור את ההזמנה. נסו שוב מאוחר יותר.');
