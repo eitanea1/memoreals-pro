@@ -112,7 +112,8 @@
       "Bash(git fetch *)",
       "Bash(gh pr *)",
       "Bash(git pull *)",
-      "Bash(Select-String -Pattern \"\\(privacy|terms|legal\\)\")"
+      "Bash(Select-String -Pattern \"\\(privacy|terms|legal\\)\")",
+      "Bash(npx prisma *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

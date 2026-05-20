@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
+import { formatOrderId } from '@/lib/utils/orderId';
 
 export default function ConfirmationPage() {
   const { state, dispatch } = useApp();
@@ -59,15 +60,15 @@ export default function ConfirmationPage() {
           </div>
         )}
 
-        {state.orderId && (
+        {state.orderDisplayNumber != null && (
           <div className="order-id-box">
             <span>מספר הזמנה (לשמירה):</span>
-            <code>{state.orderId}</code>
+            <code>{formatOrderId(state.orderDisplayNumber)}</code>
           </div>
         )}
 
         <a
-          href={`https://wa.me/972555707594?text=${encodeURIComponent(`היי, ביצעתי הזמנה ב-MemoReals (מס׳ ${state.orderId ?? ''})`)}`}
+          href={`https://wa.me/972555707594?text=${encodeURIComponent(`היי, ביצעתי הזמנה ב-MemoReals (מס׳ ${formatOrderId(state.orderDisplayNumber)})`)}`}
           target="_blank"
           rel="noopener noreferrer"
           className="conf-wa-cta"
