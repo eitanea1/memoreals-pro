@@ -1,8 +1,8 @@
 import { Resend } from 'resend';
 import { formatOrderId } from './utils/orderId';
 
-const FROM_ADDRESS = process.env.EMAIL_FROM ?? 'MemoReals <onboarding@resend.dev>';
-const REPLY_TO_ADDRESS = process.env.EMAIL_REPLY_TO ?? 'memoreals26@gmail.com';
+const FROM_ADDRESS = (process.env.EMAIL_FROM ?? 'MemoReals <onboarding@resend.dev>').trim();
+const REPLY_TO_ADDRESS = (process.env.EMAIL_REPLY_TO ?? 'memoreals26@gmail.com').trim();
 
 let _resend: Resend | null = null;
 function getResend(): Resend | null {
