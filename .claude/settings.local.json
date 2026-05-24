@@ -118,7 +118,8 @@
       "PowerShell($codePath = \\(Get-Command code -ErrorAction SilentlyContinue\\).Source; if \\($codePath\\) { \"code CLI found: $codePath\"; & code --version | Select-Object -First 1 } else { \"[WARN] code CLI not in PATH\" })",
       "PowerShell(& code --install-extension be5invis.vscode-custom-css 2>&1)",
       "PowerShell($url = \"https://github.com/GuyRonnen/rtl-for-vs-code-agents/releases/download/v10.1.1/rtl-for-vs-code-agents-10.1.1.vsix\"; $dest = \"$env:TEMP\\\\rtl-for-vs-code-agents-10.1.1.vsix\"; Invoke-WebRequest -Uri $url -OutFile $dest -UseBasicParsing; \\(Get-Item $dest\\).Length; \"downloaded to $dest\")",
-      "PowerShell(& code --install-extension \"$env:TEMP\\\\rtl-for-vs-code-agents-10.1.1.vsix\" 2>&1)"
+      "PowerShell(& code --install-extension \"$env:TEMP\\\\rtl-for-vs-code-agents-10.1.1.vsix\" 2>&1)",
+      "PowerShell($shell = New-Object -ComObject Shell.Application; $folder = $shell.Namespace\\(\"C:\\\\Users\\\\Eitan\\\\memoreals-pro\\\\public\"\\); $file = $folder.ParseName\\(\"VIDEO.mp4\"\\); 0..400 | ForEach-Object { $name = $folder.GetDetailsOf\\($null, $_\\); $val = $folder.GetDetailsOf\\($file, $_\\); if \\($name -match \"Frame|Width|Height|Resolution|Aspect|Dimensions|Length|Bit\" -and $val\\) { \"$_  $name = $val\" } })"
     ],
     "additionalDirectories": [
       "C:\\Users\\Eitan\\gmail-assistant",

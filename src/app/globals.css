@@ -823,7 +823,7 @@ h1, h2, h3, h4, h5, h6 { color: var(--ink-1); }
 }
 .hero-photo {
   position: relative;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 848 / 480;
   border-radius: 18px;
   overflow: hidden;
   background: var(--bg-2);
