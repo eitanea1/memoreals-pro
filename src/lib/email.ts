@@ -1,6 +1,9 @@
 import { Resend } from 'resend';
 import { formatOrderId } from './utils/orderId';
 
+const FROM_ADDRESS = process.env.EMAIL_FROM ?? 'MemoReals <onboarding@resend.dev>';
+const REPLY_TO_ADDRESS = process.env.EMAIL_REPLY_TO ?? 'memoreals26@gmail.com';
+
 let _resend: Resend | null = null;
 function getResend(): Resend | null {
   if (!process.env.RESEND_API_KEY) return null;
@@ -108,8 +111,9 @@ export async function sendOrderConfirmationEmail(payload: OrderEmailPayload): Pr
 
   try {
     await resend.emails.send({
-      from:    'MemoReals <onboarding@resend.dev>',
+      from:    FROM_ADDRESS,
       to:      payload.to,
+      replyTo: REPLY_TO_ADDRESS,
       subject: `✅ ההזמנה שלך התקבלה! — MemoReals`,
       html:    buildOrderEmailHtml(payload),
     });
