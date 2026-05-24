@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
+import BoomerangVideoBg from '@/components/BoomerangVideoBg';
 
 const HOW_IT_WORKS = [
   {
@@ -69,17 +70,12 @@ export default function HomePage() {
           </div>
 
           <div className="hero-media">
-            <div className="hero-photo">
-              <Image
-                src="/gallery/product-1.jpg"
-                alt="קלפי MemoReals אישיים על שולחן"
-                width={720}
-                height={900}
-                priority
-                className="hero-photo-img"
-                sizes="(max-width: 900px) 100vw, 50vw"
-              />
-            </div>
+            <BoomerangVideoBg
+              src="/VIDEO.mp4"
+              fallbackImage="/gallery/product-1.jpg"
+              fallbackAlt="קלפי MemoReals אישיים על שולחן"
+              className="hero-photo"
+            />
             <div className="hero-photo-tag">
               <span className="hero-photo-tag-dot" aria-hidden="true" />
               מודפס באהבה בישראל
