@@ -103,6 +103,13 @@ function buildOrderEmailHtml(p: OrderEmailPayload): string {
 }
 
 export async function sendOrderConfirmationEmail(payload: OrderEmailPayload): Promise<void> {
+  console.log('[email] sendOrderConfirmationEmail invoked', {
+    to: payload.to,
+    from: FROM_ADDRESS,
+    replyTo: REPLY_TO_ADDRESS,
+    hasApiKey: !!process.env.RESEND_API_KEY,
+  });
+
   const resend = getResend();
   if (!resend) {
     console.warn('[email] RESEND_API_KEY not set, skipping email');
@@ -110,14 +117,14 @@ export async function sendOrderConfirmationEmail(payload: OrderEmailPayload): Pr
   }
 
   try {
-    await resend.emails.send({
+    const result = await resend.emails.send({
       from:    FROM_ADDRESS,
       to:      payload.to,
       replyTo: REPLY_TO_ADDRESS,
       subject: `✅ ההזמנה שלך התקבלה! — MemoReals`,
       html:    buildOrderEmailHtml(payload),
     });
-    console.log('[email] Order confirmation sent to', payload.to);
+    console.log('[email] Order confirmation send result:', JSON.stringify(result));
   } catch (err) {
     // Don't throw — email failure should never block the order
     console.error('[email] Failed to send confirmation:', err);

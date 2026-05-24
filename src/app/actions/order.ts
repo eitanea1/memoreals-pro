@@ -66,8 +66,11 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
       },
     });
 
-    // Send confirmation email (fire-and-forget — never blocks the order)
-    sendOrderConfirmationEmail({
+    // Send confirmation email — awaited so the serverless function doesn't
+    // get killed mid-flight. The email helper has its own try/catch, so an
+    // email failure here will never throw and never block the order from
+    // returning successfully.
+    await sendOrderConfirmationEmail({
       to:            payload.email,
       subjectName:   payload.name,
       orderId:       order.id,
