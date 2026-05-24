@@ -195,7 +195,7 @@ export default function CharacterSelectPage() {
               <div className="relative w-16 h-16 mx-auto mb-3 flex items-center justify-center">
                 <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
                   <circle cx="24" cy="24" r="20" fill="transparent" stroke="#e7e0d5" strokeWidth="3" />
-                  <circle cx="24" cy="24" r="20" fill="transparent" stroke={isComplete ? '#16a34a' : '#5b21b6'} strokeWidth="3" strokeDasharray={2 * Math.PI * 20} strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-500" />
+                  <circle cx="24" cy="24" r="20" fill="transparent" stroke={isComplete ? '#16a34a' : '#c66a2e'} strokeWidth="3" strokeDasharray={2 * Math.PI * 20} strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-500" />
                 </svg>
                 <span className={`absolute text-sm font-extrabold ${isComplete ? 'text-green-600' : 'text-[var(--c-brand)]'}`}>{total}/20</span>
               </div>
@@ -265,7 +265,7 @@ export default function CharacterSelectPage() {
             <div className="relative w-12 h-12 flex items-center justify-center lg:hidden">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
                 <circle cx="24" cy="24" r="20" fill="transparent" stroke="#e7e0d5" strokeWidth="4" />
-                <circle cx="24" cy="24" r="20" fill="transparent" stroke={isComplete ? '#16a34a' : '#5b21b6'} strokeWidth="4" strokeDasharray={2 * Math.PI * 20} strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-300" />
+                <circle cx="24" cy="24" r="20" fill="transparent" stroke={isComplete ? '#16a34a' : '#c66a2e'} strokeWidth="4" strokeDasharray={2 * Math.PI * 20} strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-300" />
               </svg>
               <span className={`absolute text-xs font-bold ${isComplete ? 'text-green-600' : 'text-[var(--c-brand)]'}`}>{total}/20</span>
             </div>
