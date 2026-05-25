@@ -80,7 +80,7 @@ export default function PhotoUploadPage() {
 
   return (
     <div className="page" dir="rtl">
-      <StepIndicator current={2} />
+      <StepIndicator current={1} />
       <div className="page-header">
         <h2>העלאת תמונות</h2>
         <div className={`selection-counter ${canProceed ? 'complete' : ''}`}>
@@ -156,7 +156,7 @@ export default function PhotoUploadPage() {
         <Button variant="brand" size="xl" disabled={!canProceed} onClick={() => router.push('/shipping')}>
           המשך ←
         </Button>
-        <Button variant="brand-outline" size="xl" onClick={() => router.push('/characters')}>
+        <Button variant="brand-outline" size="xl" onClick={() => router.push('/details')}>
           → חזור
         </Button>
       </div>

@@ -127,14 +127,18 @@ export default function HomePage() {
                   className="package-photo"
                   sizes="(max-width: 700px) 100vw, 50vw"
                 />
+                <span className="package-pick-ribbon">
+                  <span className="material-symbols-outlined" aria-hidden="true">touch_app</span>
+                  אתם בוחרים את כל הדמויות
+                </span>
               </div>
               <div className="package-body">
                 <span className="package-badge package-badge-kids">לגילאי 4–12</span>
                 <h3 className="package-title">ילדים מהאגדות</h3>
-                <p className="package-desc">הילד/ה שלכם כגיבור אמיתי. עשרים דמויות קסומות, מודפסות בידי מקצוענים על קלפים עבים.</p>
+                <p className="package-desc">הילד/ה שלכם כגיבור אמיתי. בוחרים 20 דמויות מתוך מאות אפשרויות — גיבורי על, נסיכות, ספורטאים, ועוד.</p>
                 <div className="package-cta-row">
                   <Link href="/details" className="btn-primary-warm btn-primary-warm-sm">
-                    הזמינו עכשיו
+                    בחרו דמויות
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
                   <span className="package-price">350 ₪</span>
@@ -153,14 +157,18 @@ export default function HomePage() {
                   className="package-photo"
                   sizes="(max-width: 700px) 100vw, 50vw"
                 />
+                <span className="package-pick-ribbon">
+                  <span className="material-symbols-outlined" aria-hidden="true">touch_app</span>
+                  אתם בוחרים את כל הדמויות
+                </span>
               </div>
               <div className="package-body">
                 <span className="package-badge package-badge-adults">למבוגרים</span>
                 <h3 className="package-title">מה אם...?</h3>
-                <p className="package-desc">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית? משחק שיצחיק את כל המשפחה.</p>
+                <p className="package-desc">מה היה קורה אם סבא היה סופרמן? אם אמא הייתה סוכנת חשאית? בוחרים 20 תפקידים — שיצחיקו את כל המשפחה.</p>
                 <div className="package-cta-row">
                   <Link href="/details" className="btn-primary-warm btn-primary-warm-sm">
-                    הזמינו עכשיו
+                    בחרו דמויות
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
                   <span className="package-price">350 ₪</span>

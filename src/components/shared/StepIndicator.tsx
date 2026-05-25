@@ -3,11 +3,10 @@
 import { useRouter } from 'next/navigation';
 
 const STEPS = [
-  { label: 'פרטי המשתתף', path: '/details' },
-  { label: 'בחירת דמויות', path: '/characters' },
-  { label: 'העלאת תמונות', path: '/upload' },
-  { label: 'משלוח',        path: '/shipping' },
-  { label: 'סיכום הזמנה',  path: '/summary' },
+  { label: 'דמויות ופרטים',     path: '/details' },
+  { label: 'תמונות פנים',       path: '/upload' },
+  { label: 'משלוח ויצירת קשר',  path: '/shipping' },
+  { label: 'סיכום הזמנה',       path: '/summary' },
 ];
 
 interface Props {

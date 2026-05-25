@@ -1,102 +1,191 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import {
+  BOYS_HEROES, BOYS_ANIME, BOYS_ADVENTURES, BOYS_PREMIUM,
+  GIRLS_HEROES, GIRLS_ANIME, GIRLS_ADVENTURES, GIRLS_PREMIUM,
+  MEN_HEROES, MEN_ADVENTURES, MEN_PROFESSIONS,
+  WOMEN_HEROES, WOMEN_ADVENTURES, WOMEN_PROFESSIONS,
+} from '@/lib/data/characters';
+import CategoryList from '@/components/character/CategoryList';
+import StepIndicator from '@/components/shared/StepIndicator';
+import type { Character } from '@/lib/types';
 
 const ENGLISH_ONLY = /^[A-Za-z\s]+$/;
-const PHONE_DIGITS_ONLY = /\D/g;
+const CUSTOM_SLOTS = 5;
 
-const STEPS = [
-  { icon: 'edit_note', label: 'פרטים' },
-  { icon: 'auto_fix_high', label: 'בחירת דמויות' },
-  { icon: 'add_a_photo', label: 'העלאת תמונות' },
-  { icon: 'local_shipping', label: 'משלוח' },
+type CategoryFilter = 'all' | 'superheroes' | 'anime' | 'adventures' | 'premium';
+type GenderOption = 'Male' | 'Female';
+
+const TABS: { key: CategoryFilter; label: string }[] = [
+  { key: 'all', label: 'הכל' },
+  { key: 'superheroes', label: 'גיבורי על' },
+  { key: 'anime', label: 'אגדות ואנימה' },
+  { key: 'adventures', label: 'הרפתקאות' },
+  { key: 'premium', label: 'מקצועות/אחר' },
 ];
 
-type GenderOption = 'Male' | 'Female';
-export default function PersonalDetailsPage() {
+export default function DetailsAndCharactersPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
 
-  // If a previous order was already submitted (orderId is set), the user is
-  // starting a fresh order. Wipe stale state so old character selections,
-  // photos, address etc. don't leak into the new order.
+  // Fresh-start reset: if a previous order was already submitted (orderId set),
+  // wipe all stale state so the new order starts clean.
   useEffect(() => {
     if (state.orderId !== null) {
       dispatch({ type: 'RESET' });
     }
-    // intentional empty dep array — only run on mount
+    // intentional: run only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Persona form
   const [name, setName] = useState(state.subjectName);
   const [age, setAge] = useState(state.subjectAge);
   const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
-  const [email, setEmail] = useState(state.customerEmail);
-  const [phone, setPhone] = useState(state.customerPhone || '');
-  const [notes, setNotes] = useState(state.customerNote || '');
-  const [consent, setConsent] = useState(false);
   const [nameTouched, setNameTouched] = useState(false);
 
+  // Character filters
+  const [filter, setFilter] = useState<CategoryFilter>('all');
+  const [search, setSearch] = useState('');
+
+  // Custom character inputs
+  const [customInputs, setCustomInputs] = useState<string[]>(() => {
+    const existing = state.selectedCharacters
+      .filter((c) => c.id.startsWith('custom-'))
+      .map((c) => c.displayName);
+    return Array.from({ length: CUSTOM_SLOTS }, (_, i) => existing[i] ?? '');
+  });
+
+  // Persona validation
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
   const nameError = nameTouched && name.trim().length > 0 && !ENGLISH_ONLY.test(name.trim());
   const ageNum = parseInt(age, 10);
   const ageIsValid = age.trim().length > 0 && ageNum >= 1 && ageNum <= 120;
-  const phoneDigits = phone.replace(PHONE_DIGITS_ONLY, '');
-  const phoneIsValid = phoneDigits.startsWith('0') && phoneDigits.length >= 9 && phoneDigits.length <= 10;
-  const emailIsValid = email.trim().length > 0 && email.includes('@');
-  const canProceed = nameIsValid && ageIsValid && gender.length > 0 && emailIsValid && phoneIsValid && consent;
+  const detailsValid = nameIsValid && ageIsValid && gender.length > 0;
 
-  function handleNext() {
-    // If the user changed gender (or subject name) since the last visit to
-    // this page, wipe characters + photos because they were chosen for a
-    // different persona. We keep the consent state local to this form and
-    // re-collect it implicitly on next submit.
-    const personaChanged =
-      state.subjectGender !== '' && state.subjectGender !== gender;
-    if (personaChanged) {
+  // Gender-aware character lists. Empty until gender is selected.
+  const isBoy = gender === 'Male';
+  const heroes: Character[] = gender
+    ? [...(isBoy ? BOYS_HEROES : GIRLS_HEROES), ...(isBoy ? MEN_HEROES : WOMEN_HEROES)]
+    : [];
+  const anime: Character[] = gender ? (isBoy ? BOYS_ANIME : GIRLS_ANIME) : [];
+  const adventures: Character[] = gender
+    ? [...(isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES), ...(isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES)]
+    : [];
+  const premium: Character[] = gender
+    ? [...(isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM), ...(isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS)]
+    : [];
+
+  const selectedIds = new Set(state.selectedCharacters.map((c) => c.id));
+  const total = state.selectedCharacters.length;
+  const isComplete = total === 20;
+  const progress = (total / 20) * 100;
+  const canProceed = detailsValid && isComplete;
+
+  function filterBySearch(list: Character[]): Character[] {
+    if (!search.trim()) return list;
+    const q = search.trim().toLowerCase();
+    return list.filter(
+      (c) => c.displayName.toLowerCase().includes(q) || c.name.toLowerCase().includes(q),
+    );
+  }
+
+  function handleToggle(character: Character) {
+    if (selectedIds.has(character.id)) {
+      dispatch({ type: 'DESELECT_CHARACTER', id: character.id });
+    } else {
+      dispatch({ type: 'SELECT_CHARACTER', character });
+    }
+  }
+
+  function handleCustomChange(index: number, value: string) {
+    const prev = customInputs[index].trim();
+    const prevId = `custom-${index}`;
+    const wasSelected = prev !== '' && selectedIds.has(prevId);
+    if (wasSelected) dispatch({ type: 'DESELECT_CHARACTER', id: prevId });
+    const updated = customInputs.map((v, i) => (i === index ? value : v));
+    setCustomInputs(updated);
+    const trimmed = value.trim();
+    const effectiveTotal = wasSelected ? total - 1 : total;
+    if (trimmed && effectiveTotal < 20) {
+      dispatch({
+        type: 'SELECT_CHARACTER',
+        character: { id: prevId, name: trimmed, displayName: trimmed, category: 'premium' },
+      });
+    }
+  }
+
+  function handleGenderChange(newGender: GenderOption) {
+    // When gender flips, the previously-picked characters belong to the other set —
+    // clear them so the user starts the picks fresh for the new persona.
+    if (gender && gender !== newGender) {
       state.selectedCharacters.forEach((c) =>
         dispatch({ type: 'DESELECT_CHARACTER', id: c.id }),
       );
-      state.photos.forEach((p) =>
-        dispatch({ type: 'REMOVE_PHOTO', id: p.id }),
-      );
     }
-    dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: phoneDigits, note: notes.trim() });
-    router.push('/characters');
+    setGender(newGender);
+  }
+
+  function handleNext() {
+    dispatch({
+      type: 'SET_PERSONAL_DETAILS',
+      name: name.trim(),
+      age: age.trim(),
+      gender,
+      email: state.customerEmail,
+      phone: state.customerPhone,
+      note: state.customerNote,
+    });
+    router.push('/upload');
   }
 
   return (
-    <div className="details-premium" dir="rtl">
+    <div className="min-h-screen pb-32" dir="rtl">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-4">
+        <StepIndicator current={0} />
 
-      {/* ── Journey Tracker ── */}
-      <div className="journey-tracker">
-        <div className="journey-line" />
-        {STEPS.map((step, i) => (
-          <div key={step.label} className="journey-step">
-            <div className={`journey-dot ${i === 0 ? 'active' : ''}`}>
-              <span className="material-symbols-outlined">{step.icon}</span>
+        {/* ── Hero header ── */}
+        <div className="text-center mt-8 mb-8">
+          <h1 className="text-3xl md:text-5xl font-extrabold text-[var(--ink-1)] mb-3 tracking-tight" style={{ letterSpacing: '-0.025em' }}>
+            בואו ניצור משחק לילד שלכם
+          </h1>
+          <p className="text-base text-[var(--ink-2)] max-w-xl mx-auto leading-relaxed">
+            ספרו לנו על הילד/ה ובחרו 20 דמויות. הדמויות שלכם יהפכו לקלפים מודפסים עם הפנים האמיתיות.
+          </p>
+        </div>
+
+        {/* ── Compact details form ── */}
+        <div className="bg-[var(--surface)] rounded-2xl border border-[var(--line)] p-5 sm:p-6 mb-10 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Gender (toggle) */}
+            <div className="field-group">
+              <span className="field-label">סגנון הדמויות <span className="required">*</span></span>
+              <div className="gender-grid">
+                <label className="gender-card-label">
+                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Male'} onChange={() => handleGenderChange('Male')} />
+                  <div className={`gender-card ${gender === 'Male' ? 'selected' : ''}`}>
+                    <span className="material-symbols-outlined gender-icon" aria-hidden="true">face</span>
+                    <span className="gender-text">ילד</span>
+                  </div>
+                </label>
+                <label className="gender-card-label">
+                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Female'} onChange={() => handleGenderChange('Female')} />
+                  <div className={`gender-card ${gender === 'Female' ? 'selected' : ''}`}>
+                    <span className="material-symbols-outlined gender-icon" aria-hidden="true">face_3</span>
+                    <span className="gender-text">ילדה</span>
+                  </div>
+                </label>
+              </div>
             </div>
-            <span className={`journey-label ${i === 0 ? 'active' : ''}`}>{step.label}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* ── Content Grid ── */}
-      <div className="details-grid">
-
-        {/* Form Card */}
-        <div className="details-form-card">
-          <h1 className="details-title">פרטי המשתתף/ת</h1>
-          <p className="details-subtitle">בואו נתחיל את הקסם. ספרו לנו קצת על הגיבור או הגיבורה של הסיפור.</p>
-
-          <form className="details-form" onSubmit={(e) => e.preventDefault()}>
 
             {/* Name */}
             <div className="field-group">
-              <label className="field-label" htmlFor="child-name">שם (באנגלית)</label>
+              <label className="field-label" htmlFor="child-name">
+                שם (באנגלית) <span className="required">*</span>
+              </label>
               <input
                 id="child-name"
                 type="text"
@@ -106,37 +195,17 @@ export default function PersonalDetailsPage() {
                 dir="ltr"
                 onChange={(e) => setName(e.target.value)}
                 onBlur={() => setNameTouched(true)}
-                autoFocus
               />
               {nameError && (
                 <p className="field-error">יש להזין את השם באנגלית בלבד (עבור עיצובי ה-AI)</p>
               )}
             </div>
 
-            {/* Character Style */}
-            <div className="field-group">
-              <span className="field-label">סגנון דמויות</span>
-              <div className="gender-grid">
-                <label className="gender-card-label">
-                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Male'} onChange={() => setGender('Male')} />
-                  <div className={`gender-card ${gender === 'Male' ? 'selected' : ''}`}>
-                    <span className="material-symbols-outlined gender-icon">face</span>
-                    <span className="gender-text">דמויות גבריות</span>
-                  </div>
-                </label>
-                <label className="gender-card-label">
-                  <input type="radio" name="gender" className="sr-only" checked={gender === 'Female'} onChange={() => setGender('Female')} />
-                  <div className={`gender-card ${gender === 'Female' ? 'selected' : ''}`}>
-                    <span className="material-symbols-outlined gender-icon">face_3</span>
-                    <span className="gender-text">דמויות נשיות</span>
-                  </div>
-                </label>
-              </div>
-            </div>
-
             {/* Age */}
-            <div className="field-group field-short">
-              <label className="field-label" htmlFor="child-age">גיל</label>
+            <div className="field-group">
+              <label className="field-label" htmlFor="child-age">
+                גיל <span className="required">*</span>
+              </label>
               <input
                 id="child-age"
                 type="number"
@@ -149,111 +218,174 @@ export default function PersonalDetailsPage() {
                 onChange={(e) => setAge(e.target.value)}
               />
             </div>
+          </div>
+        </div>
 
-            {/* Divider */}
-            <div className="form-divider" />
+        {/* ── Empty state: pick gender first ── */}
+        {!gender && (
+          <div className="text-center py-16 max-w-md mx-auto">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--bg-2)] flex items-center justify-center">
+              <span className="material-symbols-outlined text-3xl text-[var(--accent)]" aria-hidden="true">touch_app</span>
+            </div>
+            <p className="text-base text-[var(--ink-2)]">
+              בחרו <strong className="text-[var(--ink-1)]">ילד</strong> או <strong className="text-[var(--ink-1)]">ילדה</strong> למעלה כדי לראות את כל הדמויות הזמינות
+            </p>
+          </div>
+        )}
 
-            {/* Email */}
-            <div className="field-group">
-              <label className="field-label" htmlFor="customer-email">
-                אימייל <span className="required">*</span>
-              </label>
-              <input
-                id="customer-email"
-                type="email"
-                className="field-input"
-                placeholder="your@email.com"
-                value={email}
-                dir="ltr"
-                onChange={(e) => setEmail(e.target.value)}
-              />
+        {/* ── Character section (only shown after gender is selected) ── */}
+        {gender && (
+          <>
+            <div className="text-center mb-6">
+              <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--ink-1)] mb-2" style={{ letterSpacing: '-0.02em' }}>
+                בחרו 20 דמויות
+              </h2>
+              <p className="text-sm text-[var(--ink-2)]">
+                כל דמות תהפוך לקלף עם הפנים של {name || (isBoy ? 'הילד' : 'הילדה') + ' שלכם'}
+              </p>
             </div>
 
-            {/* Phone */}
-            <div className="field-group">
-              <label className="field-label" htmlFor="customer-phone">
-                טלפון (לוואטסאפ) <span className="required">*</span>
-              </label>
-              <input
-                id="customer-phone"
-                type="tel"
-                inputMode="tel"
-                className="field-input"
-                placeholder="050-1234567"
-                value={phone}
-                dir="ltr"
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <p className="field-hint">ניצור איתך קשר בוואטסאפ לאישור התשלום ועדכוני סטטוס.</p>
-            </div>
-
-            {/* Notes */}
-            <div className="field-group">
-              <label className="field-label" htmlFor="customer-notes">
-                הערות ובקשות מיוחדות <span className="optional">(אופציונלי)</span>
-              </label>
-              <textarea
-                id="customer-notes"
-                className="field-input"
-                rows={3}
-                placeholder="לדוגמה: תמונות צנועות בלבד (ללא גופיות/מכנסיים קצרים), פנים עם משקפיים, שיער ארוך..."
-                value={notes}
-                onChange={(e) => setNotes(e.target.value)}
-                style={{ resize: 'vertical', minHeight: '80px', fontFamily: 'Heebo, sans-serif' }}
-              />
-            </div>
-
-            {/* Consent */}
-            <div className="field-group">
-              <label className="consent-row">
+            {/* Search */}
+            <div className="max-w-md mx-auto mb-6">
+              <div className="relative">
+                <span className="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[var(--ink-3)] pointer-events-none" style={{ fontSize: '20px' }} aria-hidden="true">search</span>
                 <input
-                  type="checkbox"
-                  className="consent-checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="חיפוש דמות... (למשל: ספיידרמן, שף, טייס)"
+                  className="w-full pr-12 pl-4 py-3 rounded-full border border-[var(--line)] bg-[var(--surface)] text-sm outline-none focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent)]/15 transition-all"
                 />
-                <span className="consent-text">
-                  אני ההורה או האפוטרופוס, ומאשר/ת את העלאת תמונות הילד/ה ל-MemoReals
-                  לצורך יצירת המשחק. קראתי ואני מסכים/ה ל
-                  <Link href="/terms" target="_blank" className="consent-link">תנאי השימוש</Link>
-                  {' '}ול
-                  <Link href="/privacy" target="_blank" className="consent-link">מדיניות הפרטיות</Link>.
-                </span>
-              </label>
+              </div>
             </div>
 
-            {/* CTA */}
-            <div className="details-cta-wrap">
-              <button
-                type="button"
-                className="details-cta"
-                disabled={!canProceed}
-                onClick={handleNext}
-              >
-                בואו נבחר את הדמויות
-                <span className="material-symbols-outlined cta-arrow">arrow_back</span>
-              </button>
-              {!canProceed && (
-                <p className="details-hint">יש למלא את כל השדות ולאשר את התנאים כדי להמשיך</p>
+            {/* Tabs */}
+            <nav className="flex justify-center gap-2 mb-10 overflow-x-auto py-1 no-scrollbar">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.key}
+                  onClick={() => setFilter(tab.key)}
+                  className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all duration-200 whitespace-nowrap
+                    ${filter === tab.key
+                      ? 'bg-[var(--accent)] text-white shadow-md'
+                      : 'bg-[var(--surface)] text-[var(--ink-1)] border border-[var(--line)] hover:bg-[var(--bg-2)]'}`}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+
+            {/* Character grids */}
+            <div className="flex-1 min-w-0">
+              {(filter === 'all' || filter === 'superheroes') && filterBySearch(heroes).length > 0 && (
+                <CategoryList title="גיבורי על" characters={filterBySearch(heroes)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+              )}
+              {(filter === 'all' || filter === 'anime') && filterBySearch(anime).length > 0 && (
+                <CategoryList title="אגדות ואנימה" characters={filterBySearch(anime)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+              )}
+              {(filter === 'all' || filter === 'adventures') && filterBySearch(adventures).length > 0 && (
+                <CategoryList title="הרפתקאות" characters={filterBySearch(adventures)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+              )}
+              {(filter === 'all' || filter === 'premium') && filterBySearch(premium).length > 0 && (
+                <CategoryList title="מקצועות/אחר" characters={filterBySearch(premium)} selectedIds={selectedIds} totalSelected={total} onToggle={handleToggle} />
+              )}
+              {search.trim() && filterBySearch(heroes).length === 0 && filterBySearch(anime).length === 0 && filterBySearch(adventures).length === 0 && filterBySearch(premium).length === 0 && (
+                <div className="text-center py-12 text-[var(--ink-3)]">
+                  <span className="material-symbols-outlined text-4xl mb-2 block" aria-hidden="true">search_off</span>
+                  <p className="text-sm">לא נמצאו דמויות התואמות לחיפוש &ldquo;{search}&rdquo;</p>
+                </div>
               )}
             </div>
-          </form>
-        </div>
 
-        {/* Hero Illustration (Desktop) */}
-        <div className="details-hero-side">
-          <div className="details-hero-glow-1" />
-          <div className="details-hero-glow-2" />
-          <div className="details-hero-img-wrap">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/example (1).jpg" alt="דוגמה לקלף" className="details-hero-img" />
-            <div className="details-hero-overlay" />
+            {/* Custom characters block */}
+            <div className="mt-12 mb-8 rounded-3xl border border-[var(--line)] bg-[var(--bg-2)] p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-10 h-10 rounded-xl bg-[var(--accent)] flex items-center justify-center text-white text-lg" aria-hidden="true">✨</div>
+                <div>
+                  <h3 className="text-lg font-extrabold text-[var(--ink-1)]">רוצים דמויות שלא מופיעות כאן?</h3>
+                  <p className="text-xs text-[var(--ink-2)]">הוסיפו עד {CUSTOM_SLOTS} דמויות מותאמות אישית</p>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
+                {customInputs.map((val, i) => {
+                  const id = `custom-${i}`;
+                  const isSelected = selectedIds.has(id);
+                  const isFull = total >= 20 && !isSelected;
+                  return (
+                    <div
+                      key={i}
+                      className={`relative flex items-center gap-3 rounded-2xl px-4 py-3 transition-all duration-200 border
+                        ${isSelected
+                          ? 'bg-[var(--surface)] ring-2 ring-[var(--accent)] border-[var(--accent)] shadow-md'
+                          : 'bg-[var(--surface)]/80 border-[var(--line)] hover:border-[var(--accent)]/40 hover:shadow-sm'}`}
+                    >
+                      <span className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-extrabold shrink-0
+                        ${isSelected ? 'bg-[var(--accent)] text-white' : 'bg-[var(--bg-3)] text-[var(--ink-1)]'}`}>
+                        {i + 1}
+                      </span>
+                      <input
+                        type="text"
+                        className="flex-1 bg-transparent text-sm font-medium outline-none placeholder:text-[var(--ink-3)] placeholder:font-normal"
+                        placeholder={`דמות מותאמת ${i + 1}`}
+                        value={val}
+                        disabled={isFull && !val}
+                        onChange={(e) => handleCustomChange(i, e.target.value)}
+                        dir="rtl"
+                      />
+                      {isSelected && (
+                        <div className="w-5 h-5 bg-[var(--accent)] rounded-full flex items-center justify-center shrink-0" aria-hidden="true">
+                          <svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M2 6l3 3 5-5" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+
+      {/* ── Sticky bottom bar ── */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[var(--bg-1)]/90 backdrop-blur-2xl border-t border-[var(--line)] shadow-[0_-8px_30px_rgba(0,0,0,0.06)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4" dir="rtl">
+          <div className="flex items-center gap-3">
+            <div className="relative w-12 h-12 flex items-center justify-center">
+              <svg className="w-full h-full -rotate-90" viewBox="0 0 48 48">
+                <circle cx="24" cy="24" r="20" fill="transparent" stroke="#e7e0d5" strokeWidth="4" />
+                <circle cx="24" cy="24" r="20" fill="transparent" stroke={isComplete ? '#16a34a' : '#c66a2e'} strokeWidth="4" strokeDasharray={2 * Math.PI * 20} strokeDashoffset={2 * Math.PI * 20 * (1 - progress / 100)} strokeLinecap="round" className="transition-all duration-300" />
+              </svg>
+              <span className={`absolute text-xs font-bold ${isComplete ? 'text-green-600' : 'text-[var(--accent-ink)]'}`}>{total}/20</span>
+            </div>
+            <div>
+              <p className={`text-sm font-bold ${isComplete ? 'text-green-600' : 'text-[var(--ink-1)]'}`}>
+                {total} / 20 דמויות
+              </p>
+              <p className="text-xs text-[var(--ink-2)]">
+                {!gender
+                  ? 'בחרו ילד או ילדה למעלה'
+                  : !detailsValid
+                  ? 'מלאו שם וגיל'
+                  : isComplete
+                  ? '✨ מוכן להמשיך'
+                  : `בחרו עוד ${20 - total} דמויות`}
+              </p>
+            </div>
           </div>
-          <div className="details-floating-quote">
-            <p>&ldquo;כל אחד הוא גיבור בסיפור משלו&rdquo;</p>
+
+          <div className="flex gap-3">
+            <button
+              onClick={handleNext}
+              disabled={!canProceed}
+              className={`px-7 sm:px-8 py-3 rounded-full text-sm font-bold transition-all duration-300
+                ${canProceed
+                  ? 'bg-[var(--accent)] text-white shadow-md hover:bg-[var(--accent-hover)] hover:scale-[1.02]'
+                  : 'bg-[var(--bg-3)] text-[var(--ink-3)] cursor-not-allowed'}`}
+            >
+              נמשיך לתמונות
+            </button>
           </div>
         </div>
-
       </div>
     </div>
   );
