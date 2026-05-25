@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
@@ -19,6 +19,17 @@ type GenderOption = 'Male' | 'Female';
 export default function PersonalDetailsPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
+
+  // If a previous order was already submitted (orderId is set), the user is
+  // starting a fresh order. Wipe stale state so old character selections,
+  // photos, address etc. don't leak into the new order.
+  useEffect(() => {
+    if (state.orderId !== null) {
+      dispatch({ type: 'RESET' });
+    }
+    // intentional empty dep array — only run on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [name, setName] = useState(state.subjectName);
   const [age, setAge] = useState(state.subjectAge);
@@ -39,6 +50,20 @@ export default function PersonalDetailsPage() {
   const canProceed = nameIsValid && ageIsValid && gender.length > 0 && emailIsValid && phoneIsValid && consent;
 
   function handleNext() {
+    // If the user changed gender (or subject name) since the last visit to
+    // this page, wipe characters + photos because they were chosen for a
+    // different persona. We keep the consent state local to this form and
+    // re-collect it implicitly on next submit.
+    const personaChanged =
+      state.subjectGender !== '' && state.subjectGender !== gender;
+    if (personaChanged) {
+      state.selectedCharacters.forEach((c) =>
+        dispatch({ type: 'DESELECT_CHARACTER', id: c.id }),
+      );
+      state.photos.forEach((p) =>
+        dispatch({ type: 'REMOVE_PHOTO', id: p.id }),
+      );
+    }
     dispatch({ type: 'SET_PERSONAL_DETAILS', name: name.trim(), age: age.trim(), gender, email: email.trim(), phone: phoneDigits, note: notes.trim() });
     router.push('/characters');
   }
