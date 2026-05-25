@@ -18,6 +18,21 @@ interface OrderEmailPayload {
   displayNumber: number;
   characters: string[];
   photoCount: number;
+  recipientName?: string;
+  shippingStreet?: string;
+  shippingApartment?: string;
+  shippingCity?: string;
+  shippingPostalCode?: string;
+}
+
+function escapeHtml(s: string | undefined | null): string {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function buildOrderEmailHtml(p: OrderEmailPayload): string {
@@ -70,9 +85,25 @@ function buildOrderEmailHtml(p: OrderEmailPayload): string {
 
             <!-- Characters -->
             <p style="font-size:14px;font-weight:700;color:#4a5568;margin:0 0 10px;">הדמויות שנבחרו (${p.characters.length}):</p>
-            <ul style="margin:0 0 32px;padding-right:20px;color:#4a5568;font-size:14px;line-height:1.8;columns:2;">
+            <ul style="margin:0 0 24px;padding-right:20px;color:#4a5568;font-size:14px;line-height:1.8;columns:2;">
               ${charList}
             </ul>
+
+            ${p.shippingStreet ? `
+            <!-- Shipping address -->
+            <table width="100%" cellpadding="0" cellspacing="0" style="background:#f7fafc;border-radius:12px;padding:20px 24px;margin-bottom:24px;">
+              <tr>
+                <td>
+                  <p style="margin:0 0 6px;font-size:13px;color:#a0aec0;font-weight:600;text-transform:uppercase;">כתובת משלוח</p>
+                  <p style="margin:0;font-size:15px;color:#2d3748;line-height:1.6;">
+                    ${escapeHtml(p.recipientName)}<br>
+                    ${escapeHtml(p.shippingStreet)}${p.shippingApartment ? ', ' + escapeHtml(p.shippingApartment) : ''}<br>
+                    ${escapeHtml(p.shippingCity)}${p.shippingPostalCode ? ' ' + escapeHtml(p.shippingPostalCode) : ''}
+                  </p>
+                </td>
+              </tr>
+            </table>
+            ` : ''}
 
             <!-- Message -->
             <div style="background:#ebf4ff;border-right:4px solid #667eea;border-radius:8px;padding:16px 20px;margin-bottom:32px;">

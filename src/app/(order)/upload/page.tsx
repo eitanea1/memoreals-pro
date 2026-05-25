@@ -153,7 +153,7 @@ export default function PhotoUploadPage() {
       />
 
       <div className="nav-buttons">
-        <Button variant="brand" size="xl" disabled={!canProceed} onClick={() => router.push('/summary')}>
+        <Button variant="brand" size="xl" disabled={!canProceed} onClick={() => router.push('/shipping')}>
           המשך ←
         </Button>
         <Button variant="brand-outline" size="xl" onClick={() => router.push('/characters')}>

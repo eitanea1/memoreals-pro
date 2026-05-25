@@ -34,6 +34,19 @@ export default function DetailsTab({
             <InfoField label="הערה" value={order.customerNote} />
           </div>
         )}
+        {order.shippingStreet && (
+          <div className="col-span-full">
+            <InfoField
+              label="כתובת משלוח"
+              value={[
+                order.recipientName,
+                order.shippingStreet + (order.shippingApartment ? `, ${order.shippingApartment}` : ''),
+                order.shippingCity + (order.shippingPostalCode ? ` ${order.shippingPostalCode}` : ''),
+                order.shippingNotes ? `הערה לשליח: ${order.shippingNotes}` : null,
+              ].filter(Boolean).join(' · ')}
+            />
+          </div>
+        )}
         <div className="col-span-full">
           <InfoField label="מספר הזמנה" value={order.id} mono />
         </div>

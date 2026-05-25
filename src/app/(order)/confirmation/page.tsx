@@ -48,6 +48,17 @@ export default function ConfirmationPage() {
           </div>
         </div>
 
+        {state.shippingStreet && (
+          <div className="conf-address-box">
+            <span className="conf-address-label">כתובת המשלוח שמסרת:</span>
+            <span className="conf-address-value">
+              <strong>{state.recipientName}</strong><br />
+              {state.shippingStreet}{state.shippingApartment && `, ${state.shippingApartment}`}<br />
+              {state.shippingCity}{state.shippingPostalCode && ` ${state.shippingPostalCode}`}
+            </span>
+          </div>
+        )}
+
         {state.customerPhone && (
           <div className="conf-phone-box">
             ניצור איתך קשר ל: <strong dir="ltr">{state.customerPhone}</strong>

@@ -12,7 +12,16 @@ interface PersonalDetails {
   note?: string;
 }
 
-interface OrderPayload extends PersonalDetails {
+interface ShippingAddress {
+  recipientName: string;
+  shippingStreet: string;
+  shippingApartment?: string;
+  shippingCity: string;
+  shippingPostalCode?: string;
+  shippingNotes?: string;
+}
+
+interface OrderPayload extends PersonalDetails, ShippingAddress {
   characters: { name: string; displayName: string; category: string }[];
   photos: { id: string; url: string; originalName: string }[];
 }
@@ -44,6 +53,12 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
         customerEmail: payload.email,
         customerPhone: payload.phone,
         customerNote:  payload.note || '',
+        recipientName:      payload.recipientName,
+        shippingStreet:     payload.shippingStreet,
+        shippingApartment:  payload.shippingApartment || '',
+        shippingCity:       payload.shippingCity,
+        shippingPostalCode: payload.shippingPostalCode || '',
+        shippingNotes:      payload.shippingNotes || '',
         userId:        user.id,
         characters: {
           create: payload.characters.map((c, i) => ({
@@ -77,6 +92,11 @@ export async function submitOrder(payload: OrderPayload): Promise<{ orderId: str
       displayNumber: order.displayNumber,
       characters:    payload.characters.map((c) => c.displayName),
       photoCount:    payload.photos.length,
+      recipientName:      payload.recipientName,
+      shippingStreet:     payload.shippingStreet,
+      shippingApartment:  payload.shippingApartment,
+      shippingCity:       payload.shippingCity,
+      shippingPostalCode: payload.shippingPostalCode,
     });
 
     return { orderId: order.id, displayNumber: order.displayNumber };
