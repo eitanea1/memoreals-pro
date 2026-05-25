@@ -66,18 +66,34 @@ export default function DetailsAndCharactersPage() {
   const ageIsValid = age.trim().length > 0 && ageNum >= 1 && ageNum <= 120;
   const detailsValid = nameIsValid && ageIsValid && gender.length > 0;
 
-  // Gender-aware character lists. Empty until gender is selected.
+  // Persona-aware character lists. We split the set by age so the same hero
+  // doesn't appear twice (once as kid-version, once as adult-version): ages
+  // 12 and under get the kid-style images, 13+ get the adult-style images.
+  // Empty arrays until both gender and a valid age are provided.
   const isBoy = gender === 'Male';
-  const heroes: Character[] = gender
-    ? [...(isBoy ? BOYS_HEROES : GIRLS_HEROES), ...(isBoy ? MEN_HEROES : WOMEN_HEROES)]
-    : [];
-  const anime: Character[] = gender ? (isBoy ? BOYS_ANIME : GIRLS_ANIME) : [];
-  const adventures: Character[] = gender
-    ? [...(isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES), ...(isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES)]
-    : [];
-  const premium: Character[] = gender
-    ? [...(isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM), ...(isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS)]
-    : [];
+  const isAdult = ageIsValid && ageNum >= 13;
+  const showCharacters = gender !== '' && ageIsValid;
+
+  const heroes: Character[] = !showCharacters
+    ? []
+    : isAdult
+      ? (isBoy ? MEN_HEROES : WOMEN_HEROES)
+      : (isBoy ? BOYS_HEROES : GIRLS_HEROES);
+  const anime: Character[] = !showCharacters
+    ? []
+    : isAdult
+      ? [] // adults don't have a separate anime category
+      : (isBoy ? BOYS_ANIME : GIRLS_ANIME);
+  const adventures: Character[] = !showCharacters
+    ? []
+    : isAdult
+      ? (isBoy ? MEN_ADVENTURES : WOMEN_ADVENTURES)
+      : (isBoy ? BOYS_ADVENTURES : GIRLS_ADVENTURES);
+  const premium: Character[] = !showCharacters
+    ? []
+    : isAdult
+      ? (isBoy ? MEN_PROFESSIONS : WOMEN_PROFESSIONS)
+      : (isBoy ? BOYS_PREMIUM : GIRLS_PREMIUM);
 
   const selectedIds = new Set(state.selectedCharacters.map((c) => c.id));
   const total = state.selectedCharacters.length;
@@ -118,15 +134,32 @@ export default function DetailsAndCharactersPage() {
     }
   }
 
+  function clearAllCharacters() {
+    state.selectedCharacters.forEach((c) =>
+      dispatch({ type: 'DESELECT_CHARACTER', id: c.id }),
+    );
+  }
+
   function handleGenderChange(newGender: GenderOption) {
     // When gender flips, the previously-picked characters belong to the other set —
     // clear them so the user starts the picks fresh for the new persona.
-    if (gender && gender !== newGender) {
-      state.selectedCharacters.forEach((c) =>
-        dispatch({ type: 'DESELECT_CHARACTER', id: c.id }),
-      );
-    }
+    if (gender && gender !== newGender) clearAllCharacters();
     setGender(newGender);
+  }
+
+  function handleAgeChange(newAge: string) {
+    // If age crosses the kid/adult boundary (12 to 13 or vice versa), the
+    // character grid switches between kid-style and adult-style images, so any
+    // previously-picked characters now have IDs that don't exist in the new
+    // visible grid. Clear so the counter and grid stay in sync.
+    const newAgeNum = parseInt(newAge, 10);
+    const oldAgeNum = parseInt(age, 10);
+    const wasAdult = !isNaN(oldAgeNum) && oldAgeNum >= 13;
+    const willBeAdult = !isNaN(newAgeNum) && newAgeNum >= 13;
+    if (!isNaN(oldAgeNum) && !isNaN(newAgeNum) && wasAdult !== willBeAdult) {
+      clearAllCharacters();
+    }
+    setAge(newAge);
   }
 
   function handleNext() {
@@ -215,26 +248,28 @@ export default function DetailsAndCharactersPage() {
                 max={120}
                 value={age}
                 dir="ltr"
-                onChange={(e) => setAge(e.target.value)}
+                onChange={(e) => handleAgeChange(e.target.value)}
               />
             </div>
           </div>
         </div>
 
-        {/* ── Empty state: pick gender first ── */}
-        {!gender && (
+        {/* ── Empty state: pick gender + age first ── */}
+        {!showCharacters && (
           <div className="text-center py-16 max-w-md mx-auto">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-[var(--bg-2)] flex items-center justify-center">
               <span className="material-symbols-outlined text-3xl text-[var(--accent)]" aria-hidden="true">touch_app</span>
             </div>
             <p className="text-base text-[var(--ink-2)]">
-              בחרו <strong className="text-[var(--ink-1)]">ילד</strong> או <strong className="text-[var(--ink-1)]">ילדה</strong> למעלה כדי לראות את כל הדמויות הזמינות
+              {!gender
+                ? <>בחרו <strong className="text-[var(--ink-1)]">ילד</strong> או <strong className="text-[var(--ink-1)]">ילדה</strong> וגם <strong className="text-[var(--ink-1)]">גיל</strong> למעלה כדי לראות את הדמויות הזמינות</>
+                : <>מלאו את <strong className="text-[var(--ink-1)]">הגיל</strong> כדי לראות את הדמויות המתאימות</>}
             </p>
           </div>
         )}
 
-        {/* ── Character section (only shown after gender is selected) ── */}
-        {gender && (
+        {/* ── Character section (only shown after gender + age are filled) ── */}
+        {showCharacters && (
           <>
             <div className="text-center mb-6">
               <h2 className="text-2xl md:text-3xl font-extrabold text-[var(--ink-1)] mb-2" style={{ letterSpacing: '-0.02em' }}>
@@ -364,8 +399,10 @@ export default function DetailsAndCharactersPage() {
               <p className="text-xs text-[var(--ink-2)]">
                 {!gender
                   ? 'בחרו ילד או ילדה למעלה'
-                  : !detailsValid
-                  ? 'מלאו שם וגיל'
+                  : !ageIsValid
+                  ? 'הזינו גיל למעלה'
+                  : !nameIsValid
+                  ? 'הזינו שם באנגלית'
                   : isComplete
                   ? '✨ מוכן להמשיך'
                   : `בחרו עוד ${20 - total} דמויות`}
