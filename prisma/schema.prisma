@@ -25,6 +25,14 @@ model Order {
   customerEmail  String      @default("")
   customerPhone  String      @default("")
   customerNote   String      @default("")
+
+  // Shipping address (collected at /shipping step before final order submit)
+  recipientName       String  @default("")
+  shippingStreet      String  @default("")
+  shippingApartment   String  @default("")
+  shippingCity        String  @default("")
+  shippingPostalCode  String  @default("")
+  shippingNotes       String  @default("")
   status         OrderStatus @default(RECEIVED)
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt

@@ -46,6 +46,12 @@ export default function SummaryPage() {
         email:      state.customerEmail,
         phone:      state.customerPhone,
         note:       state.customerNote,
+        recipientName:      state.recipientName,
+        shippingStreet:     state.shippingStreet,
+        shippingApartment:  state.shippingApartment,
+        shippingCity:       state.shippingCity,
+        shippingPostalCode: state.shippingPostalCode,
+        shippingNotes:      state.shippingNotes,
         characters: state.selectedCharacters.map((c) => ({
           name:        c.name,
           displayName: c.displayName,
@@ -68,7 +74,7 @@ export default function SummaryPage() {
 
   return (
     <div className="page" dir="rtl">
-      <StepIndicator current={3} />
+      <StepIndicator current={4} />
       <h2 className="text-2xl font-bold">סיכום הזמנה</h2>
 
       {/* Personal details */}
@@ -93,6 +99,36 @@ export default function SummaryPage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Shipping address */}
+      {state.shippingStreet && (
+        <Card className="bg-white border-0 shadow-sm rounded-2xl ring-0">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base font-bold text-right text-[var(--c-dark)]">כתובת משלוח</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="personal-details-summary">
+              {[
+                { label: 'מקבל', value: state.recipientName },
+                {
+                  label: 'כתובת',
+                  value: state.shippingStreet + (state.shippingApartment ? `, ${state.shippingApartment}` : ''),
+                },
+                {
+                  label: 'עיר',
+                  value: state.shippingCity + (state.shippingPostalCode ? ` ${state.shippingPostalCode}` : ''),
+                },
+                ...(state.shippingNotes ? [{ label: 'הערה לשליח', value: state.shippingNotes }] : []),
+              ].map(({ label, value }) => (
+                <div key={label} className="detail-row">
+                  <span className="detail-label">{label}</span>
+                  <span className="detail-value">{value}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Characters */}
       <Card className="bg-white border-0 shadow-sm rounded-2xl ring-0">
@@ -135,9 +171,9 @@ export default function SummaryPage() {
 
       <div className="nav-buttons">
         <Button variant="brand" size="xl" onClick={handlePlaceOrder} disabled={loading}>
-          {loading ? 'שולח הזמנה...' : 'שלח הזמנה ✓'}
+          {loading ? 'שולח הזמנה...' : 'אישור סופי ושליחה ✓'}
         </Button>
-        <Button variant="brand-outline" size="xl" onClick={() => router.push('/upload')}>
+        <Button variant="brand-outline" size="xl" onClick={() => router.push('/shipping')}>
           → חזור
         </Button>
       </div>

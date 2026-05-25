@@ -12,6 +12,7 @@ const STEPS = [
   { icon: 'edit_note', label: 'פרטים' },
   { icon: 'auto_fix_high', label: 'בחירת דמויות' },
   { icon: 'add_a_photo', label: 'העלאת תמונות' },
+  { icon: 'local_shipping', label: 'משלוח' },
 ];
 
 type GenderOption = 'Male' | 'Female';

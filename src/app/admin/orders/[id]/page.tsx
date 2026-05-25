@@ -13,6 +13,12 @@ export type SerializedOrder = {
   customerEmail: string;
   customerPhone: string;
   customerNote: string;
+  recipientName: string;
+  shippingStreet: string;
+  shippingApartment: string;
+  shippingCity: string;
+  shippingPostalCode: string;
+  shippingNotes: string;
   aiLabel: string;
   aiOverride: string;
   status: string;
@@ -55,6 +61,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     customerEmail: order.customerEmail,
     customerPhone: order.customerPhone,
     customerNote:  order.customerNote,
+    recipientName:      order.recipientName,
+    shippingStreet:     order.shippingStreet,
+    shippingApartment:  order.shippingApartment,
+    shippingCity:       order.shippingCity,
+    shippingPostalCode: order.shippingPostalCode,
+    shippingNotes:      order.shippingNotes,
     aiLabel:       order.aiLabel,
     aiOverride:    order.aiOverride,
     status:        order.status,

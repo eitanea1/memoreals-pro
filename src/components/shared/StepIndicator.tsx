@@ -6,6 +6,7 @@ const STEPS = [
   { label: 'פרטי המשתתף', path: '/details' },
   { label: 'בחירת דמויות', path: '/characters' },
   { label: 'העלאת תמונות', path: '/upload' },
+  { label: 'משלוח',        path: '/shipping' },
   { label: 'סיכום הזמנה',  path: '/summary' },
 ];
 
