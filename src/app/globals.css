@@ -975,6 +975,28 @@ h1, h2, h3, h4, h5, h6 { color: var(--ink-1); }
   overflow: hidden;
   background: var(--bg-2);
 }
+.package-pick-ribbon {
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--surface);
+  color: var(--ink-1);
+  font-size: 0.82rem;
+  font-weight: 700;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  box-shadow: 0 4px 14px oklch(0.22 0.05 60 / 0.18);
+  border: 1px solid var(--line);
+  z-index: 2;
+}
+.package-pick-ribbon .material-symbols-outlined {
+  font-size: 1rem;
+  color: var(--accent);
+}
+[dir="rtl"] .package-pick-ribbon { right: auto; left: 1rem; }
 .package-photo {
   width: 100%;
   height: 100%;

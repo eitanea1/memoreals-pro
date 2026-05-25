@@ -74,7 +74,7 @@ export default function SummaryPage() {
 
   return (
     <div className="page" dir="rtl">
-      <StepIndicator current={4} />
+      <StepIndicator current={3} />
       <h2 className="text-2xl font-bold">סיכום הזמנה</h2>
 
       {/* Personal details */}
