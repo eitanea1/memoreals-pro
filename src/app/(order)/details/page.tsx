@@ -31,20 +31,11 @@ export default function DetailsAndCharactersPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
 
-  // Fresh-start reset: if a previous order was already submitted (orderId set),
-  // wipe all stale state so the new order starts clean.
-  useEffect(() => {
-    if (state.orderId !== null) {
-      dispatch({ type: 'RESET' });
-    }
-    // intentional: run only on mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Persona form
-  const [name, setName] = useState(state.subjectName);
-  const [age, setAge] = useState(state.subjectAge);
-  const [gender, setGender] = useState<GenderOption | ''>((state.subjectGender as GenderOption) || '');
+  // Form fields start EMPTY by default. We only prefill (from saved state)
+  // when the user is genuinely mid-flow — see the effect below.
+  const [name, setName] = useState('');
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState<GenderOption | ''>('');
   const [nameTouched, setNameTouched] = useState(false);
 
   // Character filters
@@ -52,12 +43,36 @@ export default function DetailsAndCharactersPage() {
   const [search, setSearch] = useState('');
 
   // Custom character inputs
-  const [customInputs, setCustomInputs] = useState<string[]>(() => {
-    const existing = state.selectedCharacters
-      .filter((c) => c.id.startsWith('custom-'))
-      .map((c) => c.displayName);
-    return Array.from({ length: CUSTOM_SLOTS }, (_, i) => existing[i] ?? '');
-  });
+  const [customInputs, setCustomInputs] = useState<string[]>(() =>
+    Array.from({ length: CUSTOM_SLOTS }, () => ''),
+  );
+
+  // Decide on mount whether this is a fresh visit or a mid-flow back-navigation.
+  // Mid-flow signals: at least one selected character, an uploaded photo, or
+  // a shipping address row that was filled. If none, treat as fresh and wipe.
+  useEffect(() => {
+    const hasInFlightProgress =
+      state.photos.length > 0 ||
+      state.shippingStreet !== '' ||
+      state.selectedCharacters.length > 0;
+
+    if (state.orderId !== null || !hasInFlightProgress) {
+      // Previous order completed OR no in-flight progress → fresh start.
+      dispatch({ type: 'RESET' });
+      // Local form state already empty from initial useState above.
+    } else {
+      // Mid-flow → prefill the form from saved state so the user picks up where they left off.
+      setName(state.subjectName);
+      setAge(state.subjectAge);
+      setGender((state.subjectGender as GenderOption) || '');
+      const existingCustom = state.selectedCharacters
+        .filter((c) => c.id.startsWith('custom-'))
+        .map((c) => c.displayName);
+      setCustomInputs(Array.from({ length: CUSTOM_SLOTS }, (_, i) => existingCustom[i] ?? ''));
+    }
+    // intentional: run only on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Persona validation
   const nameIsValid = name.trim().length > 0 && ENGLISH_ONLY.test(name.trim());
