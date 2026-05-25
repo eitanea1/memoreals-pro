@@ -48,20 +48,24 @@ export default function DetailsAndCharactersPage() {
   );
 
   // Decide on mount whether this is a fresh visit or a mid-flow back-navigation.
-  // Mid-flow signals: at least one selected character, an uploaded photo, or
-  // a shipping address row that was filled. If none, treat as fresh and wipe.
+  //
+  // The ONLY signal that the user is mid-flow (and worth preserving state) is
+  // that they actually progressed past /details — i.e. uploaded a photo or
+  // filled in a shipping row. Persona fields and character picks on their own
+  // are NOT enough: they could be left over from an abandoned previous session,
+  // which is exactly what the user complained about.
   useEffect(() => {
-    const hasInFlightProgress =
+    const movedPastDetailsStep =
       state.photos.length > 0 ||
-      state.shippingStreet !== '' ||
-      state.selectedCharacters.length > 0;
+      state.shippingStreet !== '';
 
-    if (state.orderId !== null || !hasInFlightProgress) {
-      // Previous order completed OR no in-flight progress → fresh start.
+    if (state.orderId !== null || !movedPastDetailsStep) {
+      // Previous order completed OR user never made it past /details → fresh start.
       dispatch({ type: 'RESET' });
       // Local form state already empty from initial useState above.
     } else {
-      // Mid-flow → prefill the form from saved state so the user picks up where they left off.
+      // The user is back-navigating from /upload or /shipping. Prefill the form
+      // from saved state so they pick up where they left off.
       setName(state.subjectName);
       setAge(state.subjectAge);
       setGender((state.subjectGender as GenderOption) || '');
