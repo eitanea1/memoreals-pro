@@ -1,8 +1,13 @@
 import { Resend } from 'resend';
 import { formatOrderId } from './utils/orderId';
 
-const FROM_ADDRESS = (process.env.EMAIL_FROM ?? 'MemoReals <onboarding@resend.dev>').trim();
-const REPLY_TO_ADDRESS = (process.env.EMAIL_REPLY_TO ?? 'memoreals26@gmail.com').trim();
+// Resend's domain verification for memoreals.com requires an MX record that we
+// can't add right now (Namecheap email forwarding owns the apex MX). Until
+// Resend accepts the domain or we upgrade to a paid plan, FORCE the sandbox
+// sender. The EMAIL_FROM env var is intentionally ignored — leaving it set
+// from earlier attempts caused 'domain is not verified' 403s from Resend.
+const FROM_ADDRESS = 'MemoReals <onboarding@resend.dev>';
+const REPLY_TO_ADDRESS = (process.env.EMAIL_REPLY_TO ?? 'hello@memoreals.com').trim();
 
 let _resend: Resend | null = null;
 function getResend(): Resend | null {
