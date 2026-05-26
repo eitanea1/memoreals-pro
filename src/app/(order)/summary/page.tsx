@@ -12,9 +12,14 @@ import { submitOrder } from '@/app/actions/order';
 
 const CATEGORY_HEBREW: Record<string, string> = {
   superheroes: 'גיבורי על',
+  anime:       'אגדות ואנימה',
+  adventures:  'הרפתקאות',
+  premium:     'מקצועות/אחר',
+  // Legacy categories retained for older orders
   professions: 'מקצועות',
-  fairytales: 'אגדות',
+  fairytales:  'אגדות',
 };
+const CATEGORY_ORDER = ['superheroes', 'anime', 'adventures', 'premium', 'professions', 'fairytales'] as const;
 
 const GENDER_HEBREW: Record<string, string> = {
   Male: 'זכר',
@@ -27,11 +32,15 @@ export default function SummaryPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const grouped = {
-    superheroes: state.selectedCharacters.filter((c) => c.category === 'superheroes'),
-    professions: state.selectedCharacters.filter((c) => c.category === 'professions'),
-    fairytales:  state.selectedCharacters.filter((c) => c.category === 'fairytales'),
-  };
+  const grouped: Record<string, typeof state.selectedCharacters> = {};
+  for (const cat of CATEGORY_ORDER) {
+    grouped[cat] = state.selectedCharacters.filter((c) => c.category === cat);
+  }
+  // Catch any character whose category isn't in our known list — surface it
+  // under a default 'אחר' bucket instead of silently dropping it.
+  const otherBucket = state.selectedCharacters.filter(
+    (c) => !CATEGORY_ORDER.includes(c.category as (typeof CATEGORY_ORDER)[number]),
+  );
 
   const validPhotos = state.photos.filter((p) => !!p.previewUrl);
 
@@ -138,7 +147,7 @@ export default function SummaryPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
-          {(['superheroes', 'professions', 'fairytales'] as const).map((cat) =>
+          {CATEGORY_ORDER.map((cat) =>
             grouped[cat].length > 0 ? (
               <div key={cat} className="summary-category">
                 <h4 className="summary-cat-title">{CATEGORY_HEBREW[cat]}</h4>
@@ -151,6 +160,18 @@ export default function SummaryPage() {
                 </div>
               </div>
             ) : null
+          )}
+          {otherBucket.length > 0 && (
+            <div className="summary-category">
+              <h4 className="summary-cat-title">דמויות מותאמות אישית</h4>
+              <div className="flex flex-wrap gap-2">
+                {otherBucket.map((c) => (
+                  <Badge key={c.id} variant="secondary" className="bg-[var(--c-brand-light)] text-[var(--c-brand-text)] hover:bg-[var(--c-brand-light)] text-sm px-3 py-1">
+                    {c.displayName}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           )}
         </CardContent>
       </Card>
