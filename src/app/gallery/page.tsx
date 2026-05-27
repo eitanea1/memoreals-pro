@@ -3,6 +3,11 @@ import Link from 'next/link';
 
 export const metadata = { title: 'גלריה — MemoReals' };
 
+const PACKING_PHOTOS = Array.from({ length: 4 }, (_, i) => ({
+  src: `/gallery/packing-${i + 1}.jpeg`,
+  alt: `קופסת MemoReals — צילום ${i + 1}`,
+}));
+
 const PRODUCT_PHOTOS = Array.from({ length: 11 }, (_, i) => ({
   src: `/gallery/product-${i + 1}.jpg`,
   alt: `MemoReals — תמונה ${i + 1}`,
@@ -41,6 +46,26 @@ export default function GalleryPage() {
           כל משחק יוצא ייחודי, מותאם אישית, מודפס באיכות פרימיום. הנה איך זה נראה אצל המשפחות שלנו.
         </p>
       </header>
+
+      <section className="gallery-block">
+        <h2 className="gallery-h2">הקופסה הממותגת</h2>
+        <p className="gallery-block-sub">כל הזמנה מגיעה בקופסה אישית מודפסת, מוכנה למתנה.</p>
+        <div className="gallery-products">
+          {PACKING_PHOTOS.map((item) => (
+            <figure key={item.src} className="gallery-product-card">
+              <div className="gallery-product-imgwrap">
+                <Image
+                  src={item.src}
+                  alt={item.alt}
+                  fill
+                  className="gallery-product-img"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+              </div>
+            </figure>
+          ))}
+        </div>
+      </section>
 
       <section className="gallery-block">
         <h2 className="gallery-h2">המשחק בעולם האמיתי</h2>
