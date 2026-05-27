@@ -72,8 +72,8 @@ export default function HomePage() {
           <div className="hero-media">
             <BoomerangVideoBg
               src="/VIDEO.mp4"
-              fallbackImage="/gallery/product-1.jpg"
-              fallbackAlt="קלפי MemoReals אישיים על שולחן"
+              fallbackImage="/gallery/product-hero.png"
+              fallbackAlt="קלפי MemoReals אישיים פרושים על שולחן"
               className="hero-photo"
             />
             <div className="hero-photo-tag">
