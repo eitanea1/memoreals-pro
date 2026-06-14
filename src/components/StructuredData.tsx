@@ -1,6 +1,7 @@
 import { LAUNCH_PRICE } from '@/lib/pricing';
+import { SITE_URL } from '@/lib/site';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://memoreals-pro.vercel.app';
+const BASE_URL = SITE_URL;
 
 // JSON-LD for rich results in Google. Product + Organization help the listing
 // show price, currency and brand. Rendered server-side in the root layout.

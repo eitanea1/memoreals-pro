@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
+import { SITE_URL } from '@/lib/site';
 
-const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://memoreals-pro.vercel.app';
+const BASE_URL = SITE_URL;
 
 // Public, indexable marketing pages. The order funnel and admin are excluded
 // here (and in robots.ts) — they carry no SEO value.
