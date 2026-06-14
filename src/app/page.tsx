@@ -64,8 +64,10 @@ export default function HomePage() {
                 <span className="btn-arrow" aria-hidden="true">&larr;</span>
               </Link>
               <div className="hero-price-line">
-                <span className="hero-price">{LAUNCH_PRICE} ₪</span>
-                <span style={{ textDecoration: 'line-through', opacity: 0.55, fontSize: '0.85em', marginInlineStart: '8px' }}>{REGULAR_PRICE} ₪</span>
+                <div className="hero-price-row">
+                  <span className="hero-price">{LAUNCH_PRICE} ₪</span>
+                  <span className="price-was">{REGULAR_PRICE} ₪</span>
+                </div>
                 <span className="hero-price-meta">מחיר השקה · כולל הדפסה ומשלוח</span>
               </div>
             </div>
@@ -144,8 +146,8 @@ export default function HomePage() {
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
                   <span className="package-price">
-                    {LAUNCH_PRICE} ₪
-                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.7em', fontWeight: 400, marginInlineStart: '6px' }}>{REGULAR_PRICE} ₪</span>
+                    <span>{LAUNCH_PRICE} ₪</span>
+                    <span className="price-was">{REGULAR_PRICE} ₪</span>
                   </span>
                 </div>
               </div>
@@ -177,8 +179,8 @@ export default function HomePage() {
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
                   <span className="package-price">
-                    {LAUNCH_PRICE} ₪
-                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.7em', fontWeight: 400, marginInlineStart: '6px' }}>{REGULAR_PRICE} ₪</span>
+                    <span>{LAUNCH_PRICE} ₪</span>
+                    <span className="price-was">{REGULAR_PRICE} ₪</span>
                   </span>
                 </div>
               </div>
