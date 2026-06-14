@@ -1,14 +1,23 @@
 'use client';
 
+import { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
 import { Button } from '@/components/ui/button';
 import { formatOrderId } from '@/lib/utils/orderId';
+import { trackLead } from '@/lib/analytics/track';
+import { LAUNCH_PRICE, PAYMENT_LINK } from '@/lib/pricing';
 
 export default function ConfirmationPage() {
   const { state, dispatch } = useApp();
   const router = useRouter();
+
+  // Order placed — fire the Lead conversion once. Guarded on orderId so it only
+  // counts a real submission, not a stray visit to /confirmation.
+  useEffect(() => {
+    if (state.orderId) trackLead(LAUNCH_PRICE);
+  }, [state.orderId]);
 
   function handleNewOrder() {
     dispatch({ type: 'RESET' });
@@ -25,25 +34,39 @@ export default function ConfirmationPage() {
         </div>
 
         <div className="conf-text">
-          <h2 className="conf-title">קיבלנו את ההזמנה</h2>
+          <h2 className="conf-title">כמעט שם — נשאר רק להשלים תשלום</h2>
           <p className="conf-body">
-            תודה! הפרטים נשמרו אצלנו והייצור עומד להתחיל.
+            הפרטים נשמרו אצלנו. כדי שנתחיל בייצור, השלימו את התשלום המאובטח.
           </p>
         </div>
+
+        <a
+          href={PAYMENT_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="btn-primary-warm"
+          style={{ width: '100%', justifyContent: 'center', marginTop: '4px' }}
+        >
+          <span>מעבר לתשלום מאובטח · {LAUNCH_PRICE} ₪</span>
+          <span className="btn-arrow" aria-hidden="true">&larr;</span>
+        </a>
+        <p style={{ fontSize: '0.8rem', opacity: 0.7, marginTop: '8px', textAlign: 'center' }}>
+          תשלום מאובטח בביט או בכרטיס אשראי · באמצעות Grow
+        </p>
 
         <div className="conf-next">
           <div className="conf-step">
             <span className="conf-step-num">1</span>
             <div className="conf-step-body">
-              <strong>ניצור איתך קשר בוואטסאפ תוך שעה</strong>
-              <span>לאישור הזמנה ושליחת לינק לתשלום (Bit / העברה / אשראי). אנחנו עובדים בשעות א׳–ה׳ 09:00–18:00.</span>
+              <strong>משלימים את התשלום</strong>
+              <span>לחיצה על הכפתור למעלה — תשלום מאובטח בביט או באשראי. מחיר השקה: {LAUNCH_PRICE} ₪ כולל משלוח.</span>
             </div>
           </div>
           <div className="conf-step">
             <span className="conf-step-num">2</span>
             <div className="conf-step-body">
-              <strong>אחרי אישור התשלום — מתחילים</strong>
-              <span>תהליך עיצוב הדמויות (יום-יומיים) → הדפסה → אריזה → משלוח עד פתח הבית. סך הכל עד 14 ימי עסקים.</span>
+              <strong>מתחילים בייצור</strong>
+              <span>עיצוב הדמויות (יום-יומיים) → הדפסה → אריזה → משלוח עד פתח הבית. סך הכל עד 14 ימי עסקים.</span>
             </div>
           </div>
         </div>

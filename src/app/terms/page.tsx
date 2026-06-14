@@ -1,3 +1,5 @@
+import { LAUNCH_PRICE } from '@/lib/pricing';
+
 export const metadata = { title: 'תנאי שימוש — MemoReals' };
 
 export default function TermsPage() {
@@ -26,7 +28,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-lg font-bold text-[var(--c-dark)] mb-3">3. הזמנה ותשלום</h2>
           <ul className="list-disc pr-5 space-y-2">
-            <li>מחיר המשחק הוא 350 ₪ כולל משלוח.</li>
+            <li>מחיר המשחק הוא {LAUNCH_PRICE} ₪ כולל משלוח (מחיר השקה מוגבל).</li>
             <li>התשלום מתבצע בעת ביצוע ההזמנה.</li>
             <li>לאחר ביצוע התשלום תישלח אליכם הודעת אישור למייל.</li>
           </ul>

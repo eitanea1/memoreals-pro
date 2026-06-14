@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import AppShell from '@/components/AppShell';
+import Analytics from '@/components/Analytics';
+import StructuredData from '@/components/StructuredData';
+import { LAUNCH_PRICE } from '@/lib/pricing';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://memoreals-pro.vercel.app'),
   title: 'MemoReals — משחק זיכרון אישי עם AI',
-  description: 'הילד שלכם כגיבור אמיתי. משחק זיכרון מותאם אישית עם טכנולוגיית AI מתקדמת. 20 זוגות קלפים, קופסה ממותגת, משלוח עד הבית. 350 ₪.',
+  description: `הילד שלכם כגיבור אמיתי. משחק זיכרון מותאם אישית עם טכנולוגיית AI מתקדמת. 20 זוגות קלפים, קופסה ממותגת, משלוח עד הבית. ${LAUNCH_PRICE} ₪.`,
   openGraph: {
     title: 'MemoReals — משחק זיכרון אישי עם AI',
     description: 'הילד שלכם כגיבור אמיתי. 20 זוגות קלפים מותאמים אישית, קופסה ממותגת, משלוח עד הבית.',
@@ -25,7 +28,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'MemoReals — משחק זיכרון אישי עם AI',
-    description: 'הילד שלכם כגיבור אמיתי. 350 ₪ כולל משלוח.',
+    description: `הילד שלכם כגיבור אמיתי. ${LAUNCH_PRICE} ₪ כולל משלוח.`,
     images: ['/gallery/product-1.jpg'],
   },
 };
@@ -41,6 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans">
         <AppShell>{children}</AppShell>
+        <StructuredData />
+        <Analytics />
       </body>
     </html>
   );

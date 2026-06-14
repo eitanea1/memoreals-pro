@@ -1,8 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useApp } from '@/context/AppContext';
+import { trackInitiateCheckout } from '@/lib/analytics/track';
+import { LAUNCH_PRICE } from '@/lib/pricing';
 import PhotoPreviewGrid from '@/components/upload/PhotoPreviewGrid';
 import StepIndicator from '@/components/shared/StepIndicator';
 import { Button } from '@/components/ui/button';
@@ -31,6 +33,12 @@ export default function SummaryPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Customer reached the final step — signal intent to checkout for ad optimization.
+  useEffect(() => {
+    trackInitiateCheckout(LAUNCH_PRICE, state.selectedCharacters.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const grouped: Record<string, typeof state.selectedCharacters> = {};
   for (const cat of CATEGORY_ORDER) {
