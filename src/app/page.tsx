@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import BoomerangVideoBg from '@/components/BoomerangVideoBg';
+import { LAUNCH_PRICE, REGULAR_PRICE } from '@/lib/pricing';
 
 const HOW_IT_WORKS = [
   {
@@ -63,8 +64,9 @@ export default function HomePage() {
                 <span className="btn-arrow" aria-hidden="true">&larr;</span>
               </Link>
               <div className="hero-price-line">
-                <span className="hero-price">350 ₪</span>
-                <span className="hero-price-meta">כולל הדפסה ומשלוח</span>
+                <span className="hero-price">{LAUNCH_PRICE} ₪</span>
+                <span style={{ textDecoration: 'line-through', opacity: 0.55, fontSize: '0.85em', marginInlineStart: '8px' }}>{REGULAR_PRICE} ₪</span>
+                <span className="hero-price-meta">מחיר השקה · כולל הדפסה ומשלוח</span>
               </div>
             </div>
           </div>
@@ -141,7 +143,10 @@ export default function HomePage() {
                     בחרו דמויות
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
-                  <span className="package-price">350 ₪</span>
+                  <span className="package-price">
+                    {LAUNCH_PRICE} ₪
+                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.7em', fontWeight: 400, marginInlineStart: '6px' }}>{REGULAR_PRICE} ₪</span>
+                  </span>
                 </div>
               </div>
             </article>
@@ -171,7 +176,10 @@ export default function HomePage() {
                     בחרו דמויות
                     <span className="btn-arrow" aria-hidden="true">&larr;</span>
                   </Link>
-                  <span className="package-price">350 ₪</span>
+                  <span className="package-price">
+                    {LAUNCH_PRICE} ₪
+                    <span style={{ textDecoration: 'line-through', opacity: 0.5, fontSize: '0.7em', fontWeight: 400, marginInlineStart: '6px' }}>{REGULAR_PRICE} ₪</span>
+                  </span>
                 </div>
               </div>
             </article>
@@ -210,7 +218,7 @@ export default function HomePage() {
           </div>
           <div className="faq-list">
             {[
-              { q: 'כמה זה עולה?', a: 'המחיר למשחק זיכרון אישי ומעוצב הוא 350 ₪, כולל את תהליך העיצוב בהתאמה אישית, הדפסה איכותית, אריזת מתנה ומשלוח מהיר עד פתח הבית. מחיר השקה מוגבל.' },
+              { q: 'כמה זה עולה?', a: `המחיר למשחק זיכרון אישי ומעוצב הוא ${LAUNCH_PRICE} ₪ — מחיר השקה מוגבל, במקום ${REGULAR_PRICE} ₪. המחיר כולל את תהליך העיצוב בהתאמה אישית, הדפסה איכותית, אריזת מתנה ומשלוח מהיר עד פתח הבית.` },
               { q: 'כמה זמן לוקח עד שהמשחק מגיע?', a: 'אנחנו משקיעים זמן בכל דמות ודמות כדי להבטיח תוצאה מושלמת. התהליך, הכולל עיבוד תמונה, הדפסה מקצועית ובקרת איכות, לוקח עד 14 ימי עסקים. שווה את ההמתנה.' },
               { q: 'מה בדיוק כוללת הערכה?', a: '40 קלפים קשיחים ועמידים (20 זוגות) עם דמויות ייחודיות שנוצרו במיוחד עבורכם, קופסה ממותגת ואיכותית, הוראות משחק וטיפים לחיזוק הזיכרון, ומשלוח חינם עד הבית.' },
               { q: 'למה כדאי לבחור ב-MemoReals?', a: 'מעבר למתנה אישית ומרגשת, המשחק שלנו נועד להחזיר את המשפחה לשולחן אחד. הזדמנות מושלמת להפסקה מהמסכים, לחדד את הזיכרון של הילדים, וליהנות מזמן איכות משותף.' },
