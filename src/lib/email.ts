@@ -1,13 +1,14 @@
 import { Resend } from 'resend';
 import { formatOrderId } from './utils/orderId';
 
-// Resend's domain verification for memoreals.com requires an MX record that we
-// can't add right now (Namecheap email forwarding owns the apex MX). Until
-// Resend accepts the domain or we upgrade to a paid plan, FORCE the sandbox
-// sender. The EMAIL_FROM env var is intentionally ignored — leaving it set
-// from earlier attempts caused 'domain is not verified' 403s from Resend.
-const FROM_ADDRESS = 'MemoReals <onboarding@resend.dev>';
-const REPLY_TO_ADDRESS = (process.env.EMAIL_REPLY_TO ?? 'hello@memoreals.com').trim();
+// memoreals.com is verified in Resend (DKIM + SPF + MX on the `send` subdomain,
+// region eu-west-1), so confirmation emails ship from the branded domain — they
+// now reach ANY recipient, not just the account owner as the resend.dev sandbox
+// did. Replies route to the business inbox; Namecheap email forwarding is off
+// (we switched to Custom MX for the Resend record), so the Reply-To is the
+// Gmail inbox, not an @memoreals.com address that no longer receives mail.
+const FROM_ADDRESS = 'MemoReals <noreply@memoreals.com>';
+const REPLY_TO_ADDRESS = 'memoreals26@gmail.com';
 
 let _resend: Resend | null = null;
 function getResend(): Resend | null {
