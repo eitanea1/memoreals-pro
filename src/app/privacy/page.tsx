@@ -59,7 +59,7 @@ export default function PrivacyPage() {
             <li>לבקש מחיקת המידע שלכם.</li>
             <li>לבקש מחיקה מוקדמת של התמונות.</li>
           </ul>
-          <p className="mt-2">לכל בקשה, פנו אלינו: <a href="mailto:hello@memoreals.com" className="text-[var(--c-brand)] hover:underline">hello@memoreals.com</a></p>
+          <p className="mt-2">לכל בקשה, פנו אלינו: <a href="mailto:memoreals26@gmail.com" className="text-[var(--c-brand)] hover:underline">memoreals26@gmail.com</a></p>
         </section>
 
         <section>

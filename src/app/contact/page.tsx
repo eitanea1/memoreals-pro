@@ -20,9 +20,9 @@ export default function ContactPage() {
           </a>
         </li>
         <li>
-          <a href="mailto:hello@memoreals.com" className="contact-channel">
+          <a href="mailto:memoreals26@gmail.com" className="contact-channel">
             <span className="contact-channel-label">אימייל</span>
-            <span className="contact-channel-value">hello@memoreals.com</span>
+            <span className="contact-channel-value">memoreals26@gmail.com</span>
             <span className="contact-channel-arrow" aria-hidden="true">&larr;</span>
           </a>
         </li>
