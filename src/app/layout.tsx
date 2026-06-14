@@ -4,15 +4,16 @@ import AppShell from '@/components/AppShell';
 import Analytics from '@/components/Analytics';
 import StructuredData from '@/components/StructuredData';
 import { LAUNCH_PRICE } from '@/lib/pricing';
+import { SITE_URL } from '@/lib/site';
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://memoreals-pro.vercel.app'),
+  metadataBase: new URL(SITE_URL),
   title: 'MemoReals — משחק זיכרון אישי עם AI',
   description: `הילד שלכם כגיבור אמיתי. משחק זיכרון מותאם אישית עם טכנולוגיית AI מתקדמת. 20 זוגות קלפים, קופסה ממותגת, משלוח עד הבית. ${LAUNCH_PRICE} ₪.`,
   openGraph: {
     title: 'MemoReals — משחק זיכרון אישי עם AI',
     description: 'הילד שלכם כגיבור אמיתי. 20 זוגות קלפים מותאמים אישית, קופסה ממותגת, משלוח עד הבית.',
-    url: 'https://memoreals-pro.vercel.app',
+    url: SITE_URL,
     siteName: 'MemoReals',
     images: [
       {
