@@ -120,7 +120,7 @@ function buildOrderEmailHtml(p: OrderEmailPayload): string {
             </div>
 
             <p style="text-align:center;color:#a0aec0;font-size:13px;margin:0;">
-              יש שאלות? נשמח לעזור — <a href="mailto:hello@memoreals.com" style="color:#667eea;">hello@memoreals.com</a>
+              יש שאלות? נשמח לעזור — <a href="mailto:memoreals26@gmail.com" style="color:#667eea;">memoreals26@gmail.com</a>
             </p>
           </td>
         </tr>

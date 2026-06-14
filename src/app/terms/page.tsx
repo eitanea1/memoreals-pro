@@ -67,7 +67,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-lg font-bold text-[var(--c-dark)] mb-3">8. יצירת קשר</h2>
-          <p>לשאלות ופניות: <a href="mailto:hello@memoreals.com" className="text-[var(--c-brand)] hover:underline">hello@memoreals.com</a></p>
+          <p>לשאלות ופניות: <a href="mailto:memoreals26@gmail.com" className="text-[var(--c-brand)] hover:underline">memoreals26@gmail.com</a></p>
         </section>
       </div>
     </div>
