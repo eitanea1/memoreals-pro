@@ -12,6 +12,28 @@ function fbq(): FbqFn | undefined {
   return (window as unknown as { fbq?: FbqFn }).fbq;
 }
 
+/** Customer viewed the product — the character-selection / configuration page. */
+export function trackViewContent() {
+  fbq()?.('track', 'ViewContent', {
+    content_name: 'MemoReals Memory Game',
+    content_type: 'product',
+    currency: 'ILS',
+  });
+}
+
+/**
+ * Customer finished picking their 20 characters and moved forward in the funnel.
+ * The closest analog to "add to cart" in this build — they've configured the
+ * product and committed to proceeding.
+ */
+export function trackAddToCart(value: number, contents?: number) {
+  fbq()?.('track', 'AddToCart', {
+    value,
+    currency: 'ILS',
+    num_items: contents,
+  });
+}
+
 /** Customer reached the order summary and is about to commit. */
 export function trackInitiateCheckout(value: number, contents?: number) {
   fbq()?.('track', 'InitiateCheckout', {

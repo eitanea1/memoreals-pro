@@ -11,6 +11,8 @@ import {
 } from '@/lib/data/characters';
 import CategoryList from '@/components/character/CategoryList';
 import StepIndicator from '@/components/shared/StepIndicator';
+import { trackViewContent, trackAddToCart } from '@/lib/analytics/track';
+import { LAUNCH_PRICE } from '@/lib/pricing';
 import type { Character } from '@/lib/types';
 
 const ENGLISH_ONLY = /^[A-Za-z\s]+$/;
@@ -76,6 +78,11 @@ export default function DetailsAndCharactersPage() {
     }
     // intentional: run only on mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // Product view — the customer is looking at the product (character builder).
+  useEffect(() => {
+    trackViewContent();
   }, []);
 
   // Persona validation
@@ -191,6 +198,8 @@ export default function DetailsAndCharactersPage() {
       phone: state.customerPhone,
       note: state.customerNote,
     });
+    // Configured the deck (20 characters) and proceeding — add-to-cart signal.
+    trackAddToCart(LAUNCH_PRICE, total);
     router.push('/upload');
   }
 
