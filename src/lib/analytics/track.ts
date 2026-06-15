@@ -54,3 +54,15 @@ export function trackLead(value: number) {
     currency: 'ILS',
   });
 }
+
+/**
+ * Payment completed. Fired when the customer returns from Grow's hosted page
+ * to /thank-you after a successful charge — the real conversion event Meta
+ * should optimize toward once the Grow success-redirect is configured.
+ */
+export function trackPurchase(value: number) {
+  fbq()?.('track', 'Purchase', {
+    value,
+    currency: 'ILS',
+  });
+}
