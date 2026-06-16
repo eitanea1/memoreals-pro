@@ -194,7 +194,7 @@ export default function HomePage() {
         <div className="how-inner">
           <div className="section-header">
             <span className="section-eyebrow-warm">איך זה עובד?</span>
-            <h2 className="section-heading-warm">שלושה צעדים, ארבעה־עשר ימים</h2>
+            <h2 className="section-heading-warm">שלושה צעדים פשוטים</h2>
           </div>
           <ol className="how-flow">
             {HOW_IT_WORKS.map((step, i) => (
