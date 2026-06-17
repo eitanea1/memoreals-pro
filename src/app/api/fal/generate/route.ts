@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
 import { buildPrompt, VARIATIONS, LORA_TRIGGER, type PromptVariation } from '@/lib/prompts';
+import { getBaseUrl } from '@/lib/baseUrl';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
@@ -168,7 +169,7 @@ export async function POST(req: NextRequest) {
 
     // If there are more to generate, trigger the next batch
     if (remaining > 0) {
-      const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3002';
+      const baseUrl = getBaseUrl(req);
       fetch(`${baseUrl}/api/fal/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma';
 import { put, head } from '@vercel/blob';
 import JSZip from 'jszip';
 import { LORA_TRIGGER } from '@/lib/prompts';
+import { getBaseUrl } from '@/lib/baseUrl';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
@@ -24,7 +25,7 @@ export async function POST(req: NextRequest) {
   }
 
   // Build image URLs (absolute — fal.ai needs public URLs)
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3002';
+  const baseUrl = getBaseUrl(req);
   const imageUrls = order.uploads.map((u) =>
     u.storageUrl.startsWith('http') ? u.storageUrl : `${baseUrl}${u.storageUrl}`
   );
