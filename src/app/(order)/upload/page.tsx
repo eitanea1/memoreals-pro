@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { useApp } from '@/context/AppContext';
 import DropZone from '@/components/upload/DropZone';
 import PhotoPreviewGrid from '@/components/upload/PhotoPreviewGrid';
+import PhotoExamples from '@/components/upload/PhotoExamples';
 import CropModal from '@/components/upload/CropModal';
 import StepIndicator from '@/components/shared/StepIndicator';
 import { Button } from '@/components/ui/button';
@@ -144,6 +145,8 @@ export default function PhotoUploadPage() {
           </div>
         </div>
       </div>
+
+      <PhotoExamples />
 
       <DropZone onFiles={handleFiles} />
       <PhotoPreviewGrid
