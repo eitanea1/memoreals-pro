@@ -192,6 +192,21 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     setExpandedChar(charName);
   }
 
+  // Ask Claude to write winning-formula prompts for this character (handles
+  // custom / Hebrew character names that have no fixed entry in prompts.ts).
+  async function handleAutoPrompt(charName: string) {
+    setLoading(`autoprompt-${charName}`); setError('');
+    try {
+      const res = await post('/api/admin/generate-prompt', { characterName: charName, aiLabel });
+      setCharPrompts((prev) => ({
+        ...prev,
+        [charName]: { variation_a: res.variation_a, variation_b: res.variation_b },
+      }));
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה ביצירת פרומפט אוטומטי');
+    } finally { setLoading(null); }
+  }
+
   function updateCharPrompt(charName: string, variation: string, value: string) {
     setCharPrompts((prev) => ({
       ...prev,
@@ -260,6 +275,18 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
 
         {expandedChar === char.name && (
           <div className="flex flex-col gap-2 mt-3 p-3 bg-[var(--c-bg)] rounded-lg">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[var(--c-muted)]">
+                דמות מותאמת? תן ל-AI לכתוב פרומפט מנצח (מבין גם עברית)
+              </span>
+              <Button
+                variant="brand-outline" size="sm"
+                disabled={loading === `autoprompt-${char.name}`}
+                onClick={() => handleAutoPrompt(char.name)}
+              >
+                {loading === `autoprompt-${char.name}` ? '⏳ כותב...' : '✨ צור פרומפט אוטומטי'}
+              </Button>
+            </div>
             {VARIATIONS.map((v) => (
               <div key={v} className="flex flex-col gap-1">
                 <label className="text-xs font-semibold text-[var(--c-muted)]">{VARIATION_LABELS[v] ?? v}</label>
