@@ -38,6 +38,9 @@ async function generateForCharacterVariation(params: {
       // gives full likeness AND full scene at 1.0, like the proven manual run.
       loras: [{ path: params.loraUrl, scale: 1.0 }],
       num_images: 1,
+      // Default image_size + 28 steps + guidance 3.5 + scale 1.0 — the exact settings
+      // behind the approved gold results (Wonder Woman, Iron Man, Batgirl). The magic
+      // lives in the prompt formula (see prompts.ts), not in these settings.
       num_inference_steps: 28,
       guidance_scale: 3.5,
       enable_safety_checker: false,

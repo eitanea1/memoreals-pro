@@ -2,164 +2,286 @@
 export const VARIATIONS = ['variation_a', 'variation_b'] as const;
 export type PromptVariation = (typeof VARIATIONS)[number];
 
-// ── Character prompts (without trigger word and age — those are prepended) ───
-// Template: "{character}, {action + scene}. {outfit}. Looking at camera. {lighting}. Floating sparks..."
+// ── Winning prompt formula ─────────────────────────────────────────────────────
+// Reverse-engineered from the proven manual fal runs (Wonder Woman / Iron Man /
+// Batgirl) that produced rich cinematic, magical results at scale 1.0.
+//
+// Final prompt shape:
+//   "An ultra-realistic photographic portrait of {trigger}, a {aiLabel} fully
+//    transformed into a real-life {SCENE}. {MAGIC_GLOW} {QUALITY_TAIL} {angle}{override}"
+//
+// Each CHARACTER_PROMPTS entry is the {SCENE} — it MUST start with the character
+// noun (NOT with "a/an", because "a real-life " already precedes it) and pack the
+// vivid environment + detailed costume + prop. The scene leads so it overpowers
+// the LoRA's indoor bias (otherwise enclosed scenes revert to "a kid's room").
+// Phrasing is gender-neutral (no he/she) so shared names (Chef, Samurai, …) work
+// for boys, girls, men and women — gender comes from {aiLabel}.
+
+// Shared "magic layer" — adds the glow/sparkle/bokeh feel to every character.
+const MAGIC_GLOW =
+  'Glowing magical light particles and sparkling embers drift through the air, ' +
+  'a subtle shimmering magical aura, dreamy glowing bokeh and soft ethereal light bloom, ' +
+  'dramatic cinematic lighting.';
+
+// Shared quality/realism tail.
+const QUALITY_TAIL =
+  'Hyper-detailed and photorealistic, cinematic movie-poster quality. make it realistic and magical.';
+
+// ── Character scenes (costume + environment + prop) ─────────────────────────────
 const CHARACTER_PROMPTS: Record<string, string> = {
-  // ── Superheroes ──
+  // ── Superheroes (shared boys / girls / men / women) ──
   'Spider-Man':
-    'Spider-Man, mask off face fully visible, standing on a rooftop ledge above a glowing city at dusk. His ultra-realistic suit showcases detailed webbing and vibrant red and blue colors. Looking at camera. Golden hour lighting with city lights below. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
+    'Spider-Man with the mask off and face fully visible, crouched in a dynamic pose on a skyscraper ledge above a glowing city at dusk, wearing an ultra-realistic red and blue suit with intricate black webbing detail',
   'Iron Man':
-    'Iron Man, helmet off, standing with one glowing repulsor raised. His ultra-realistic red and gold suit shines with reflective metallic textures, arc reactor glowing on chest. Looking at camera. Cinematic blue-orange lighting. Floating sparks and magical energy surround him, enhancing the fantasy-like atmosphere.',
-
-  'Captain America':
-    'Captain America, standing on a glowing battlefield, holding a vibranium shield that pulses with a radiant blue glow. His ultra-realistic suit is detailed with subtle metallic accents, and his heroic stance is illuminated by golden light from the setting sun. Looking at camera. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Thor':
-    'Thor, standing atop a rocky cliff gripping a glowing Mjolnir that crackles with vibrant blue lightning. His ultra-realistic Asgardian armor gleams with intricate metallic designs, red cape flowing behind. Looking at camera. Dramatic stormy sky lighting. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Doctor Strange':
-    'Doctor Strange, standing with glowing orange magical circles forming around his hands. His ultra-realistic Cloak of Levitation flows dramatically with Eye of Agamotto glowing. Looking at camera. Mystical warm golden lighting. Floating sparks and magical energy swirl around him, enhancing the fantasy-like atmosphere.',
-
-  'Superman':
-    'Superman, standing tall with fists at his sides on a mountain peak above clouds. His ultra-realistic blue suit glows faintly with reflective details, red cape flowing powerfully in the wind. Looking at camera. Warm golden sunlight from behind. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
+    'Iron Man with the helmet off and face fully visible, hovering in a powerful flight pose above a futuristic neon city skyline at night, wearing an ultra-realistic glowing red and gold armored suit with a bright arc reactor on the chest',
   'Batman':
-    'Batman, cowl off face fully visible, standing on a gothic rooftop with Bat-Signal glowing in the sky behind. His ultra-realistic dark armored batsuit reflects the moody city lights. Looking at camera. Moody blue-gray night lighting. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'The Flash':
-    'The Flash, standing mid-stride with lightning trails behind him on a city street. His ultra-realistic red suit features golden lightning bolt emblem that pulses with energy. Looking at camera. Dynamic blue-orange speed effect lighting. Floating sparks and electric energy crackle around him, enhancing the fantasy-like atmosphere.',
-
-  'Green Arrow':
-    'Green Arrow, standing in a misty enchanted forest holding a bow with arrow drawn. His ultra-realistic green suit is detailed with leather textures and metallic accents. Looking at camera. Soft green forest light filtering through trees. Floating sparks and magical mist swirl around, enhancing the fantasy-like atmosphere.',
-
-  'Black Panther':
-    'Black Panther, mask off face fully visible, standing in a glowing Wakandan jungle. His ultra-realistic black vibranium suit pulses with purple energy lines. Looking at camera. Bioluminescent purple and blue lighting. Floating sparks and energy crackle from his suit, enhancing the fantasy-like atmosphere.',
-
+    'Batman with the cowl pulled back so the face is fully visible, standing on a gothic rooftop with the glowing Bat-Signal lighting the night sky, wearing an ultra-realistic dark armored batsuit with a flowing cape',
+  'Superman':
+    'Superman standing tall in a heroic pose on a mountain peak above the clouds at golden hour, wearing an ultra-realistic blue suit with the iconic chest emblem and a red cape flowing in the wind',
+  'Thor':
+    'Thor standing on a rocky cliff gripping the glowing hammer Mjolnir crackling with blue lightning, wearing ultra-realistic Asgardian armor with a flowing red cape under a dramatic stormy sky',
+  'Captain America':
+    'Captain America standing in a strong heroic stance on a dark rubble-strewn battlefield at dusk, holding the iconic glowing vibranium shield, wearing an ultra-realistic rugged blue tactical suit with a metallic star emblem',
   'Hulk':
-    'Hulk, standing powerfully in a destroyed city street. His massive green muscular body is ultra-realistically detailed, wearing torn pants. Looking at camera. Dramatic sunset backlighting with warm orange tones. Floating sparks and embers fill the air, enhancing the fantasy-like atmosphere.',
-
+    'the Hulk, a massive muscular green-skinned hero with the face fully visible and recognizable, standing powerfully in a destroyed city street at sunset, wearing torn purple shorts',
+  'The Flash':
+    'the Flash in a dynamic running pose with glowing electric lightning trails on a city street at night, wearing an ultra-realistic red suit with a glowing golden lightning emblem',
   'Aquaman':
-    'Aquaman, standing on ocean rocks holding a golden trident with energy at its tip, waves crashing behind. Wearing ultra-realistic orange and green scale armor. Looking at camera. Stormy dramatic lighting with ocean spray. Floating sparks and glowing water particles fill the air, enhancing the fantasy-like atmosphere.',
-
+    'Aquaman standing on ocean rocks holding a glowing golden trident with waves crashing behind under a dramatic sky, wearing ultra-realistic green and gold scale armor',
   'Wonder Woman':
-    'Wonder Woman, standing in ancient Greek temple ruins at golden hour. Wearing ultra-realistic golden tiara, red and gold armor, blue skirt with stars, lasso glowing at hip. Looking at camera. Warm golden light. Floating sparks and glowing dust particles fill the air, enhancing the fantasy-like atmosphere.',
+    'Wonder Woman standing confidently in a strong heroic pose on an ancient battlefield at golden sunrise, holding a glowing Lasso of Truth, wearing intricately detailed gold and red armor that gleams with polished metallic highlights',
+  'Captain Marvel':
+    'Captain Marvel hovering in a powerful pose with glowing cosmic energy radiating from the hands, against a starry cosmic sky, wearing an ultra-realistic red, blue and gold suit glowing with energy',
+  'Black Widow':
+    'Black Widow in a confident action pose in a moody industrial setting at night, wearing an ultra-realistic sleek black tactical suit with utility belts',
+  'Batgirl':
+    'Batgirl standing confidently in a heroic pose on a gothic city rooftop at night with the glowing Bat-Signal lighting up the dark sky, wearing a sleek intricately detailed black batsuit with a glowing yellow bat emblem, a flowing dark cape and utility belt, the cowl pulled back so the face is fully visible',
+  'Storm':
+    'Storm floating in mid-air with glowing white eyes and crackling lightning in a dramatic stormy sky, wearing an ultra-realistic sleek black suit with a flowing cape, hair billowing in the wind',
+  'Supergirl':
+    'Supergirl flying in a heroic pose above a glowing city skyline at golden hour, wearing an ultra-realistic blue suit with the iconic emblem and a red cape',
+  'Scarlet Witch':
+    'the Scarlet Witch in a powerful pose with glowing crimson magic energy swirling around the hands, in a dark mystical setting, wearing an ultra-realistic red coat and crimson headpiece',
+  'Valkyrie':
+    'an Asgardian Valkyrie warrior standing on a misty battlefield holding a glowing sword, wearing ultra-realistic blue and silver armor with a flowing cape',
 
-  // ── Fantasy & Movies ──
+  // ── Boys anime ──
+  'Dragon Ball Z Fighter':
+    'a Super Saiyan fighter from Dragon Ball Z in a powerful pose with glowing golden spiky hair and a blazing golden aura of energy, on a rocky battlefield, wearing an orange and blue martial-arts gi',
+  'Vegeta Dragon Ball':
+    'Vegeta from Dragon Ball in a proud powerful stance with a glowing blue aura of energy and spiky black hair, wearing ultra-realistic blue and white Saiyan battle armor',
+  'Naruto Ninja':
+    'a Naruto-style ninja in a dynamic pose with glowing chakra energy swirling, in a hidden ninja village at dusk, wearing an ultra-realistic orange and black ninja outfit with a headband',
+  'Pokemon Trainer':
+    'a Pokemon trainer standing confidently in a grassy field at sunrise holding a glowing Poke Ball, wearing an ultra-realistic cap, jacket and backpack',
+  'Avatar Navi':
+    "a tall blue-skinned Na'vi from Pandora with the face fully visible, standing in a glowing bioluminescent jungle at night, wearing tribal Na'vi attire with beads",
+  'Avatar Airbender':
+    'an airbending master in a dynamic pose with swirling glowing air currents and blue arrow tattoos, on a mountaintop temple, wearing ultra-realistic orange and yellow air-nomad robes',
   'Harry Potter':
-    'Harry Potter, standing in a grand magical library with floating candles and old books. Wearing ultra-realistic Hogwarts robe with Gryffindor scarf, holding a glowing wand. Looking at camera. Warm candlelight atmosphere. Floating sparks and magical particles drift through the air, enhancing the fantasy-like atmosphere.',
+    'a young wizard in a grand magical Hogwarts library with floating glowing candles, holding a glowing magic wand, wearing an ultra-realistic Hogwarts robe with a Gryffindor scarf',
 
-  'Aladdin':
-    'Aladdin, standing on a magic carpet hovering above a moonlit Arabian city with domed palaces. Wearing ultra-realistic embroidered vest and baggy pants. Looking at camera. Warm moonlight and golden city glow. Floating sparks and magical dust particles fill the air, enhancing the fantasy-like atmosphere.',
-
+  // ── Adventures (shared) ──
   'Jack Sparrow':
-    'Jack Sparrow, standing on the deck of a pirate ship under a starry night sky. Wearing ultra-realistic weathered pirate coat, tricorn hat, and beaded braids. Looking at camera. Moody lantern light on deck. Floating sparks and golden dust particles drift in the sea breeze, enhancing the fantasy-like atmosphere.',
-
-  'Avatar':
-    'Na\'vi Avatar, standing in a bioluminescent forest on Pandora at night. Ultra-realistic blue skin with glowing patterns, tribal outfit. Looking at camera. Ethereal blue and purple bioluminescent lighting. Floating sparks and glowing particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Dragon Rider':
-    'dragon rider, sitting confidently atop a massive dragon on a cliff edge with a vast landscape below. Wearing ultra-realistic leather armor with dragon scale details. Looking at camera. Epic golden hour lighting with clouds. Floating sparks and embers rise from the dragon, enhancing the fantasy-like atmosphere.',
-
+    'a charismatic pirate captain in the style of Jack Sparrow on the deck of a pirate ship under a starry night sky, wearing an ultra-realistic weathered pirate coat, tricorn hat and beaded braids',
+  'Aladdin':
+    'Aladdin on a flying magic carpet hovering above a moonlit Arabian city with domed palaces, wearing an ultra-realistic embroidered vest and baggy pants',
   'Peter Pan':
-    'Peter Pan, hovering above moonlit London rooftops with Big Ben in the background. Wearing ultra-realistic green tunic and pointed hat with feather. Looking at camera. Magical moonlight glow. Floating fairy dust trail glowing like golden sparks behind him, enhancing the fantasy-like atmosphere.',
+    'Peter Pan hovering above moonlit London rooftops with Big Ben in the background and a glowing fairy-dust trail, wearing an ultra-realistic green tunic and feathered cap',
+  'Hercules':
+    'the legendary hero Hercules in a powerful heroic pose at an ancient Greek temple at golden hour, wearing ultra-realistic bronze and leather armor',
+  'Mowgli':
+    'Mowgli standing in a lush glowing jungle at dawn beside a friendly wolf, surrounded by fireflies, wearing a simple red loincloth',
+  'Robin Hood':
+    'Robin Hood drawing a bow with an arrow in a misty enchanted forest, wearing an ultra-realistic green hooded tunic with leather details',
+  'Ninja Turtle Fighter':
+    'a heroic ninja-turtle warrior in a dynamic action pose in a neon-lit city alley at night, wearing a colored eye mask and ninja gear with weapons',
+  'Optimus Prime':
+    'a giant heroic Transformer robot in the style of Optimus Prime standing in a futuristic city with glowing blue eyes, ultra-realistic red and blue metallic armor plating',
+  'Indiana Jones':
+    'an adventurous archaeologist explorer in the style of Indiana Jones in an ancient torch-lit temple ruin, holding a whip, wearing an ultra-realistic leather jacket and fedora',
+  'James Bond':
+    'a suave secret agent in the style of James Bond in a sleek black tuxedo at a glamorous casino at night, holding a pistol, dramatic moody lighting',
+  'Drunk Pirate':
+    'a jolly tipsy pirate with a comedic grin stumbling on a tavern ship deck holding a bottle, wearing an ultra-realistic weathered pirate coat and hat',
+  'Lara Croft':
+    'an adventurous explorer in the style of Lara Croft in an ancient jungle temple, holding dual pistols, wearing a tank top and cargo shorts with adventure gear',
+  'Spy':
+    'a sleek elegant spy in a glamorous gown at a high-society event at night, dramatic moody lighting, holding a small concealed pistol',
+  'Pirate Captain':
+    'a bold pirate captain at the helm of a ship under a dramatic stormy sky, wearing an ultra-realistic ornate pirate coat and feathered hat',
 
-  // ── Professions ──
-  'Pilot':
-    'pilot, standing proudly next to a modern jet on an airfield at sunrise. Wearing ultra-realistic pilot uniform with patches, holding helmet under arm. Looking at camera. Warm sunrise lighting on tarmac.',
-
+  // ── Boys premium ──
   'Astronaut':
-    'astronaut, standing on the moon surface with Earth visible in the dark sky behind. Wearing ultra-realistic detailed white space suit, helmet visor up. Looking at camera. Dramatic space lighting with Earth glow.',
+    "an astronaut standing on the moon's surface with Earth glowing in the dark starry sky behind, wearing an ultra-realistic detailed white space suit with the helmet visor up",
+  'Medieval Knight':
+    'a medieval knight in shining silver plate armor standing in a grand castle courtyard at golden hour, holding a gleaming sword',
+  'Prince King':
+    'a royal prince in a grand palace throne room, wearing an ultra-realistic ornate royal outfit with a golden crown and a regal cape',
+  'Viking Dragon Rider':
+    'a young Viking dragon rider standing on a cliff beside a majestic dragon at golden hour, wearing ultra-realistic leather and fur armor with dragon-scale details',
+  'Kung Fu Master':
+    'a kung fu master in a powerful martial-arts stance in a misty ancient temple courtyard at dawn, wearing an ultra-realistic traditional martial-arts robe',
+  'Sherlock Detective':
+    'a clever detective in the style of Sherlock Holmes on a foggy Victorian London street at night, holding a magnifying glass, wearing an ultra-realistic tweed coat and cap',
+  'Race Driver':
+    'a race-car driver standing confidently beside a sleek formula race car on a track, holding a helmet, wearing an ultra-realistic racing suit covered in sponsor patches',
+  'Football Champion':
+    'a football champion celebrating on a stadium pitch under bright floodlights with confetti falling, wearing an ultra-realistic team jersey',
+  'Secret Agent':
+    'a sharp secret agent in a sleek black tuxedo in a glamorous casino at night, holding a pistol, dramatic moody lighting',
+  'Samurai Warrior':
+    'a samurai warrior in a blossoming cherry-blossom courtyard holding a gleaming katana, wearing ultra-realistic traditional samurai armor',
+  'Cowboy':
+    'a cowboy standing in a golden desert canyon at sunset, wearing an ultra-realistic cowboy hat, leather vest and boots',
+  'Roman Gladiator':
+    'a Roman gladiator standing in a sunlit Colosseum arena with dust in the air, holding a sword and shield, wearing ultra-realistic leather and bronze armor',
+  'Motorcycle Rider':
+    'a cool motorcycle rider beside a powerful motorcycle on a neon-lit city street at night, wearing an ultra-realistic black leather riding jacket',
+  'Pro Surfer':
+    'a pro surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+  'Viking Berserker':
+    'a fierce Viking warrior on a rugged northern shore with stormy seas, holding a battle axe, wearing ultra-realistic fur cloak and iron armor with braided hair',
+  'Horse Rider Knight':
+    'a knight riding a majestic horse galloping through a grand field at golden hour, wearing ultra-realistic armor',
 
-  'Firefighter':
-    'firefighter, standing in front of a blazing fire with embers floating in the air. Wearing ultra-realistic yellow turnout coat and helmet. Looking at camera. Warm orange firelight on face.',
-
-  'Chef':
-    'chef, standing in a professional kitchen with flames rising from a pan. Wearing ultra-realistic white chef coat and tall toque hat, copper pots gleaming in background. Looking at camera. Warm amber kitchen lighting.',
-
-  'Police Officer':
-    'police officer, standing by a patrol car at dusk in an urban street. Wearing ultra-realistic dark blue uniform with badge and utility belt. Looking at camera. Red and blue light reflections, moody atmosphere.',
-
-  'Doctor':
-    'doctor, standing in a modern hospital corridor. Wearing ultra-realistic white coat with stethoscope around neck. Looking at camera. Clean blue-white hospital lighting.',
-
-  'Scientist':
-    'scientist, standing in a high-tech laboratory with glowing screens and beakers. Wearing ultra-realistic white lab coat and safety goggles on forehead. Looking at camera. Cool blue lab lighting with warm accent.',
-
-  'Teacher':
-    'teacher, standing by a chalkboard covered in equations in a warm classroom. Wearing ultra-realistic smart professional attire, holding chalk. Looking at camera. Warm golden light from tall windows.',
-
-  'Nurse':
-    'nurse, standing in a modern hospital ward. Wearing ultra-realistic teal medical scrubs with stethoscope around neck. Looking at camera. Soft warm caring atmosphere lighting.',
-
-  'Engineer':
-    'engineer, standing on a steel building framework at sunrise with city skyline below. Wearing ultra-realistic hard hat and reflective vest, holding blueprints. Looking at camera. Golden sunrise lighting.',
-
-  'Veterinarian':
-    'veterinarian, standing in a warm clinic gently holding a small puppy. Wearing ultra-realistic scrubs with stethoscope. Looking at camera. Soft golden window light.',
-
-  'Artist':
-    'artist, standing in a sunlit studio surrounded by large canvases. Wearing ultra-realistic paint-splattered apron, holding palette and brush. Looking at camera. Golden afternoon light with colorful paint splashes.',
-
-  // ── Sports & Entertainment ──
-  'Football Player':
-    'football player, standing on a stadium pitch mid-celebration with arms raised. Wearing ultra-realistic team jersey, shorts and cleats. Looking at camera. Dramatic stadium floodlights.',
-
-  'Basketball Player':
-    'basketball player, standing on a polished indoor court holding a basketball. Wearing ultra-realistic jersey and high-top sneakers. Looking at camera. Dramatic gym lighting with floor reflections.',
-
-  'Rock Singer':
-    'rock singer, standing on a concert stage with spotlights and crowd silhouettes behind. Wearing ultra-realistic leather jacket and band t-shirt, holding microphone. Looking at camera. Dramatic stage lighting with colored beams.',
-
-  // ── Disney Princesses ──
-  'Elsa Frozen':
-    'Elsa from Frozen, standing in a glittering frozen ice palace with frost swirling from her hands. Wearing an ultra-realistic sparkling ice-blue gown with delicate snowflake details and a long flowing translucent cape, platinum-blonde hair in a loose side braid. Looking at camera. Cool blue magical lighting with shimmering frost. Floating ice crystals and glowing snow particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Moana':
-    'Moana, standing on a tropical beach at sunset with ocean waves curling behind her. Wearing an ultra-realistic red and tan island outfit with a shell necklace, long dark wavy hair flowing in the breeze. Looking at camera. Warm golden tropical sunset lighting. Floating golden light sparks dance over the water, enhancing the fantasy-like atmosphere.',
-
-  'Mulan':
-    'Mulan, standing in a blossoming pink cherry-blossom courtyard. Wearing an ultra-realistic elegant traditional Hanfu robe in soft pinks and greens with an ornate hair ornament. Looking at camera. Soft warm golden light. Floating cherry blossom petals and golden sparks drift through the air, enhancing the fantasy-like atmosphere.',
-
-  'Ariel Little Mermaid':
-    'Ariel, sitting on rocks by the ocean shore at sunset with waves gently crashing. Wearing ultra-realistic mermaid outfit with teal sequined details, long flowing red hair. Looking at camera. Warm sunset ocean lighting. Floating golden light sparks dance on the water, enhancing the fantasy-like atmosphere.',
-
-  'Aurora Sleeping Beauty':
-    'Aurora, standing in an enchanted castle garden full of blooming roses. Wearing ultra-realistic flowing pink gown with golden crown, long blonde hair. Looking at camera. Soft dreamy golden light. Floating fairy sparkles and golden particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Belle Beauty Beast':
-    'Belle, standing in an enchanted castle ballroom with a magical rose glowing under a glass dome nearby. Wearing ultra-realistic iconic golden ball gown, brown hair in an elegant updo. Looking at camera. Magical warm golden ballroom lighting. Floating sparks and golden particles rise from the rose, enhancing the fantasy-like atmosphere.',
-
-  // ── Fairy Tales ──
+  // ── Girls — princesses & fairy tales ──
   'Cinderella':
-    'Cinderella, descending a grand marble staircase in a palace ballroom. Wearing ultra-realistic shimmering light blue ball gown with glass slippers. Looking at camera. Magical golden sparkle lighting. Floating sparks and fairy dust swirl around, enhancing the fantasy-like atmosphere.',
-
+    'Cinderella on a grand marble staircase inside a magnificent palace ballroom with golden chandeliers and ornate columns, wearing an exquisitely detailed shimmering light-blue ball gown with layered tulle and sparkling glass slippers, hair in an elegant updo',
   'Snow White':
-    'Snow White, standing in an enchanted forest clearing with sunbeams breaking through. Wearing ultra-realistic yellow and blue royal gown with red bow headband. Looking at camera. Soft fairytale golden light. Floating golden particles drift like fireflies, enhancing the fantasy-like atmosphere.',
-
-  'Little Red Riding Hood':
-    'Little Red Riding Hood, walking through a misty dark forest path holding a basket. Wearing ultra-realistic flowing red hooded cape over white dress. Looking at camera. Atmospheric forest light breaking through trees. Floating golden light sparks drift between the trees, enhancing the fantasy-like atmosphere.',
-
+    'Snow White in an enchanted sunlit forest clearing with birds and deer, wearing an ultra-realistic yellow and blue royal gown with a red bow headband',
   'Rapunzel':
-    'Rapunzel, standing at a tower window with long flowing golden hair cascading down. Wearing ultra-realistic purple dress. Hundreds of floating lanterns rise into the twilight sky. Looking at camera. Warm lantern glow. Floating sparks and golden light particles fill the air, enhancing the fantasy-like atmosphere.',
+    'Rapunzel at a tower window with long flowing golden hair, hundreds of glowing floating lanterns rising into the twilight sky, wearing an ultra-realistic purple dress',
+  'Elsa Frozen':
+    'Elsa from Frozen inside a vast glowing ice palace with towering frozen crystal pillars and shimmering frost-covered walls, glowing frost magic swirling from the hands, wearing a sparkling ice-blue gown and a long flowing translucent cape glowing with magical light, platinum-blonde hair in a side braid',
+  'Moana':
+    'Moana on a tropical beach at golden sunset with ocean waves curling behind, long dark wavy hair flowing, wearing an ultra-realistic red and tan island outfit with a shell necklace',
+  'Mulan':
+    'Mulan in a blossoming pink cherry-blossom courtyard, wearing an ultra-realistic elegant traditional Hanfu robe with an ornate hair ornament',
+  'Ariel Little Mermaid':
+    'Ariel the little mermaid sitting on ocean rocks at sunset with waves gently crashing, long flowing red hair, wearing an ultra-realistic mermaid outfit with a teal sequined tail',
+  'Aurora Sleeping Beauty':
+    'Princess Aurora in an enchanted castle garden full of blooming roses, long blonde hair, wearing an ultra-realistic flowing pink gown with a golden crown',
+  'Belle Beauty Beast':
+    'Belle in an enchanted castle ballroom with a glowing magical rose under a glass dome, hair in an elegant updo, wearing an ultra-realistic iconic golden ball gown',
+  'Pocahontas':
+    'Pocahontas on a cliff above a forest river at golden hour with wind swirling autumn leaves, long black flowing hair, wearing an ultra-realistic tan buckskin dress with a turquoise necklace',
+  'Little Red Riding Hood':
+    'Little Red Riding Hood on a misty enchanted forest path holding a basket, wearing an ultra-realistic flowing red hooded cape over a white dress',
+  'Sailor Moon':
+    'a Sailor Moon-style magical girl in a dynamic pose with glowing crescent-moon magic and sparkles, against a starry night sky, wearing an ultra-realistic sailor-style uniform with a red bow',
+  'Anime Warrior Girl':
+    'an anime warrior girl in a dynamic pose with glowing energy on a dramatic battlefield, wearing ultra-realistic stylized fantasy armor',
 
-  'Pinocchio':
-    'Pinocchio, standing in an old Italian puppet workshop surrounded by wooden toys. Wearing ultra-realistic Tyrolean hat and suspenders. Looking at camera. Warm candlelight atmosphere. Floating golden sparks drift in the air, enhancing the fantasy-like atmosphere.',
+  // ── Girls adventures ──
+  'Hogwarts Witch':
+    'a young witch in a grand magical Hogwarts library with floating glowing candles, holding a glowing wand, wearing an ultra-realistic Hogwarts robe with a house scarf',
+  'Dragon Rider Girl':
+    'a young dragon rider on a cliff beside a majestic dragon at golden hour, wearing ultra-realistic leather armor with dragon-scale details',
 
-  'Beauty & the Beast':
-    'Belle, standing in an enchanted castle ballroom with a magical rose glowing under a glass dome nearby. Wearing ultra-realistic iconic golden ball gown. Looking at camera. Magical warm golden ballroom lighting. Floating sparks and golden particles rise from the rose, enhancing the fantasy-like atmosphere.',
+  // ── Girls premium ──
+  'Astronaut Girl':
+    "an astronaut standing on the moon's surface with Earth glowing in the dark starry sky behind, wearing an ultra-realistic detailed white space suit with the helmet visor up",
+  'Princess Queen':
+    'a regal princess queen on an ornate golden throne in a grand palace hall, wearing an ultra-realistic luxurious royal gown with a golden crown and jewels',
+  'Fairy Godmother':
+    'a magical fairy with glowing translucent wings in an enchanted glowing forest at night, holding a sparkling magic wand, surrounded by fairy dust, wearing a shimmering gown',
+  'Samurai Girl':
+    'a samurai warrior in a blossoming cherry-blossom courtyard holding a gleaming katana, wearing ultra-realistic traditional samurai armor',
+  'Horse Rider Girl':
+    'an equestrian rider on a majestic horse galloping through a grand field at golden hour, wearing ultra-realistic equestrian attire',
+  'Ballerina':
+    'a graceful ballerina mid-pose on a grand theater stage under a soft glowing spotlight, wearing an ultra-realistic elegant tutu',
+  'Hip Hop Dancer':
+    'a cool hip hop dancer in a dynamic pose on a neon-lit urban street at night, wearing ultra-realistic stylish streetwear',
+  'Rock Star Girl':
+    'a rock star on a concert stage with dramatic spotlights and crowd silhouettes, holding a microphone, wearing an ultra-realistic leather jacket',
+  'Pro Surfer Girl':
+    'a pro surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+  'Chef Girl':
+    "a chef in a professional kitchen with flames rising from a pan, wearing an ultra-realistic white chef's coat and tall toque hat",
+  'Doctor Girl':
+    'a doctor in a modern hospital corridor, wearing an ultra-realistic white coat with a stethoscope around the neck',
+  'Scientist Girl':
+    'a scientist in a high-tech laboratory with glowing screens and beakers, wearing an ultra-realistic white lab coat and safety goggles',
+  'Cowgirl':
+    'a cowgirl in a golden desert canyon at sunset, wearing an ultra-realistic cowboy hat, leather vest and boots',
+  'Gladiator Girl':
+    'a gladiator standing in a sunlit Colosseum arena with dust in the air, holding a sword and shield, wearing ultra-realistic leather and bronze armor',
+  'Race Driver Girl':
+    'a race-car driver standing confidently beside a sleek formula race car on a track, holding a helmet, wearing an ultra-realistic racing suit covered in sponsor patches',
+  'Secret Agent Girl':
+    'a sharp secret agent in an elegant outfit at a glamorous casino at night, holding a pistol, dramatic moody lighting',
+  'Football Star Girl':
+    'a football star celebrating on a stadium pitch under bright floodlights with confetti falling, wearing an ultra-realistic team jersey',
+  'Pirate Girl':
+    'a bold pirate captain at the helm of a ship under a dramatic stormy sky, wearing an ultra-realistic ornate pirate coat and feathered hat',
+  'Knight Girl':
+    'a knight in shining silver plate armor standing in a grand castle courtyard at golden hour, holding a gleaming sword',
+  'Ninja Girl':
+    'a ninja in a dynamic stealth pose on a moonlit rooftop at night, holding a katana, wearing an ultra-realistic black ninja outfit',
 
-  'The Little Mermaid':
-    'Ariel, sitting on rocks by the ocean shore at sunset with waves gently crashing. Wearing ultra-realistic mermaid outfit with teal sequined details. Looking at camera. Warm sunset ocean lighting. Floating golden light sparks dance on the water, enhancing the fantasy-like atmosphere.',
-
-  'Sleeping Beauty':
-    'Aurora, standing in an enchanted castle garden full of blooming roses. Wearing ultra-realistic flowing pink and blue gown with golden crown. Looking at camera. Soft dreamy golden light. Floating fairy sparkles and golden particles fill the air, enhancing the fantasy-like atmosphere.',
-
-  'Hansel & Gretel':
-    'Hansel, standing before a magical gingerbread house in a dark enchanted forest. Wearing ultra-realistic Bavarian folk costume. Looking at camera. Warm magical glow from candy decorations. Floating golden sparks drift through the dark forest, enhancing the fantasy-like atmosphere.',
-
-  'Jack and the Beanstalk':
-    'Jack, climbing an enormous beanstalk high above the clouds. Wearing ultra-realistic medieval peasant tunic. Looking at camera. Epic golden light above clouds. Floating magical sparks and light particles swirl around the beanstalk, enhancing the fantasy-like atmosphere.',
+  // ── Professions (shared men / women) ──
+  'Chef':
+    "a chef in a professional kitchen with flames rising from a pan, wearing an ultra-realistic white chef's coat and tall toque hat",
+  'Doctor':
+    'a doctor in a modern hospital corridor, wearing an ultra-realistic white coat with a stethoscope around the neck',
+  'Pilot':
+    'an airline pilot beside a modern jet on a runway at sunrise, holding a helmet, wearing an ultra-realistic pilot uniform with cap',
+  'Firefighter':
+    'a firefighter in front of a blazing fire with glowing embers in the air, wearing an ultra-realistic yellow turnout coat and helmet',
+  'Police Officer':
+    'a police officer beside a patrol car on an urban street at dusk with red and blue light reflections, wearing an ultra-realistic uniform with a badge',
+  'Lawyer':
+    'a confident lawyer in a grand wood-paneled courtroom, holding documents, wearing an ultra-realistic sharp tailored suit',
+  'Professor':
+    'a distinguished professor in a classic library with tall bookshelves, holding a book, wearing an ultra-realistic tweed jacket',
+  'DJ':
+    'a DJ at the turntables in a nightclub with vibrant neon lights and a crowd, wearing ultra-realistic headphones and a stylish outfit',
+  'Bartender':
+    'a stylish bartender behind an elegant bar mixing a cocktail with flair, warm moody lighting, wearing a vest with rolled sleeves',
+  'Barber':
+    'a skilled barber in a vintage barbershop holding scissors, warm lighting, wearing an ultra-realistic apron',
+  'Photographer':
+    'a photographer holding a professional camera on a vibrant city street at golden hour, wearing a stylish casual outfit',
+  'Jazz Musician':
+    'a jazz musician playing a golden saxophone on a moody dimly-lit stage with a single spotlight, wearing an ultra-realistic sharp suit',
+  'Architect':
+    'an architect at a drafting desk with blueprints in a modern studio overlooking a city skyline, holding a building model, wearing a smart outfit',
+  'Archaeologist':
+    'an archaeologist carefully brushing an ancient artifact at a sunlit desert dig site surrounded by stone ruins, wearing a wide-brimmed safari hat and a rugged shirt',
+  'Winemaker':
+    'a winemaker in a sunlit vineyard at golden hour holding a glass of red wine with rows of grapevines behind, wearing a rustic shirt',
+  'Fitness Trainer':
+    'a fit fitness trainer in a modern gym with dramatic lighting, confident and athletic, wearing athletic gear',
+  'Golf Pro':
+    'a golf pro mid-swing on a lush green golf course at golden hour, wearing an ultra-realistic polo shirt and cap',
+  'Yacht Captain':
+    "a yacht captain on the deck of a luxury yacht on turquoise ocean water, wearing a crisp white captain's uniform and cap",
+  'Mountain Climber':
+    'a mountain climber at a snowy summit with epic mountain vistas at sunrise, wearing ultra-realistic climbing gear and ropes',
+  'SWAT Operator':
+    'a SWAT operator in full tactical gear during a dramatic urban night operation, wearing an ultra-realistic armored vest and helmet',
+  'Boxer':
+    'a boxer in a dramatic boxing ring under bright spotlights, intense and powerful, wearing boxing gloves and shorts',
+  'Surfer':
+    'a surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+  'Cowboy Mustache':
+    'a cowboy with a thick mustache standing in a golden desert canyon at sunset, wearing an ultra-realistic cowboy hat, leather vest and boots',
+  'Gladiator':
+    'a gladiator standing in a sunlit Colosseum arena with dust in the air, holding a sword and shield, wearing ultra-realistic leather and bronze armor',
+  'Samurai':
+    'a samurai warrior in a blossoming cherry-blossom courtyard holding a gleaming katana, wearing ultra-realistic traditional samurai armor',
+  'Viking':
+    'a fierce Viking warrior on a rugged northern shore with stormy seas, holding a battle axe, wearing ultra-realistic fur cloak and iron armor with braided hair',
+  'Sumo Wrestler':
+    'a sumo wrestler in a powerful stance in a traditional sumo ring inside a dramatic arena, wearing a traditional mawashi belt',
+  'Male Ballerina':
+    'a graceful ballet dancer mid-leap on a grand theater stage under a soft glowing spotlight, wearing an ultra-realistic ballet outfit',
+  'Funny Ballerina':
+    'a ballerina in a comedic exaggerated pose with a playful funny expression on a theater stage under a spotlight, wearing a tutu',
+  'Cowgirl Mustache':
+    'a cowgirl wearing a funny fake mustache standing in a golden desert canyon at sunset, wearing an ultra-realistic cowboy hat, leather vest and boots',
 };
 
 // ── Trigger word used during LoRA training ────────────────────────────────────
@@ -167,8 +289,8 @@ export const LORA_TRIGGER = 'MRLSSUBJ';
 
 // ── Angle/composition per variation ──────────────────────────────────────────
 const VARIATION_ANGLES: Record<PromptVariation, string> = {
-  variation_a: 'full body shot',
-  variation_b: 'upper body portrait, close framing',
+  variation_a: 'Full body shot, head to toe.',
+  variation_b: 'Close-up portrait, head and shoulders.',
 };
 
 // ── Build a full prompt for a single character + variation ─────────────────────
@@ -187,14 +309,15 @@ export function buildPrompt(params: {
   const trigger = params.loraTrigger?.trim() || LORA_TRIGGER;
   const angle = params.variation ? VARIATION_ANGLES[params.variation] : VARIATION_ANGLES.variation_a;
 
+  // Scene leads the prompt so it overpowers the LoRA's indoor/training bias.
   const scene = CHARACTER_PROMPTS[params.characterName]
-    ?? `${params.characterName}, in a cinematic ultra-realistic scene with dramatic lighting and golden sparks.`;
+    ?? `${params.characterName} in an epic cinematic fantasy scene with dramatic lighting`;
 
   const override = params.aiOverride?.trim()
     ? ` ${params.aiOverride.trim()}`
     : '';
 
-  return `Cinematic photorealistic portrait of ${trigger}, a ${params.aiLabel} ${scene} ${angle}.${override}`;
+  return `An ultra-realistic photographic portrait of ${trigger}, a ${params.aiLabel} fully transformed into a real-life ${scene}. ${MAGIC_GLOW} ${QUALITY_TAIL} ${angle}${override}`;
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────
