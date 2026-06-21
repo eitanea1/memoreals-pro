@@ -139,7 +139,7 @@ const CHARACTER_PROMPTS: Record<string, string> = {
   'Motorcycle Rider':
     'a cool motorcycle rider beside a powerful motorcycle on a neon-lit city street at night, wearing an ultra-realistic black leather riding jacket',
   'Pro Surfer':
-    'a pro surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+    'a pro surfer standing on the beach at golden sunset holding a tall surfboard upright beside them, big ocean waves breaking behind, wearing a wetsuit, water droplets glistening',
   'Viking Berserker':
     'a fierce Viking warrior on a rugged northern shore with stormy seas, holding a battle axe, wearing ultra-realistic fur cloak and iron armor with braided hair',
   'Horse Rider Knight':
@@ -197,7 +197,7 @@ const CHARACTER_PROMPTS: Record<string, string> = {
   'Rock Star Girl':
     'a rock star on a concert stage with dramatic spotlights and crowd silhouettes, holding a microphone, wearing an ultra-realistic leather jacket',
   'Pro Surfer Girl':
-    'a pro surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+    'a pro surfer standing on the beach at golden sunset holding a tall surfboard upright beside them, big ocean waves breaking behind, wearing a wetsuit, water droplets glistening',
   'Chef Girl':
     "a chef in a professional kitchen with flames rising from a pan, wearing an ultra-realistic white chef's coat and tall toque hat",
   'Doctor Girl':
@@ -265,7 +265,7 @@ const CHARACTER_PROMPTS: Record<string, string> = {
   'Boxer':
     'a boxer in a dramatic boxing ring under bright spotlights, intense and powerful, wearing boxing gloves and shorts',
   'Surfer':
-    'a surfer on a beach at golden sunset holding a surfboard with ocean waves behind, water droplets glistening, wearing a wetsuit',
+    'a surfer standing on the beach at golden sunset holding a tall surfboard upright beside them, big ocean waves breaking behind, wearing a wetsuit, water droplets glistening',
   'Cowboy Mustache':
     'a cowboy with a thick mustache standing in a golden desert canyon at sunset, wearing an ultra-realistic cowboy hat, leather vest and boots',
   'Gladiator':
@@ -287,12 +287,6 @@ const CHARACTER_PROMPTS: Record<string, string> = {
 // ── Trigger word used during LoRA training ────────────────────────────────────
 export const LORA_TRIGGER = 'MRLSSUBJ';
 
-// ── Angle/composition per variation ──────────────────────────────────────────
-const VARIATION_ANGLES: Record<PromptVariation, string> = {
-  variation_a: 'Full body shot, head to toe.',
-  variation_b: 'Close-up portrait, head and shoulders.',
-};
-
 // ── Build a full prompt for a single character + variation ─────────────────────
 export function buildPrompt(params: {
   characterName: string;
@@ -307,17 +301,27 @@ export function buildPrompt(params: {
   }
 
   const trigger = params.loraTrigger?.trim() || LORA_TRIGGER;
-  const angle = params.variation ? VARIATION_ANGLES[params.variation] : VARIATION_ANGLES.variation_a;
 
   // Scene leads the prompt so it overpowers the LoRA's indoor/training bias.
-  const scene = CHARACTER_PROMPTS[params.characterName]
-    ?? `${params.characterName} in an epic cinematic fantasy scene with dramatic lighting`;
+  // Strip a leading article ("a chef" → "chef") so "...real-life {scene}" reads
+  // correctly instead of "real-life a chef".
+  const scene = (CHARACTER_PROMPTS[params.characterName]
+    ?? `${params.characterName} in an epic cinematic fantasy scene with dramatic lighting`)
+    .replace(/^(an?|the)\s+/i, '');
 
   const override = params.aiOverride?.trim()
     ? ` ${params.aiOverride.trim()}`
     : '';
 
-  return `An ultra-realistic photographic portrait of ${trigger}, a ${params.aiLabel} fully transformed into a real-life ${scene}. ${MAGIC_GLOW} ${QUALITY_TAIL} ${angle}${override}`;
+  // Front-load the framing. For the full-body shot we deliberately avoid the word
+  // "portrait" — it biases the model toward a face close-up and fights the
+  // "head to toe" instruction (CLIP truncates the prompt tail, so a trailing
+  // "full body shot" loses to the opening word).
+  const opening = params.variation === 'variation_b'
+    ? `An ultra-realistic cinematic close-up portrait, head and shoulders, of ${trigger}`
+    : `A full-body ultra-realistic cinematic photograph of ${trigger} shown in full from head to toe`;
+
+  return `${opening}, a ${params.aiLabel} fully transformed into a real-life ${scene}. ${MAGIC_GLOW} ${QUALITY_TAIL}${override}`;
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────

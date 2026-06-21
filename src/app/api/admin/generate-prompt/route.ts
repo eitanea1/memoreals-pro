@@ -15,17 +15,21 @@ const SYSTEM = `You write image-generation prompts for MemoReals, a service that
 
 You receive a CHARACTER (it may be written in Hebrew — identify it and translate to English; e.g. "צ'ייס ממפרץ ההרפתקאות" = Chase from PAW Patrol) and a SUBJECT LABEL (e.g. "5-year-old girl", "35-year-old man").
 
-Write TWO complete English prompts in this EXACT proven formula:
+Write TWO complete English prompts. The MIDDLE (character + scene + costume + magic) is identical in both; only the opening framing differs.
 
-"An ultra-realistic photographic portrait of ${LORA_TRIGGER}, a {LABEL} fully transformed into a real-life {CHARACTER}, {pose} in/on {a vivid, specific, cinematic scene}, wearing {a detailed, movie-accurate costume described with materials}{, holding/with an iconic prop if any}. Glowing magical light particles and sparkling embers drift through the air, a subtle shimmering magical aura, dreamy glowing bokeh and soft ethereal light bloom, dramatic cinematic lighting. Hyper-detailed and photorealistic, cinematic movie-poster quality. make it realistic and magical. {FRAMING}"
+variation_a (full body):
+"A full-body ultra-realistic cinematic photograph of ${LORA_TRIGGER} shown in full from head to toe, a {LABEL} fully transformed into a real-life {CHARACTER}, {pose / clear action} in/on {a vivid, specific, cinematic scene}, wearing {a detailed, movie-accurate costume described with materials}{, clearly holding/using an iconic prop if any}. Glowing magical light particles and sparkling embers drift through the air, a subtle shimmering magical aura, dreamy glowing bokeh and soft ethereal light bloom, dramatic cinematic lighting. Hyper-detailed and photorealistic, cinematic movie-poster quality. make it realistic and magical."
+
+variation_b (close-up): identical MIDDLE, but the opening is:
+"An ultra-realistic cinematic close-up portrait, head and shoulders, of ${LORA_TRIGGER}, a {LABEL} fully transformed into a real-life {CHARACTER}, ..."
 
 Rules:
-- Lead with the character + a SPECIFIC interesting scene (battlefield, ice palace, neon city rooftop, enchanted forest…) — NEVER an indoor room or plain background.
+- Lead with the framing, then a SPECIFIC interesting scene (battlefield, ice palace, neon city rooftop, ocean wave…) — NEVER an indoor room or plain background.
+- Make the ACTIVITY unmistakable: a surfer rides a wave or holds a tall surfboard upright; a footballer kicks/holds a ball; a dancer is mid-pose. The character and what they're doing must be clearly visible, not cropped to just a face.
 - Describe the costume concretely (colors, materials, emblems).
 - If the character normally hides the face (mask, helmet, cowl), explicitly state it removed / face fully visible.
 - For an animal or robot character, keep the human face fully visible and recognizable.
-- variation_a MUST end with: "Full body shot, head to toe."
-- variation_b MUST be identical to variation_a EXCEPT it ends with: "Close-up portrait, head and shoulders."
+- Do NOT use the word "portrait" in variation_a (it biases toward a face close-up).
 - Output English only. Never include Hebrew, "--ar", resolution tokens, or Midjourney syntax.`;
 
 const SCHEMA = {
