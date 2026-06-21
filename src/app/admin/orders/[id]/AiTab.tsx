@@ -111,11 +111,22 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     } finally { setLoading(null); }
   }
 
+  // The server generates a small batch per request (to stay under the serverless
+  // timeout) and reports how many remain. We loop here, on the client, until the
+  // whole set is done — refreshing between batches so images appear as they finish.
+  // Re-calling is idempotent (the server skips already-generated images).
+  async function runBatchLoop(mode: 'samples' | 'full') {
+    for (let guard = 0; guard < 300; guard++) {
+      const res = await post('/api/fal/generate', { orderId: order.id, mode });
+      router.refresh();
+      if (!res?.remaining || res.remaining <= 0) break;
+    }
+  }
+
   async function handleGenerateSamples() {
     setLoading('samples'); setError('');
     try {
-      await post('/api/fal/generate', { orderId: order.id, mode: 'samples' });
-      router.refresh();
+      await runBatchLoop('samples');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'שגיאה ביצירת דגימות');
     } finally { setLoading(null); }
@@ -124,8 +135,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   async function handleGenerateFull() {
     setLoading('full'); setError('');
     try {
-      await post('/api/fal/generate', { orderId: order.id, mode: 'full' });
-      router.refresh();
+      await runBatchLoop('full');
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'שגיאה ביצירת הסט המלא');
     } finally { setLoading(null); }

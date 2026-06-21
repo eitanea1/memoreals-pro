@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
 import { buildPrompt, VARIATIONS, LORA_TRIGGER, type PromptVariation } from '@/lib/prompts';
-import { getBaseUrl } from '@/lib/baseUrl';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
-export const maxDuration = 300; // 5 minutes max
+export const maxDuration = 300; // 5 minutes max (capped lower on Hobby; small batches keep us safe)
 
 type FalImageResult = { data: { images: { url: string }[] } };
 
@@ -66,7 +65,7 @@ async function generateForCharacterVariation(params: {
 }
 
 export async function POST(req: NextRequest) {
-  const { orderId, mode, startIndex, characterName, customPrompts } = await req.json();
+  const { orderId, mode, characterName, customPrompts } = await req.json();
   // mode: 'samples' | 'full' | 'single' (regenerate one character)
   // characterName: required for mode='single'
   // customPrompts: optional { closeup?: string, halfbody?: string, dramatic?: string }
@@ -149,8 +148,12 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: true, generated: 0, message: 'All images already generated' });
   }
 
-  // Process in batches — generate up to 15 images per request (5 characters × 3 variations)
-  const BATCH_SIZE = 15;
+  // Small batch per request so each call finishes well under the serverless
+  // timeout (~60s on Hobby). The CLIENT loops, calling this until remaining === 0,
+  // which is far more reliable than a fire-and-forget self-fetch (that gets frozen
+  // once the response is sent). Re-calling is idempotent: already-generated
+  // character+variation pairs are skipped via existingKeys, so it resumes cleanly.
+  const BATCH_SIZE = 3;
   const batch = pending.slice(0, BATCH_SIZE);
 
   try {
@@ -172,15 +175,8 @@ export async function POST(req: NextRequest) {
 
     const remaining = pending.length - batch.length;
 
-    // If there are more to generate, trigger the next batch
-    if (remaining > 0) {
-      const baseUrl = getBaseUrl(req);
-      fetch(`${baseUrl}/api/fal/generate`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ orderId, mode, startIndex: (startIndex ?? 0) + batch.length }),
-      }).catch(() => {}); // fire-and-forget
-    } else if (mode === 'full') {
+    // When the full set is fully generated, advance the order status.
+    if (remaining === 0 && mode === 'full') {
       await prisma.order.update({
         where: { id: orderId },
         data: { status: 'PROCESSING_ALL' },
