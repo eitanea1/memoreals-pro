@@ -111,6 +111,25 @@ const CHARACTER_PROMPTS: Record<string, string> = {
   'Rock Singer':
     'rock singer, standing on a concert stage with spotlights and crowd silhouettes behind. Wearing ultra-realistic leather jacket and band t-shirt, holding microphone. Looking at camera. Dramatic stage lighting with colored beams.',
 
+  // ── Disney Princesses ──
+  'Elsa Frozen':
+    'Elsa from Frozen, standing in a glittering frozen ice palace with frost swirling from her hands. Wearing an ultra-realistic sparkling ice-blue gown with delicate snowflake details and a long flowing translucent cape, platinum-blonde hair in a loose side braid. Looking at camera. Cool blue magical lighting with shimmering frost. Floating ice crystals and glowing snow particles fill the air, enhancing the fantasy-like atmosphere.',
+
+  'Moana':
+    'Moana, standing on a tropical beach at sunset with ocean waves curling behind her. Wearing an ultra-realistic red and tan island outfit with a shell necklace, long dark wavy hair flowing in the breeze. Looking at camera. Warm golden tropical sunset lighting. Floating golden light sparks dance over the water, enhancing the fantasy-like atmosphere.',
+
+  'Mulan':
+    'Mulan, standing in a blossoming pink cherry-blossom courtyard. Wearing an ultra-realistic elegant traditional Hanfu robe in soft pinks and greens with an ornate hair ornament. Looking at camera. Soft warm golden light. Floating cherry blossom petals and golden sparks drift through the air, enhancing the fantasy-like atmosphere.',
+
+  'Ariel Little Mermaid':
+    'Ariel, sitting on rocks by the ocean shore at sunset with waves gently crashing. Wearing ultra-realistic mermaid outfit with teal sequined details, long flowing red hair. Looking at camera. Warm sunset ocean lighting. Floating golden light sparks dance on the water, enhancing the fantasy-like atmosphere.',
+
+  'Aurora Sleeping Beauty':
+    'Aurora, standing in an enchanted castle garden full of blooming roses. Wearing ultra-realistic flowing pink gown with golden crown, long blonde hair. Looking at camera. Soft dreamy golden light. Floating fairy sparkles and golden particles fill the air, enhancing the fantasy-like atmosphere.',
+
+  'Belle Beauty Beast':
+    'Belle, standing in an enchanted castle ballroom with a magical rose glowing under a glass dome nearby. Wearing ultra-realistic iconic golden ball gown, brown hair in an elegant updo. Looking at camera. Magical warm golden ballroom lighting. Floating sparks and golden particles rise from the rose, enhancing the fantasy-like atmosphere.',
+
   // ── Fairy Tales ──
   'Cinderella':
     'Cinderella, descending a grand marble staircase in a palace ballroom. Wearing ultra-realistic shimmering light blue ball gown with glass slippers. Looking at camera. Magical golden sparkle lighting. Floating sparks and fairy dust swirl around, enhancing the fantasy-like atmosphere.',

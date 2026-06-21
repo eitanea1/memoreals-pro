@@ -87,6 +87,20 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     } finally { setLoading(null); }
   }
 
+  async function handleRetrain() {
+    if (!window.confirm(
+      'לאמן מחדש את המודל? האימון ייקח כ-6 דקות ויחליף את ה-LoRA הקיים. ' +
+      'התמונות שכבר נוצרו יישארו — אחרי שהאימון יסתיים תוכל ללחוץ "🔄 ג׳נרט מחדש" על כל דמות כדי לקבל תמונות חדשות עם המודל המעודכן.'
+    )) return;
+    setLoading('train'); setError('');
+    try {
+      await post('/api/fal/train', { orderId: order.id });
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה באימון');
+    } finally { setLoading(null); }
+  }
+
   async function handleSaveSettings() {
     setLoading('settings'); setError('');
     try {
@@ -258,19 +272,34 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
       {/* ── Step 1: Train ── */}
       <div className="admin-ai-step">
         <span className="admin-step-label">שלב 1 — אימון מודל</span>
-        <Button
-          variant="brand" size="sm"
-          disabled={!!loading || isTraining || isSampling || isProcessing || isReady || isShipped}
-          onClick={handleTrain}
-        >
-          {loading === 'train'
-            ? '⏳ שולח לאימון...'
-            : isTraining
-            ? '⏳ מאמן... (ממתין ל-webhook)'
-            : order.trainingFailed
-            ? '🔄 נסה שוב (נכשל)'
-            : '🚀 התחל אימון'}
-        </Button>
+        {(isSampling || isProcessing || isReady) && !isTraining ? (
+          <div className="flex flex-col gap-1">
+            <Button
+              variant="brand" size="sm"
+              disabled={!!loading}
+              onClick={handleRetrain}
+            >
+              {loading === 'train' ? '⏳ שולח לאימון...' : '🔁 אמן מחדש'}
+            </Button>
+            <span className="text-[10px] text-[var(--c-muted)]">
+              המודל כבר אומן. אמן מחדש כדי להשתמש בהגדרות אימון מעודכנות.
+            </span>
+          </div>
+        ) : (
+          <Button
+            variant="brand" size="sm"
+            disabled={!!loading || isTraining || isShipped}
+            onClick={handleTrain}
+          >
+            {loading === 'train'
+              ? '⏳ שולח לאימון...'
+              : isTraining
+              ? '⏳ מאמן... (ממתין ל-webhook)'
+              : order.trainingFailed
+              ? '🔄 נסה שוב (נכשל)'
+              : '🚀 התחל אימון'}
+          </Button>
+        )}
       </div>
 
       {/* ── Step 2: Edit Prompt Settings ── */}

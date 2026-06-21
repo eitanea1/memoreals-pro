@@ -65,14 +65,19 @@ export async function POST(req: NextRequest) {
     }
 
     // Submit training to the queue (returns immediately, no blocking)
+    // NOTE: these inputs mirror the manual fal training run that produced great
+    // results at scale 1.0 (full likeness AND full scene). The previous config
+    // diverged in 4 ways that overbaked the LoRA and locked the subject to the
+    // training background — see each inline comment.
     const { request_id } = await fal.queue.submit('fal-ai/flux-lora-portrait-trainer', {
       input: {
         images_data_url: zipUrl,
-        trigger_word: LORA_TRIGGER,
+        trigger_phrase: LORA_TRIGGER,    // was `trigger_word` — wrong param name, so the trigger was ignored
         steps: 1000,
-        learning_rate: 0.0004,
-        batch_size: 1,
-        resolution: '512,768,1024',
+        learning_rate: 0.0002,           // was 0.0004 — double LR overbaked the LoRA (narrow scale band)
+        subject_crop: true,              // was missing — without it the room/background bakes into the subject
+        create_masks: false,
+        multiresolution_training: true,  // was `resolution: '512,768,1024'` — wrong param, silently ignored
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any,
       webhookUrl,

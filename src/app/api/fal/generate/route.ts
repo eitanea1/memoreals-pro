@@ -34,6 +34,8 @@ async function generateForCharacterVariation(params: {
   const result = await fal.subscribe('fal-ai/flux-lora', {
     input: {
       prompt,
+      // scale 1.0: a correctly-trained LoRA (see train/route.ts — subject_crop + 0.0002 LR)
+      // gives full likeness AND full scene at 1.0, like the proven manual run.
       loras: [{ path: params.loraUrl, scale: 1.0 }],
       num_images: 1,
       num_inference_steps: 28,
