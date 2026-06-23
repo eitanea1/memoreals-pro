@@ -1,59 +1,59 @@
-import OpenAI, { toFile } from 'openai';
+import { fal } from '@fal-ai/client';
 import { put } from '@vercel/blob';
 
-// The prompt that made the dragon image razor-sharp: regenerate fine detail
-// (scales, hair, fabric, eyes) WITHOUT touching composition — and above all,
-// without altering the child's face. Face identity is the #1 rule for MemoReals:
-// a "beautified" face means the kid no longer looks like themselves.
-export const UPSCALE_PROMPT = `Upscale this image to maximum resolution and photorealistic detail.
-Enhance fine textures: individual hair strands, fabric weave, scales, skin pores,
-crisp reflections in the eyes, realistic depth and rim lighting.
-Keep the EXACT same composition, pose, framing, colors and mood — do not change the scene,
-do not add or remove any element.
+fal.config({ credentials: process.env.FAL_KEY });
 
-CRITICAL: preserve the human face identity 100% — same facial features, same proportions,
-same expression, same age. Do NOT beautify, smooth, reshape, or alter the face in any way.
-If unsure about a facial detail, keep the original face untouched.`;
+// Why fal clarity-upscaler instead of GPT Image:
+//   1. OpenAI's safety system rejects edits of photos of children (400) — and
+//      every MemoReals card is a child, so that path is a dead end here.
+//   2. clarity-upscaler adds real detail (skin texture, hair strands, crisp eyes)
+//      like a Magnific-style upscale, runs in ~13s, and reuses the FAL_KEY we
+//      already have.
+// Face fidelity is the #1 rule for MemoReals (the kid must still look like
+// themselves), so creativity is kept LOW and resemblance HIGH, with a negative
+// prompt that discourages reshaping the face.
+const POSITIVE_PROMPT =
+  'masterpiece, best quality, highly detailed, sharp focus, fine skin texture, ' +
+  'individual hair strands, realistic eyes, crisp fabric texture, natural lighting';
+const NEGATIVE_PROMPT =
+  'deformed face, distorted face, different person, changed facial features, ' +
+  'plastic skin, oversmoothed, blurry, artifacts, extra fingers';
 
-let _client: OpenAI | null = null;
-function getClient(): OpenAI {
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) throw new Error('OPENAI_API_KEY is not set');
-  if (!_client) _client = new OpenAI({ apiKey });
-  return _client;
-}
+type ClarityResult = { data: { image?: { url: string } } };
 
 /**
- * Upscale one image with GPT Image (high quality), upload the result to Vercel
- * Blob, and return the public URL. Non-destructive: caller stores this alongside
- * the original imageUrl.
+ * Upscale one image 2× with fal clarity-upscaler, store the result in Vercel
+ * Blob, and return the public URL. Non-destructive: caller keeps the original
+ * imageUrl and just fills in upscaledUrl.
  *
- * @param sourceUrl  public URL of the image to upscale (fal or blob URL)
- * @param destPath   blob path for the result, e.g. `upscaled/<imageId>.png`
+ * @param sourceUrl public URL of the image to upscale
+ * @param destPath  blob path for the result, e.g. `upscaled/<imageId>.png`
  */
 export async function upscaleImage(sourceUrl: string, destPath: string): Promise<string> {
-  // 1. Pull the source image into memory.
-  const srcRes = await fetch(sourceUrl);
-  if (!srcRes.ok) throw new Error(`Failed to fetch source image: ${srcRes.status}`);
-  const srcBuffer = Buffer.from(await srcRes.arrayBuffer());
+  const result = (await fal.subscribe('fal-ai/clarity-upscaler', {
+    input: {
+      image_url: sourceUrl,
+      prompt: POSITIVE_PROMPT,
+      negative_prompt: NEGATIVE_PROMPT,
+      upscale_factor: 2,
+      // Low creativity + max resemblance => sharper detail without altering the
+      // child's identity. Bump creativity toward 0.35 for more "invented" detail.
+      creativity: 0.25,
+      resemblance: 1,
+      num_inference_steps: 18,
+    },
+    logs: false,
+    onQueueUpdate: () => {},
+  })) as ClarityResult;
 
-  // 2. Send to GPT Image. size:'auto' keeps the source aspect ratio (cards are
-  // portrait), quality:'high' is what produces the sharp, detail-rich result.
-  const openai = getClient();
-  const result = await openai.images.edit({
-    model: 'gpt-image-1',
-    image: await toFile(srcBuffer, 'source.png', { type: 'image/png' }),
-    prompt: UPSCALE_PROMPT,
-    size: 'auto',
-    quality: 'high',
-  });
+  const outUrl = result.data?.image?.url;
+  if (!outUrl) throw new Error('clarity-upscaler returned no image');
 
-  const b64 = result.data?.[0]?.b64_json;
-  if (!b64) throw new Error('GPT Image returned no image data');
-  const outBuffer = Buffer.from(b64, 'base64');
-
-  // 3. Store the HD result in Vercel Blob and hand back the URL.
-  const blob = await put(destPath, outBuffer, {
+  // Persist to our own Blob storage so the HD file is durable for print later.
+  const res = await fetch(outUrl);
+  if (!res.ok) throw new Error(`Failed to fetch upscaled image: ${res.status}`);
+  const buffer = Buffer.from(await res.arrayBuffer());
+  const blob = await put(destPath, buffer, {
     access: 'public',
     contentType: 'image/png',
     allowOverwrite: true,
