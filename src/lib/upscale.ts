@@ -13,11 +13,12 @@ fal.config({ credentials: process.env.FAL_KEY });
 // themselves), so creativity is kept LOW and resemblance HIGH, with a negative
 // prompt that discourages reshaping the face.
 const POSITIVE_PROMPT =
-  'masterpiece, best quality, highly detailed, sharp focus, fine skin texture, ' +
-  'individual hair strands, realistic eyes, crisp fabric texture, natural lighting';
+  'ultra realistic photograph, highly detailed, sharp focus, hyperdetailed skin texture, ' +
+  'visible skin pores, individual hair strands, realistic eyes, crisp fabric texture, ' +
+  'professional photography, natural lighting';
 const NEGATIVE_PROMPT =
-  'deformed face, distorted face, different person, changed facial features, ' +
-  'plastic skin, oversmoothed, blurry, artifacts, extra fingers';
+  'smooth skin, plastic skin, airbrushed, cartoon, painting, deformed face, distorted face, ' +
+  'different person, changed facial features, oversmoothed, blurry, artifacts, extra fingers';
 
 type ClarityResult = { data: { image?: { url: string } } };
 
@@ -36,11 +37,12 @@ export async function upscaleImage(sourceUrl: string, destPath: string): Promise
       prompt: POSITIVE_PROMPT,
       negative_prompt: NEGATIVE_PROMPT,
       upscale_factor: 2,
-      // Low creativity + max resemblance => sharper detail without altering the
-      // child's identity. Bump creativity toward 0.35 for more "invented" detail.
-      creativity: 0.25,
-      resemblance: 1,
-      num_inference_steps: 18,
+      // Balanced: enough creativity for ultra-realistic skin/texture, enough
+      // resemblance to keep the child's identity. Lower creativity = smoother
+      // but more faithful; higher = more realistic texture but the face shifts.
+      creativity: 0.4,
+      resemblance: 0.85,
+      num_inference_steps: 22,
     },
     logs: false,
     onQueueUpdate: () => {},
