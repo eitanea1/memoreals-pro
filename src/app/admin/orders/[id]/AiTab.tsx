@@ -255,6 +255,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
 
   function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean) {
     const imgs = imagesByChar[char.name] ?? [];
+    const selectedImg = imgs.find((i) => i.isSelected);
     return (
       <div key={char.name} className="mb-6 border border-[var(--c-border)] rounded-xl p-3">
         <div className="flex items-center justify-between mb-2">
@@ -264,6 +265,26 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
           </p>
           {showRegenerate && (
             <div className="flex gap-2">
+              {/* UPSCALE the selected winner for this character. Disabled until one
+                  is selected; shows a "ready" state once its HD version exists. */}
+              {selectedImg?.upscaledUrl ? (
+                <Button
+                  variant="brand-outline" size="sm"
+                  onClick={() => setLightboxUrl(selectedImg.upscaledUrl)}
+                  title="הצג גרסת HD"
+                >
+                  ✅ HD מוכן — הצג
+                </Button>
+              ) : (
+                <Button
+                  variant="brand-outline" size="sm"
+                  disabled={!selectedImg || loading === `upscale-${selectedImg?.id}` || loading === 'upscale-all'}
+                  onClick={() => selectedImg && handleUpscaleImage(selectedImg.id)}
+                  title={selectedImg ? 'שדרג את התמונה הנבחרת ל-HD' : 'בחר תמונה קודם'}
+                >
+                  {selectedImg && loading === `upscale-${selectedImg.id}` ? '⏳ משדרג...' : '✨ UPSCALE נבחרת'}
+                </Button>
+              )}
               <Button variant="brand-outline" size="sm" onClick={() => togglePromptEditor(char.name)}>
                 {expandedChar === char.name ? 'סגור פרומפטים' : 'ערוך פרומפטים'}
               </Button>
@@ -307,25 +328,11 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
                 >
                   🗑
                 </button>
-                {/* HD upscale — show a green badge when done (click to view HD),
-                    otherwise a button to upscale this single image. */}
-                {img.upscaledUrl ? (
-                  <button
-                    className="absolute bottom-1 right-1 bg-green-600/90 hover:bg-green-600 text-white text-[10px] font-bold rounded px-1.5 py-0.5"
-                    onClick={(e) => { e.stopPropagation(); setLightboxUrl(img.upscaledUrl); }}
-                    title="הצג גרסת HD (לחיצה כפולה על התמונה = מקור)"
-                  >
+                {/* Small non-interactive badge so it's clear which image is HD. */}
+                {img.upscaledUrl && (
+                  <span className="absolute bottom-1 right-1 bg-green-600/90 text-white text-[10px] font-bold rounded px-1.5 py-0.5">
                     HD ✓
-                  </button>
-                ) : (
-                  <button
-                    className="absolute bottom-1 right-1 bg-purple-600/85 hover:bg-purple-600 text-white text-[10px] rounded px-1.5 py-0.5 disabled:opacity-60"
-                    disabled={loading === `upscale-${img.id}` || loading === 'upscale-all'}
-                    onClick={(e) => { e.stopPropagation(); handleUpscaleImage(img.id); }}
-                    title="שדרג ל-HD (GPT Image)"
-                  >
-                    {loading === `upscale-${img.id}` ? '⏳' : '✨ HD'}
-                  </button>
+                  </span>
                 )}
               </div>
             ))}
