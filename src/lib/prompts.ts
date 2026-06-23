@@ -23,6 +23,13 @@ const MAGIC_GLOW =
   'a subtle shimmering magical aura, dreamy glowing bokeh and soft ethereal light bloom, ' +
   'dramatic cinematic lighting.';
 
+// Face-fidelity block — reinforces the real person's face (the product's whole
+// value). Style-neutral so it works for every character. Prefixed with the
+// trigger at build time (e.g. "MRLSSUBJ's face is natural...").
+const FACE_QUALITY =
+  'face is natural and realistic, sharp and clean, with expressive eyes and soft cinematic lighting, ' +
+  'ultra-realistic skin texture, realistic hair, and finely detailed realistic materials.';
+
 // Shared quality/realism tail.
 const QUALITY_TAIL =
   'Hyper-detailed and photorealistic, cinematic movie-poster quality. make it realistic and magical.';
@@ -321,7 +328,7 @@ export function buildPrompt(params: {
     ? `An ultra-realistic cinematic close-up portrait, head and shoulders, of ${trigger}`
     : `A full-body ultra-realistic cinematic photograph of ${trigger} shown in full from head to toe`;
 
-  return `${opening}, a ${params.aiLabel} fully transformed into a real-life ${scene}. ${MAGIC_GLOW} ${QUALITY_TAIL}${override}`;
+  return `${opening}, a ${params.aiLabel} fully transformed into a real-life ${scene}. ${MAGIC_GLOW} ${trigger}'s ${FACE_QUALITY} ${QUALITY_TAIL}${override}`;
 }
 
 // ── Negative prompt (applied to every generation) ────────────────────────────
