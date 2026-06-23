@@ -3,53 +3,35 @@ import { put } from '@vercel/blob';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
-// Why fal clarity-upscaler instead of GPT Image:
-//   1. OpenAI's safety system rejects edits of photos of children (400) — and
-//      every MemoReals card is a child, so that path is a dead end here.
-//   2. clarity-upscaler adds real detail (skin texture, hair strands, crisp eyes)
-//      like a Magnific-style upscale, runs in ~13s, and reuses the FAL_KEY we
-//      already have.
-// Face fidelity is the #1 rule for MemoReals (the kid must still look like
-// themselves), so creativity is kept LOW and resemblance HIGH, with a negative
-// prompt that discourages reshaping the face.
-const POSITIVE_PROMPT =
-  'ultra realistic photograph, highly detailed, sharp focus, hyperdetailed skin texture, ' +
-  'visible skin pores, individual hair strands, realistic eyes, crisp fabric texture, ' +
-  'professional photography, natural lighting';
-const NEGATIVE_PROMPT =
-  'smooth skin, plastic skin, airbrushed, cartoon, painting, deformed face, distorted face, ' +
-  'different person, changed facial features, oversmoothed, blurry, artifacts, extra fingers';
+// Engine: fal Crystal Upscaler — a portrait-specialised enhancer.
+//
+// Why this and not the others we tried:
+//   - GPT Image API: rejects children's photos outright (safety 400). Dead end.
+//   - clarity-upscaler: either smooth/plasticky (low creativity) or it reinvents
+//     the face and background (high creativity). No good middle for kids.
+//   - flux-vision-upscaler: great quality but ~8 minutes per image. Too slow.
+//   - Crystal: keeps the child's face AND the original background faithful, adds
+//     real sharpness/texture, runs in ~10s, outputs 2048×1536. No knobs to tune.
 
-type ClarityResult = { data: { image?: { url: string } } };
+type CrystalResult = { data: { images?: { url: string }[]; image?: { url: string } } };
 
 /**
- * Upscale one image 2× with fal clarity-upscaler, store the result in Vercel
- * Blob, and return the public URL. Non-destructive: caller keeps the original
- * imageUrl and just fills in upscaledUrl.
+ * Upscale one image with fal Crystal Upscaler, store the result in Vercel Blob,
+ * and return the public URL. Non-destructive: caller keeps the original imageUrl
+ * and just fills in upscaledUrl.
  *
  * @param sourceUrl public URL of the image to upscale
- * @param destPath  blob path for the result, e.g. `upscaled/<imageId>.png`
+ * @param destPath  blob path for the result, e.g. `upscaled/<imageId>.jpg`
  */
 export async function upscaleImage(sourceUrl: string, destPath: string): Promise<string> {
-  const result = (await fal.subscribe('fal-ai/clarity-upscaler', {
-    input: {
-      image_url: sourceUrl,
-      prompt: POSITIVE_PROMPT,
-      negative_prompt: NEGATIVE_PROMPT,
-      upscale_factor: 2,
-      // Balanced: enough creativity for ultra-realistic skin/texture, enough
-      // resemblance to keep the child's identity. Lower creativity = smoother
-      // but more faithful; higher = more realistic texture but the face shifts.
-      creativity: 0.4,
-      resemblance: 0.85,
-      num_inference_steps: 22,
-    },
+  const result = (await fal.subscribe('clarityai/crystal-upscaler', {
+    input: { image_url: sourceUrl },
     logs: false,
     onQueueUpdate: () => {},
-  })) as ClarityResult;
+  })) as CrystalResult;
 
-  const outUrl = result.data?.image?.url;
-  if (!outUrl) throw new Error('clarity-upscaler returned no image');
+  const outUrl = result.data?.images?.[0]?.url ?? result.data?.image?.url;
+  if (!outUrl) throw new Error('crystal-upscaler returned no image');
 
   // Persist to our own Blob storage so the HD file is durable for print later.
   const res = await fetch(outUrl);
@@ -57,7 +39,7 @@ export async function upscaleImage(sourceUrl: string, destPath: string): Promise
   const buffer = Buffer.from(await res.arrayBuffer());
   const blob = await put(destPath, buffer, {
     access: 'public',
-    contentType: 'image/png',
+    contentType: 'image/jpeg',
     allowOverwrite: true,
   });
   return blob.url;
