@@ -191,7 +191,8 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   // request (each GPT Image call is slow) and refresh between them so the HD
   // badges light up as they finish. Already-upscaled images are skipped server-side.
   async function handleUpscaleAllSelected() {
-    const selected = order.generatedImages.filter((img) => img.isSelected && !img.upscaledUrl);
+    // Full-set winners only — these are what get printed.
+    const selected = order.generatedImages.filter((img) => img.isSelected && !img.isSample && !img.upscaledUrl);
     if (selected.length === 0) {
       setError('אין תמונות נבחרות לשדרוג (או שכולן כבר ב-HD)');
       return;
@@ -253,8 +254,11 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     }));
   }
 
-  function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean) {
-    const imgs = imagesByChar[char.name] ?? [];
+  function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean, isSampleSection: boolean) {
+    // Scope to this section's image group: a character can have BOTH a selected
+    // sample and a selected full-set image. Without this filter the UPSCALE
+    // button (and the displayed thumbnails) could target the wrong copy.
+    const imgs = (imagesByChar[char.name] ?? []).filter((i) => i.isSample === isSampleSection);
     const selectedImg = imgs.find((i) => i.isSelected);
     return (
       <div key={char.name} className="mb-6 border border-[var(--c-border)] rounded-xl p-3">
@@ -481,7 +485,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
       {isSampling && hasSamples && (
         <div className="flex flex-col gap-2">
           <p className="text-sm text-[var(--c-muted)]">בחר תמונה מועדפת לכל דמות (לבדיקת איכות):</p>
-          {sampleChars.map((char) => renderCharacterImages(char, true))}
+          {sampleChars.map((char) => renderCharacterImages(char, true, true))}
         </div>
       )}
 
@@ -515,7 +519,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
           </div>
           {/* HD upscale for all winners — what actually goes to print. */}
           {(() => {
-            const selectedImgs = order.generatedImages.filter((img) => img.isSelected);
+            const selectedImgs = order.generatedImages.filter((img) => img.isSelected && !img.isSample);
             const upscaledCount = selectedImgs.filter((img) => img.upscaledUrl).length;
             const pending = selectedImgs.length - upscaledCount;
             return (
@@ -543,7 +547,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
             );
           })()}
           <p className="text-sm text-[var(--c-muted)]">בחר תמונה מנצחת לכל דמות:</p>
-          {order.characters.map((char) => renderCharacterImages(char, true))}
+          {order.characters.map((char) => renderCharacterImages(char, true, false))}
         </div>
       )}
 
