@@ -91,6 +91,7 @@ model GeneratedImage {
   characterName  String
   characterIndex Int
   imageUrl       String
+  upscaledUrl    String?  // GPT Image HD upscale (null until upscaled); print uses this when present
   variation      String   @default("default")  // closeup | halfbody | dramatic
   isSample       Boolean  @default(false)
   isSelected     Boolean  @default(false)

@@ -11,6 +11,7 @@ interface GeneratedImage {
   characterName: string;
   characterIndex: number;
   imageUrl: string;
+  upscaledUrl: string | null;
   variation: string;
   isSample: boolean;
   isSelected: boolean;
@@ -26,6 +27,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
   const [charPrompts, setCharPrompts] = useState<Record<string, Record<string, string>>>({});
   const [showPromptPreview, setShowPromptPreview] = useState(false);
+  const [upscaleProgress, setUpscaleProgress] = useState<string | null>(null);
 
   // Group generated images by character
   const imagesByChar: Record<string, GeneratedImage[]> = {};
@@ -173,6 +175,43 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     }
   }
 
+  // Upscale a single image to HD via GPT Image. Non-destructive — the original
+  // stays; we just fill in upscaledUrl. force=true re-runs even if already done.
+  async function handleUpscaleImage(imageId: string, force = false) {
+    setLoading(`upscale-${imageId}`); setError('');
+    try {
+      await post('/api/admin/upscale', { imageId, force });
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה בשדרוג HD');
+    } finally { setLoading(null); }
+  }
+
+  // Upscale every SELECTED winner across all characters. We loop one image per
+  // request (each GPT Image call is slow) and refresh between them so the HD
+  // badges light up as they finish. Already-upscaled images are skipped server-side.
+  async function handleUpscaleAllSelected() {
+    const selected = order.generatedImages.filter((img) => img.isSelected && !img.upscaledUrl);
+    if (selected.length === 0) {
+      setError('אין תמונות נבחרות לשדרוג (או שכולן כבר ב-HD)');
+      return;
+    }
+    setError('');
+    for (let i = 0; i < selected.length; i++) {
+      setUpscaleProgress(`${i + 1}/${selected.length}`);
+      setLoading('upscale-all');
+      try {
+        await post('/api/admin/upscale', { imageId: selected[i].id });
+        router.refresh();
+      } catch (e: unknown) {
+        setError(e instanceof Error ? e.message : 'שגיאה בשדרוג HD');
+        break;
+      }
+    }
+    setUpscaleProgress(null);
+    setLoading(null);
+  }
+
   function getDefaultPrompt(charName: string, variation: PromptVariation): string {
     return buildPrompt({
       characterName: charName,
@@ -268,6 +307,26 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
                 >
                   🗑
                 </button>
+                {/* HD upscale — show a green badge when done (click to view HD),
+                    otherwise a button to upscale this single image. */}
+                {img.upscaledUrl ? (
+                  <button
+                    className="absolute bottom-1 right-1 bg-green-600/90 hover:bg-green-600 text-white text-[10px] font-bold rounded px-1.5 py-0.5"
+                    onClick={(e) => { e.stopPropagation(); setLightboxUrl(img.upscaledUrl); }}
+                    title="הצג גרסת HD (לחיצה כפולה על התמונה = מקור)"
+                  >
+                    HD ✓
+                  </button>
+                ) : (
+                  <button
+                    className="absolute bottom-1 right-1 bg-purple-600/85 hover:bg-purple-600 text-white text-[10px] rounded px-1.5 py-0.5 disabled:opacity-60"
+                    disabled={loading === `upscale-${img.id}` || loading === 'upscale-all'}
+                    onClick={(e) => { e.stopPropagation(); handleUpscaleImage(img.id); }}
+                    title="שדרג ל-HD (GPT Image)"
+                  >
+                    {loading === `upscale-${img.id}` ? '⏳' : '✨ HD'}
+                  </button>
+                )}
               </div>
             ))}
           </div>
@@ -447,6 +506,35 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
               />
             </div>
           </div>
+          {/* HD upscale for all winners — what actually goes to print. */}
+          {(() => {
+            const selectedImgs = order.generatedImages.filter((img) => img.isSelected);
+            const upscaledCount = selectedImgs.filter((img) => img.upscaledUrl).length;
+            const pending = selectedImgs.length - upscaledCount;
+            return (
+              <div className="flex items-center justify-between bg-[var(--c-bg)] rounded-xl p-3 gap-3">
+                <div className="flex flex-col">
+                  <span className="text-sm font-semibold text-[var(--c-mid)]">
+                    שדרוג HD (GPT Image) — {upscaledCount}/{selectedImgs.length} נבחרות מוכנות
+                  </span>
+                  <span className="text-[10px] text-[var(--c-muted)]">
+                    מחדד פנים, שיער וטקסטורות לאיכות הדפסה. ההורדות ישתמשו אוטומטית בגרסת ה-HD.
+                  </span>
+                </div>
+                <Button
+                  variant="brand" size="sm"
+                  disabled={!!loading || pending === 0}
+                  onClick={handleUpscaleAllSelected}
+                >
+                  {loading === 'upscale-all'
+                    ? `⏳ משדרג ${upscaleProgress ?? ''}...`
+                    : pending === 0
+                    ? '✓ הכל ב-HD'
+                    : `✨ שדרג HD לכל הנבחרות (${pending})`}
+                </Button>
+              </div>
+            );
+          })()}
           <p className="text-sm text-[var(--c-muted)]">בחר תמונה מנצחת לכל דמות:</p>
           {order.characters.map((char) => renderCharacterImages(char, true))}
         </div>

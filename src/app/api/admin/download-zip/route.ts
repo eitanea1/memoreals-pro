@@ -44,7 +44,8 @@ export async function GET(req: NextRequest) {
   // Download each image and add to ZIP
   for (const img of selectedImages) {
     try {
-      const res = await fetch(img.imageUrl);
+      // Prefer the HD upscale for print; fall back to the original.
+      const res = await fetch(img.upscaledUrl ?? img.imageUrl);
       if (!res.ok) continue;
       const buffer = await res.arrayBuffer();
 

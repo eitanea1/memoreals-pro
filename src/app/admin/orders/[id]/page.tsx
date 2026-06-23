@@ -32,6 +32,7 @@ export type SerializedOrder = {
     characterName: string;
     characterIndex: number;
     imageUrl: string;
+    upscaledUrl: string | null;
     variation: string;
     isSample: boolean;
     isSelected: boolean;
@@ -77,7 +78,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     characters:    order.characters.map((c) => ({ id: c.id, name: c.name, displayName: c.displayName, position: c.position })),
     generatedImages: order.generatedImages.map((g) => ({
       id: g.id, characterName: g.characterName, characterIndex: g.characterIndex,
-      imageUrl: g.imageUrl, variation: g.variation, isSample: g.isSample, isSelected: g.isSelected,
+      imageUrl: g.imageUrl, upscaledUrl: g.upscaledUrl, variation: g.variation, isSample: g.isSample, isSelected: g.isSelected,
     })),
   };
 

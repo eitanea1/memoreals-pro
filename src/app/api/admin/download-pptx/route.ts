@@ -49,7 +49,8 @@ export async function GET(req: NextRequest) {
   for (const img of selectedImages) {
     let imageData: string;
     try {
-      const res = await fetch(img.imageUrl, { redirect: 'follow' });
+      // Prefer the HD upscale for print; fall back to the original.
+      const res = await fetch(img.upscaledUrl ?? img.imageUrl, { redirect: 'follow' });
       if (!res.ok) {
         console.error(`[download-pptx] HTTP ${res.status} for image ${img.id}`);
         continue;

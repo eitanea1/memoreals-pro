@@ -90,7 +90,8 @@ export async function GET(req: NextRequest) {
     let imageBytes: Uint8Array;
     let contentType = '';
     try {
-      const res = await fetch(img.imageUrl, { redirect: 'follow' });
+      // Prefer the HD upscale for print; fall back to the original.
+      const res = await fetch(img.upscaledUrl ?? img.imageUrl, { redirect: 'follow' });
       if (!res.ok) {
         console.error(`[download-pdf] HTTP ${res.status} for image ${img.id}`);
         continue;
