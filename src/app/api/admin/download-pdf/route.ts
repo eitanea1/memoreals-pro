@@ -166,21 +166,27 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // Scale to COVER the whole page (full bleed). Portrait card, no rotation —
-    // the child stays upright. Overflow past the page edge is clipped by the
-    // page MediaBox.
-    const scale = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
-    const scaledW = embedded.width * scale;
-    const scaledH = embedded.height * scale;
+    // Two layers so the FULL image sits inside the cut line (never cropped) while
+    // the bleed is still filled (no white edge after trimming):
+    //  • background — the same image enlarged to COVER the whole media; fills the
+    //    1.5mm bleed ring and the small side margins from the 4:3-vs-card ratio gap.
+    //  • foreground — the FULL image CONTAINED inside the TRIM box (aspect kept,
+    //    nothing cut). This is what survives the cut.
+    const bg = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
+    const bgW = embedded.width * bg, bgH = embedded.height * bg;
+    const fg = Math.min(TRIM_W / embedded.width, TRIM_H / embedded.height);
+    const fgW = embedded.width * fg, fgH = embedded.height * fg;
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
+      // bleed/background fill (enlarged copy of the same image — no white edge)
       page.drawImage(embedded, {
-        x: (PAGE_W - scaledW) / 2,
-        y: (PAGE_H - scaledH) / 2,
-        width: scaledW,
-        height: scaledH,
+        x: (PAGE_W - bgW) / 2, y: (PAGE_H - bgH) / 2, width: bgW, height: bgH,
+      });
+      // full, uncut image inside the trim
+      page.drawImage(embedded, {
+        x: TRIM_X + (TRIM_W - fgW) / 2, y: TRIM_Y + (TRIM_H - fgH) / 2, width: fgW, height: fgH,
       });
       drawTrimGuide(page); // red dashed cut line on top
     }
