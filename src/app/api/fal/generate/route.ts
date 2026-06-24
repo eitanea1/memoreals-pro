@@ -20,6 +20,7 @@ async function generateForCharacterVariation(params: {
   isSample: boolean;
   variation: PromptVariation;
   customPrompt?: string;
+  loraScale: number;
 }) {
   const prompt = buildPrompt({
     characterName: params.characterName,
@@ -33,9 +34,10 @@ async function generateForCharacterVariation(params: {
   const result = await fal.subscribe('fal-ai/flux-lora', {
     input: {
       prompt,
-      // scale 1.0: a correctly-trained LoRA (see train/route.ts — subject_crop + 0.0002 LR)
-      // gives full likeness AND full scene at 1.0, like the proven manual run.
-      loras: [{ path: params.loraUrl, scale: 1.0 }],
+      // Default scale 1.0 (correctly-trained LoRA gives full likeness + scene). Lower
+      // it per-order (order.loraScale) for an over-fit LoRA that bakes in the kid's
+      // own clothes — ~0.6 lets the costume win while keeping likeness.
+      loras: [{ path: params.loraUrl, scale: params.loraScale }],
       num_images: 1,
       // Default image_size + 28 steps + guidance 3.5 + scale 1.0 — the exact settings
       // behind the approved gold results (Wonder Woman, Iron Man, Batgirl). The magic
@@ -109,6 +111,7 @@ export async function POST(req: NextRequest) {
           isSample: false,
           variation,
           customPrompt: custom,
+          loraScale: order.loraScale ?? 1.0,
         });
         generated++;
       }
@@ -170,6 +173,7 @@ export async function POST(req: NextRequest) {
         orderId:        order.id,
         isSample,
         variation,
+        loraScale:      order.loraScale ?? 1.0,
       });
       generated++;
     }

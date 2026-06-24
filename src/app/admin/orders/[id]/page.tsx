@@ -24,6 +24,7 @@ export type SerializedOrder = {
   status: string;
   trainingFailed: boolean;
   loraUrl: string | null;
+  loraScale: number | null;
   coverImageUrl: string | null;
   createdAt: string;
   uploads: { id: string; storageUrl: string; originalName: string }[];
@@ -74,6 +75,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
     status:        order.status,
     trainingFailed: order.trainingFailed,
     loraUrl:       order.loraUrl,
+    loraScale:     order.loraScale,
     coverImageUrl: order.coverImageUrl,
     createdAt:     order.createdAt.toISOString(),
     uploads:       order.uploads.map((u) => ({ id: u.id, storageUrl: u.storageUrl, originalName: u.originalName })),

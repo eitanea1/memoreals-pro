@@ -22,6 +22,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   const [loading, setLoading] = useState<string | null>(null);
   const [aiLabel, setAiLabel] = useState(order.aiLabel);
   const [override, setOverride] = useState(order.aiOverride);
+  const [loraScale, setLoraScale] = useState<number>(order.loraScale ?? 1);
   const [error, setError] = useState('');
   const [lightboxUrl, setLightboxUrl] = useState<string | null>(null);
   const [expandedChar, setExpandedChar] = useState<string | null>(null);
@@ -106,7 +107,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
   async function handleSaveSettings() {
     setLoading('settings'); setError('');
     try {
-      await post('/api/admin/override', { orderId: order.id, aiOverride: override, aiLabel: aiLabel });
+      await post('/api/admin/override', { orderId: order.id, aiOverride: override, aiLabel: aiLabel, loraScale });
       router.refresh();
     } catch (e: unknown) {
       setError(e instanceof Error ? e.message : 'שגיאה בשמירה');
@@ -500,6 +501,22 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
               className="h-9 px-3 text-sm border border-[var(--c-border)] rounded-lg focus:outline-none focus:border-[var(--c-brand-mid)]"
               dir="ltr"
             />
+          </div>
+
+          {/* LoRA strength — lower for over-fit models that force the kid's own clothes */}
+          <div className="flex flex-col gap-1">
+            <label className="text-xs font-semibold text-[var(--c-mid)]">
+              עוצמת LoRA: {loraScale.toFixed(2)}
+            </label>
+            <input
+              type="range" min={0.4} max={1} step={0.05}
+              value={loraScale}
+              onChange={(e) => setLoraScale(Number(e.target.value))}
+              className="w-full accent-[var(--c-brand-mid)]"
+            />
+            <p className="text-[10px] text-[var(--c-muted)]">
+              1.00 = דמיון מקסימלי. אם הדמות יוצאת עם הבגדים של הילד (חולצה/טרנינג במקום חליפה) — הורד ל-0.6–0.7. שמור ואז ג׳נרט מחדש.
+            </p>
           </div>
 
           {/* Save + Preview buttons */}
