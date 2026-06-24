@@ -214,6 +214,18 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     setLoading(null);
   }
 
+  // Refine the selected image's costume via Flux Kontext (keeps face/pose/bg).
+  // Creates a new auto-selected option for the character.
+  async function handleRefineCostume(imageId: string) {
+    setLoading(`refine-${imageId}`); setError('');
+    try {
+      await post('/api/admin/refine-costume', { imageId });
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה בשיפור החליפה');
+    } finally { setLoading(null); }
+  }
+
   // Open the OS file picker and resolve with the chosen image (or null).
   function pickImage(): Promise<File | null> {
     return new Promise((resolve) => {
@@ -321,6 +333,17 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
           </p>
           {showRegenerate && (
             <div className="flex gap-2">
+              {/* Refine the selected winner's costume via Flux Kontext (keeps face/pose). */}
+              {!isSampleSection && (
+                <Button
+                  variant="brand-outline" size="sm"
+                  disabled={!selectedImg || loading === `refine-${selectedImg?.id}`}
+                  onClick={() => selectedImg && handleRefineCostume(selectedImg.id)}
+                  title={selectedImg ? 'שפר את החליפה (Kontext) — שומר פנים ופוזה' : 'בחר תמונה קודם'}
+                >
+                  {selectedImg && loading === `refine-${selectedImg.id}` ? '⏳ משפר...' : '✨ שפר חליפה'}
+                </Button>
+              )}
               {/* UPSCALE the selected winner for this character. Disabled until one
                   is selected; shows a "ready" state once its HD version exists. */}
               {selectedImg?.upscaledUrl ? (
