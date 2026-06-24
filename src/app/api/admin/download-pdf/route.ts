@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
+import {
+  PDFDocument, rgb, StandardFonts, type PDFPage,
+  pushGraphicsState, popGraphicsState, rectangle, clip, endPath,
+} from 'pdf-lib';
 
 export const maxDuration = 60;
 
@@ -8,18 +11,50 @@ export const maxDuration = 60;
  * Generate a print-ready PDF for a MemoReals order.
  * GET /api/admin/download-pdf?orderId=xxx
  *
- * Layout:
+ * Layout (proper prepress so the print shop can trim accurately):
  *  - Page 1: Cover — cream background, MemoReals title, child's name
  *  - Pages 2–N: Each selected character image appears TWICE (memory game pairs)
- *               Source images are landscape (1424×1024); rotated 90° CW to portrait.
+ *  - Every page: image fills the BLEED box (3mm past the cut line) and is clipped
+ *    there, a white MARGIN holds CROP MARKS at the trim corners so the bleed is
+ *    visible and the cutter knows exactly where to cut.
  *
- * Card size: 63×89mm portrait + 3mm bleed on all sides = 69×95mm per page
+ * Card (trim) size: 89×63mm landscape. + 3mm bleed + 6mm margin for crop marks.
  */
 
 const MM = 2.8346; // 1mm in PDF points
-// Card 63×89mm played LANDSCAPE → page is 89mm wide × 63mm tall + 3mm bleed each side
-const PAGE_W = (89 + 6) * MM; // 269.3 pt
-const PAGE_H = (63 + 6) * MM; // 195.6 pt
+const TRIM_W = 89 * MM;        // card cut size (landscape)
+const TRIM_H = 63 * MM;
+const BLEED = 3 * MM;          // image extends this far past the cut line
+const MARGIN = 6 * MM;         // white border holding the crop marks
+// Bleed box (the full-bleed image area):
+const BLEED_W = TRIM_W + 2 * BLEED;
+const BLEED_H = TRIM_H + 2 * BLEED;
+// Full media (page) size = bleed box + crop-mark margin all around:
+const PAGE_W = BLEED_W + 2 * MARGIN;
+const PAGE_H = BLEED_H + 2 * MARGIN;
+// Origins (bottom-left) of the bleed box and trim box within the page:
+const BLEED_X = MARGIN, BLEED_Y = MARGIN;
+const TRIM_X = MARGIN + BLEED, TRIM_Y = MARGIN + BLEED;
+
+// Draw the 8 crop marks (2 per corner) in the white margin, aligned to the trim
+// edges. They sit OUTSIDE the bleed box so they never overlap the image.
+function drawCropMarks(page: PDFPage) {
+  const t = 0.5; // line thickness (pt)
+  const black = rgb(0, 0, 0);
+  const L = MARGIN; // mark length = the margin width
+  const xL = TRIM_X, xR = TRIM_X + TRIM_W;          // trim left / right
+  const yB = TRIM_Y, yT = TRIM_Y + TRIM_H;          // trim bottom / top
+  const bL = BLEED_X, bR = BLEED_X + BLEED_W;       // bleed left / right
+  const bB = BLEED_Y, bT = BLEED_Y + BLEED_H;       // bleed bottom / top
+  const line = (x1: number, y1: number, x2: number, y2: number) =>
+    page.drawLine({ start: { x: x1, y: y1 }, end: { x: x2, y: y2 }, thickness: t, color: black });
+  // vertical marks (in top/bottom margins), aligned to trim left & right edges
+  line(xL, 0, xL, bB); line(xL, bT, xL, PAGE_H);
+  line(xR, 0, xR, bB); line(xR, bT, xR, PAGE_H);
+  // horizontal marks (in left/right margins), aligned to trim bottom & top edges
+  line(0, yB, bL, yB); line(bR, yB, PAGE_W, yB);
+  line(0, yT, bL, yT); line(bR, yT, PAGE_W, yT);
+}
 
 export async function GET(req: NextRequest) {
   const orderId = req.nextUrl.searchParams.get('orderId');
@@ -47,8 +82,9 @@ export async function GET(req: NextRequest) {
 
   // ── Cover page ──────────────────────────────────────────────────────────────
   const coverPage = pdf.addPage([PAGE_W, PAGE_H]);
-  // Warm cream background
-  coverPage.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: rgb(0.961, 0.945, 0.925) });
+  // Warm cream background — fills the bleed box only, so the crop-mark margin stays white.
+  coverPage.drawRectangle({ x: BLEED_X, y: BLEED_Y, width: BLEED_W, height: BLEED_H, color: rgb(0.961, 0.945, 0.925) });
+  drawCropMarks(coverPage);
 
   const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
   const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
@@ -131,20 +167,30 @@ export async function GET(req: NextRequest) {
       continue;
     }
 
-    // Scale to cover the landscape card — no rotation needed.
-    const scale = Math.max(PAGE_W / embedded.width, PAGE_H / embedded.height);
+    // Scale to COVER the bleed box (image fills 3mm past the trim on every side).
+    const scale = Math.max(BLEED_W / embedded.width, BLEED_H / embedded.height);
     const scaledW = embedded.width * scale;
     const scaledH = embedded.height * scale;
 
     // Draw the image TWICE (memory game pair)
     for (let i = 0; i < 2; i++) {
       const page = pdf.addPage([PAGE_W, PAGE_H]);
+      // Clip to the bleed box so the cover-scaled overflow can't spill onto the
+      // white crop-mark margin.
+      page.pushOperators(
+        pushGraphicsState(),
+        rectangle(BLEED_X, BLEED_Y, BLEED_W, BLEED_H),
+        clip(),
+        endPath(),
+      );
       page.drawImage(embedded, {
-        x: (PAGE_W - scaledW) / 2,
-        y: (PAGE_H - scaledH) / 2,
+        x: BLEED_X + (BLEED_W - scaledW) / 2,
+        y: BLEED_Y + (BLEED_H - scaledH) / 2,
         width: scaledW,
         height: scaledH,
       });
+      page.pushOperators(popGraphicsState());
+      drawCropMarks(page);
     }
   }
 
