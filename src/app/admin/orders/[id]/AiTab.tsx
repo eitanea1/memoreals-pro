@@ -213,6 +213,57 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     setLoading(null);
   }
 
+  // Open the OS file picker and resolve with the chosen image (or null).
+  function pickImage(): Promise<File | null> {
+    return new Promise((resolve) => {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/png,image/jpeg';
+      input.onchange = () => resolve(input.files?.[0] ?? null);
+      input.click();
+    });
+  }
+
+  async function uploadImage(fields: Record<string, string>, file: File) {
+    const fd = new FormData();
+    fd.append('file', file);
+    fd.append('orderId', order.id);
+    for (const [k, v] of Object.entries(fields)) fd.append(k, v);
+    const res = await fetch('/api/admin/upload-image', { method: 'POST', body: fd });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'שגיאה' }));
+      throw new Error(err.error ?? 'שגיאה בהעלאה');
+    }
+  }
+
+  // Upload a custom image as a new OPTION for an existing character (replace flow).
+  async function handleUploadForChar(char: { name: string; position: number }) {
+    const file = await pickImage();
+    if (!file) return;
+    setLoading(`upload-${char.name}`); setError('');
+    try {
+      await uploadImage({ mode: 'character', characterName: char.name, characterIndex: String(char.position) }, file);
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה בהעלאה');
+    } finally { setLoading(null); }
+  }
+
+  // Add a brand-new character from an uploaded image (auto-selected).
+  async function handleAddCharacter() {
+    const displayName = window.prompt('שם הדמות החדשה (למשל: אלזה)');
+    if (!displayName?.trim()) return;
+    const file = await pickImage();
+    if (!file) return;
+    setLoading('add-character'); setError('');
+    try {
+      await uploadImage({ mode: 'newCharacter', displayName: displayName.trim() }, file);
+      router.refresh();
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה בהוספת דמות');
+    } finally { setLoading(null); }
+  }
+
   function getDefaultPrompt(charName: string, variation: PromptVariation): string {
     return buildPrompt({
       characterName: charName,
@@ -254,7 +305,7 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     }));
   }
 
-  function renderCharacterImages(char: { name: string; displayName: string }, showRegenerate: boolean, isSampleSection: boolean) {
+  function renderCharacterImages(char: { name: string; displayName: string; position: number }, showRegenerate: boolean, isSampleSection: boolean) {
     // Scope to this section's image group: a character can have BOTH a selected
     // sample and a selected full-set image. Without this filter the UPSCALE
     // button (and the displayed thumbnails) could target the wrong copy.
@@ -287,6 +338,16 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
                   title={selectedImg ? 'שדרג את התמונה הנבחרת ל-HD' : 'בחר תמונה קודם'}
                 >
                   {selectedImg && loading === `upscale-${selectedImg.id}` ? '⏳ משדרג...' : '✨ UPSCALE נבחרת'}
+                </Button>
+              )}
+              {!isSampleSection && (
+                <Button
+                  variant="brand-outline" size="sm"
+                  disabled={loading === `upload-${char.name}`}
+                  onClick={() => handleUploadForChar({ name: char.name, position: char.position })}
+                  title="העלה תמונה משלך כאופציה לדמות הזו"
+                >
+                  {loading === `upload-${char.name}` ? '⏳ מעלה...' : '⬆️ העלה תמונה'}
                 </Button>
               )}
               <Button variant="brand-outline" size="sm" onClick={() => togglePromptEditor(char.name)}>
@@ -546,7 +607,17 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
               </div>
             );
           })()}
-          <p className="text-sm text-[var(--c-muted)]">בחר תמונה מנצחת לכל דמות:</p>
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-[var(--c-muted)]">בחר תמונה מנצחת לכל דמות:</p>
+            <Button
+              variant="brand-outline" size="sm"
+              disabled={loading === 'add-character'}
+              onClick={handleAddCharacter}
+              title="הוסף דמות חדשה מתמונה שתעלה"
+            >
+              {loading === 'add-character' ? '⏳ מוסיף...' : '➕ הוסף דמות'}
+            </Button>
+          </div>
           {order.characters.map((char) => renderCharacterImages(char, true, false))}
         </div>
       )}

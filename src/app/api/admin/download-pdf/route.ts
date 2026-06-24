@@ -72,44 +72,53 @@ export async function GET(req: NextRequest) {
 
   // ── Cover page ──────────────────────────────────────────────────────────────
   const coverPage = pdf.addPage([PAGE_W, PAGE_H]);
-  // Warm cream background fills the whole page (full bleed).
-  coverPage.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: rgb(0.961, 0.945, 0.925) });
+
+  if (order.coverImageUrl) {
+    // Custom uploaded logo — fill the card full-bleed, just like a character card.
+    try {
+      const res = await fetch(order.coverImageUrl, { redirect: 'follow' });
+      if (res.ok) {
+        const bytes = new Uint8Array(await res.arrayBuffer());
+        const ct = res.headers.get('content-type') ?? '';
+        const logo = ct.includes('png') || (bytes[0] === 0x89 && bytes[1] === 0x50)
+          ? await pdf.embedPng(bytes)
+          : await pdf.embedJpg(bytes);
+        const s = Math.max(PAGE_W / logo.width, PAGE_H / logo.height);
+        coverPage.drawImage(logo, {
+          x: (PAGE_W - logo.width * s) / 2,
+          y: (PAGE_H - logo.height * s) / 2,
+          width: logo.width * s,
+          height: logo.height * s,
+        });
+      }
+    } catch (e) {
+      console.error('[download-pdf] cover image failed:', e);
+    }
+  } else {
+    // Default title card: cream background + "MemoReals" + child's name.
+    coverPage.drawRectangle({ x: 0, y: 0, width: PAGE_W, height: PAGE_H, color: rgb(0.961, 0.945, 0.925) });
+    const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
+    const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
+    const brandText = 'MemoReals';
+    const brandSize = 20;
+    const brandW = boldFont.widthOfTextAtSize(brandText, brandSize);
+    coverPage.drawText(brandText, {
+      x: (PAGE_W - brandW) / 2, y: PAGE_H * 0.62, size: brandSize, font: boldFont,
+      color: rgb(0.357, 0.129, 0.714),
+    });
+    const nameText = order.subjectName;
+    const nameSize = 16;
+    const nameW = regularFont.widthOfTextAtSize(nameText, nameSize);
+    coverPage.drawText(nameText, {
+      x: (PAGE_W - nameW) / 2, y: PAGE_H * 0.47, size: nameSize, font: regularFont,
+      color: rgb(0.18, 0.18, 0.18),
+    });
+    coverPage.drawLine({
+      start: { x: PAGE_W * 0.25, y: PAGE_H * 0.55 }, end: { x: PAGE_W * 0.75, y: PAGE_H * 0.55 },
+      thickness: 0.5, color: rgb(0.6, 0.5, 0.8),
+    });
+  }
   drawTrimGuide(coverPage);
-
-  const boldFont = await pdf.embedFont(StandardFonts.HelveticaBold);
-  const regularFont = await pdf.embedFont(StandardFonts.Helvetica);
-
-  // "MemoReals" brand title
-  const brandText = 'MemoReals';
-  const brandSize = 20;
-  const brandW = boldFont.widthOfTextAtSize(brandText, brandSize);
-  coverPage.drawText(brandText, {
-    x: (PAGE_W - brandW) / 2,
-    y: PAGE_H * 0.62,
-    size: brandSize,
-    font: boldFont,
-    color: rgb(0.357, 0.129, 0.714), // deep purple
-  });
-
-  // Child's name
-  const nameText = order.subjectName;
-  const nameSize = 16;
-  const nameW = regularFont.widthOfTextAtSize(nameText, nameSize);
-  coverPage.drawText(nameText, {
-    x: (PAGE_W - nameW) / 2,
-    y: PAGE_H * 0.47,
-    size: nameSize,
-    font: regularFont,
-    color: rgb(0.18, 0.18, 0.18),
-  });
-
-  // Thin divider line
-  coverPage.drawLine({
-    start: { x: PAGE_W * 0.25, y: PAGE_H * 0.55 },
-    end:   { x: PAGE_W * 0.75, y: PAGE_H * 0.55 },
-    thickness: 0.5,
-    color: rgb(0.6, 0.5, 0.8),
-  });
 
   // ── Character pages (each image × 2) ────────────────────────────────────────
   for (const img of selectedImages) {

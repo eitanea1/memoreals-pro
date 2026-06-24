@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 
 export default function DownloadTab({
@@ -8,13 +9,36 @@ export default function DownloadTab({
   selectedCount,
   totalChars,
   allSelected,
+  coverImageUrl,
 }: {
   orderId: string;
   selectedCount: number;
   totalChars: number;
   allSelected: boolean;
+  coverImageUrl: string | null;
 }) {
-  const [loading, setLoading] = useState<'pdf' | 'pptx' | 'zip' | null>(null);
+  const router = useRouter();
+  const [loading, setLoading] = useState<'pdf' | 'pptx' | 'zip' | 'logo' | null>(null);
+
+  async function handleUploadLogo() {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/png,image/jpeg';
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      setLoading('logo');
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('orderId', orderId);
+        fd.append('mode', 'logo');
+        await fetch('/api/admin/upload-image', { method: 'POST', body: fd });
+        router.refresh();
+      } finally { setLoading(null); }
+    };
+    input.click();
+  }
 
   function handleDownloadPdf() {
     setLoading('pdf');
@@ -59,6 +83,33 @@ export default function DownloadTab({
       <div className="flex items-center gap-2 text-green-700 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
         <span className="text-lg">🎉</span>
         <span className="font-semibold text-sm">כל {totalChars} הדמויות נבחרו — מוכן להדפסה!</span>
+      </div>
+
+      {/* Logo / cover card — the top card of the game */}
+      <div className="rounded-2xl border border-[var(--c-border)] bg-white p-6 flex flex-col gap-3">
+        <div className="flex items-start gap-3">
+          <span className="text-2xl">🏷️</span>
+          <div className="flex-1">
+            <p className="font-semibold text-[var(--c-dark)]">לוגו (הכרטיס העליון)</p>
+            <p className="text-xs text-[var(--c-muted)] mt-0.5">
+              {coverImageUrl
+                ? 'לוגו מותאם הועלה — יופיע ככרטיס הראשון ב-PDF.'
+                : 'ברירת מחדל: כרטיס "MemoReals" + שם הילד. אפשר להעלות לוגו משלך.'}
+            </p>
+          </div>
+          {coverImageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={coverImageUrl} alt="logo" className="h-14 w-14 object-cover rounded-lg border border-[var(--c-border)]" />
+          )}
+        </div>
+        <Button
+          variant="brand-outline"
+          onClick={handleUploadLogo}
+          disabled={!!loading}
+          className="w-full sm:w-auto"
+        >
+          {loading === 'logo' ? '⏳ מעלה...' : coverImageUrl ? '🔄 החלף לוגו' : '🏷️ העלה לוגו'}
+        </Button>
       </div>
 
       {/* PDF download — primary */}

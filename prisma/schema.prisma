@@ -44,6 +44,8 @@ model Order {
   loraTrigger    String?     // trigger word used during LoRA training
   aiOverride     String      @default("")
 
+  coverImageUrl  String?     // custom logo/cover image for the top card (admin upload)
+
   userId         String?
   user           User?       @relation(fields: [userId], references: [id])
   characters     OrderCharacter[]

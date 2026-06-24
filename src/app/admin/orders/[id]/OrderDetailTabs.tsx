@@ -100,6 +100,7 @@ export default function OrderDetailTabs({ order }: { order: SerializedOrder }) {
             selectedCount={selectedCount}
             totalChars={order.characters.length}
             allSelected={allSelected}
+            coverImageUrl={order.coverImageUrl}
           />
         )}
       </div>
