@@ -8,23 +8,24 @@ export const maxDuration = 60;
  * Generate a print-ready PDF for a MemoReals order.
  * GET /api/admin/download-pdf?orderId=xxx
  *
- * Replicates the customer's PowerPoint template "cards-6.3-8.9":
+ * Replicates the customer's "cards-6.3-8.9" template, LANDSCAPE so the 4:3 images
+ * fill the card with no heavy cropping:
  *  - Page 1: Cover — cream background, MemoReals title, child's name
  *  - Pages 2–N: Each selected character image appears TWICE (memory game pairs)
- *  - Every page: PORTRAIT card. The image fills the whole page (full bleed). A red
+ *  - Every page: LANDSCAPE card. The image fills the whole page (full bleed). A red
  *    dashed rounded rectangle marks the cut line (trim); everything outside it is
  *    the 1.5mm bleed that gets trimmed off.
  *
- * Exact geometry from the template: slide (media) 66×92mm, trim 63×89mm portrait
- * (1.5mm bleed each side), rounded corners r≈2.2mm, red long-dashed border.
+ * Geometry: trim 89×63mm landscape, 1.5mm bleed each side → media 92×66mm,
+ * rounded corners r≈2.2mm, red long-dashed border.
  */
 
 const MM = 2.8346; // 1mm in PDF points
-const TRIM_W = 63 * MM;        // card cut size (PORTRAIT)
-const TRIM_H = 89 * MM;
+const TRIM_W = 89 * MM;        // card cut size (LANDSCAPE)
+const TRIM_H = 63 * MM;
 const BLEED = 1.5 * MM;        // image extends this far past the cut line (per template)
-const PAGE_W = TRIM_W + 2 * BLEED;  // 66mm media
-const PAGE_H = TRIM_H + 2 * BLEED;  // 92mm media
+const PAGE_W = TRIM_W + 2 * BLEED;  // 92mm media
+const PAGE_H = TRIM_H + 2 * BLEED;  // 66mm media
 const TRIM_X = BLEED, TRIM_Y = BLEED;
 const CORNER = 2.2 * MM;       // rounded-corner radius (template adj 3536)
 
