@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fal } from '@fal-ai/client';
 import { prisma } from '@/lib/prisma';
-import { buildPrompt, VARIATIONS, LORA_TRIGGER, type PromptVariation } from '@/lib/prompts';
+import { buildPrompt, VARIATIONS, LORA_TRIGGER, NEGATIVE_PROMPT, type PromptVariation } from '@/lib/prompts';
 
 fal.config({ credentials: process.env.FAL_KEY });
 
@@ -42,6 +42,7 @@ async function generateForCharacterVariation(params: {
       // lives in the prompt formula (see prompts.ts), not in these settings.
       num_inference_steps: 28,
       guidance_scale: 3.5,
+      negative_prompt: NEGATIVE_PROMPT, // was never passed — this pushes out the kid's everyday clothes
       enable_safety_checker: false,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,

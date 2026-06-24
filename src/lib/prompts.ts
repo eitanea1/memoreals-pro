@@ -331,4 +331,7 @@ export const NEGATIVE_PROMPT =
   'cartoon, anime, illustration, painting, drawing, blurry, deformed, ' +
   'ugly, bad anatomy, extra limbs, watermark, text, nsfw, nude, ' +
   'flat lighting, studio backdrop, plain background, low quality, ' +
-  'jpeg artifacts, smooth plastic skin, airbrushed, stock photo look';
+  'jpeg artifacts, smooth plastic skin, airbrushed, stock photo look, ' +
+  // Anti-casual: stop the LoRA from forcing the child's everyday clothes onto the costume.
+  'polo shirt, t-shirt, casual clothes, everyday clothing, plain shirt, ' +
+  'sweater, hoodie, jeans, school uniform, regular outfit';
