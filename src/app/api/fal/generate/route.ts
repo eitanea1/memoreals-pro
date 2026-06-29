@@ -43,8 +43,10 @@ async function generateForCharacterVariation(params: {
       // behind the approved gold results (Wonder Woman, Iron Man, Batgirl). The magic
       // lives in the prompt formula (see prompts.ts), not in these settings.
       num_inference_steps: 28,
-      guidance_scale: 3.5,
-      negative_prompt: NEGATIVE_PROMPT, // was never passed — this pushes out the kid's everyday clothes
+      // guidance 2.5 (was 3.5): lower guidance gives natural photographic skin;
+      // 3.5 produced the "plastic / waxy AI" look. Costume adherence still holds.
+      guidance_scale: 2.5,
+      negative_prompt: NEGATIVE_PROMPT, // pushes out everyday clothes + plastic skin
       enable_safety_checker: false,
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } as any,

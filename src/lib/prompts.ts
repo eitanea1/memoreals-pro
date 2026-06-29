@@ -332,6 +332,8 @@ export const NEGATIVE_PROMPT =
   'ugly, bad anatomy, extra limbs, watermark, text, nsfw, nude, ' +
   'flat lighting, studio backdrop, plain background, low quality, ' +
   'jpeg artifacts, smooth plastic skin, airbrushed, stock photo look, ' +
+  // Anti-plastic: fight the flux "baked / waxy AI" skin look.
+  'waxy skin, doll, 3d render, cgi, overly rosy cheeks, fake skin, glossy skin, ' +
   // Anti-casual: stop the LoRA from forcing the child's everyday clothes onto the costume.
   'polo shirt, t-shirt, casual clothes, everyday clothing, plain shirt, ' +
   'sweater, hoodie, jeans, school uniform, regular outfit';
