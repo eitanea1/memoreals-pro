@@ -43,6 +43,7 @@ model Order {
   loraUrl        String?
   loraTrigger    String?     // trigger word used during LoRA training
   loraScale      Float?      // LoRA strength at generation (null → 1.0); lower for over-fit LoRAs
+  modelVersion   String      @default("flux1") // "flux1" | "flux2" — which fal model family trains/generates this order
   aiOverride     String      @default("")
 
   coverImageUrl  String?     // custom logo/cover image for the top card (admin upload)

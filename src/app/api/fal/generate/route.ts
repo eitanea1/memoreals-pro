@@ -21,6 +21,7 @@ async function generateForCharacterVariation(params: {
   variation: PromptVariation;
   customPrompt?: string;
   loraScale: number;
+  modelVersion: string;
 }) {
   const prompt = buildPrompt({
     characterName: params.characterName,
@@ -31,26 +32,41 @@ async function generateForCharacterVariation(params: {
     customPrompt: params.customPrompt,
   });
 
-  const result = await fal.subscribe('fal-ai/flux-lora', {
-    input: {
-      prompt,
-      // Default scale 1.0 (correctly-trained LoRA gives full likeness + scene). Lower
-      // it per-order (order.loraScale) for an over-fit LoRA that bakes in the kid's
-      // own clothes — ~0.6 lets the costume win while keeping likeness.
-      loras: [{ path: params.loraUrl, scale: params.loraScale }],
-      num_images: 1,
-      // Default image_size + 28 steps + guidance 3.5 + scale 1.0 — the exact settings
-      // behind the approved gold results (Wonder Woman, Iron Man, Batgirl). The magic
-      // lives in the prompt formula (see prompts.ts), not in these settings.
-      num_inference_steps: 28,
-      guidance_scale: 3.5, // original (do not change without asking — see memory)
-      negative_prompt: NEGATIVE_PROMPT, // pushes out everyday clothes + plastic skin
-      enable_safety_checker: false,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any,
-    logs: false,
-    onQueueUpdate: () => {},
-  }) as FalImageResult;
+  // FLUX.2 orders generate on fal-ai/flux-2/lora (more photorealistic skin, default
+  // guidance 2.5, no negative_prompt support). Everything else stays on FLUX.1.
+  const isFlux2 = params.modelVersion === 'flux2';
+  const result = isFlux2
+    ? await fal.subscribe('fal-ai/flux-2/lora', {
+        input: {
+          prompt,
+          loras: [{ path: params.loraUrl, scale: params.loraScale }],
+          num_images: 1,
+          num_inference_steps: 28,
+          guidance_scale: 2.5,
+          image_size: 'landscape_4_3', // matches the card orientation
+          enable_safety_checker: false,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+        logs: false,
+        onQueueUpdate: () => {},
+      }) as FalImageResult
+    : await fal.subscribe('fal-ai/flux-lora', {
+        input: {
+          prompt,
+          // Default scale 1.0 (correctly-trained LoRA gives full likeness + scene). Lower
+          // it per-order (order.loraScale) for an over-fit LoRA that bakes in the kid's
+          // own clothes — ~0.6 lets the costume win while keeping likeness.
+          loras: [{ path: params.loraUrl, scale: params.loraScale }],
+          num_images: 1,
+          num_inference_steps: 28,
+          guidance_scale: 3.5, // original (do not change without asking — see memory)
+          negative_prompt: NEGATIVE_PROMPT, // pushes out everyday clothes + plastic skin
+          enable_safety_checker: false,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+        logs: false,
+        onQueueUpdate: () => {},
+      }) as FalImageResult;
 
   const images = result.data?.images ?? [];
 
@@ -112,6 +128,7 @@ export async function POST(req: NextRequest) {
           variation,
           customPrompt: custom,
           loraScale: order.loraScale ?? 1.0,
+          modelVersion: order.modelVersion,
         });
         generated++;
       }
@@ -174,6 +191,7 @@ export async function POST(req: NextRequest) {
         isSample,
         variation,
         loraScale:      order.loraScale ?? 1.0,
+        modelVersion:   order.modelVersion,
       });
       generated++;
     }

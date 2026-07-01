@@ -64,24 +64,35 @@ export async function POST(req: NextRequest) {
       zipUrl = blob.url;
     }
 
-    // Submit training to the queue (returns immediately, no blocking)
-    // NOTE: these inputs mirror the manual fal training run that produced great
-    // results at scale 1.0 (full likeness AND full scene). The previous config
-    // diverged in 4 ways that overbaked the LoRA and locked the subject to the
-    // training background — see each inline comment.
-    const { request_id } = await fal.queue.submit('fal-ai/flux-lora-portrait-trainer', {
-      input: {
-        images_data_url: zipUrl,
-        trigger_phrase: LORA_TRIGGER,    // was `trigger_word` — wrong param name, so the trigger was ignored
-        steps: 1000,
-        learning_rate: 0.0002,           // was 0.0004 — double LR overbaked the LoRA (narrow scale band)
-        subject_crop: true,              // was missing — without it the room/background bakes into the subject
-        create_masks: false,
-        multiresolution_training: true,  // was `resolution: '512,768,1024'` — wrong param, silently ignored
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any,
-      webhookUrl,
-    });
+    // Submit training to the queue (returns immediately, no blocking). Branch on
+    // the order's model family. Both trainers output `diffusers_lora_file` (the
+    // webhook reads that), so no webhook change is needed.
+    const isFlux2 = order.modelVersion === 'flux2';
+    const { request_id } = isFlux2
+      ? await fal.queue.submit('fal-ai/flux-2-trainer', {
+          input: {
+            image_data_url: zipUrl,               // NOTE: singular for flux-2 (vs images_data_url on flux-1)
+            steps: 1000,
+            learning_rate: 0.00005,               // flux-2 default
+            default_caption: `a photo of ${LORA_TRIGGER}`, // bakes the trigger token in (no trigger_phrase param on flux-2)
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any,
+          webhookUrl,
+        })
+      : await fal.queue.submit('fal-ai/flux-lora-portrait-trainer', {
+          // FLUX.1 config mirrors the proven manual run (full likeness AND scene at scale 1.0).
+          input: {
+            images_data_url: zipUrl,
+            trigger_phrase: LORA_TRIGGER,
+            steps: 1000,
+            learning_rate: 0.0002,
+            subject_crop: true,              // without it the room/background bakes into the subject
+            create_masks: false,
+            multiresolution_training: true,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any,
+          webhookUrl,
+        });
 
     await prisma.order.update({
       where: { id: orderId },

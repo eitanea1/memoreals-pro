@@ -80,6 +80,21 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
     return res.json();
   }
 
+  async function handleDuplicateToFlux2() {
+    if (!window.confirm(
+      'לשכפל את ההזמנה למודל FLUX.2? ' +
+      'ההזמנה המקורית (FLUX.1) תישאר כמו שהיא. יווצר עותק חדש (עם אותן תמונות ודמויות) שתצטרך לאמן מחדש על FLUX.2 (~$6.40). ' +
+      'תועבר לעותק החדש.'
+    )) return;
+    setLoading('duplicate'); setError('');
+    try {
+      const res = await post('/api/admin/duplicate-order', { orderId: order.id, modelVersion: 'flux2' });
+      if (res?.newOrderId) router.push(`/admin/orders/${res.newOrderId}`);
+    } catch (e: unknown) {
+      setError(e instanceof Error ? e.message : 'שגיאה בשכפול');
+    } finally { setLoading(null); }
+  }
+
   async function handleTrain() {
     setLoading('train'); setError('');
     try {
@@ -461,6 +476,23 @@ export default function AiTab({ order }: { order: SerializedOrder }) {
 
   return (
     <div className="flex flex-col gap-4">
+      {/* ── Model family banner + duplicate-to-FLUX.2 ── */}
+      <div className="flex items-center justify-between rounded-xl border border-[var(--c-border)] bg-[var(--c-bg)] px-4 py-2">
+        <span className="text-sm font-semibold text-[var(--c-mid)]">
+          מודל: {order.modelVersion === 'flux2' ? '🟣 FLUX.2 (ריאליסטי)' : '🔵 FLUX.1'}
+        </span>
+        {order.modelVersion !== 'flux2' && (
+          <Button
+            variant="brand-outline" size="sm"
+            disabled={loading === 'duplicate'}
+            onClick={handleDuplicateToFlux2}
+            title="צור עותק של ההזמנה לאימון על FLUX.2 (המקור נשאר)"
+          >
+            {loading === 'duplicate' ? '⏳ משכפל...' : '🧬 שכפל ל-FLUX.2'}
+          </Button>
+        )}
+      </div>
+
       {/* ── Step 1: Train ── */}
       <div className="admin-ai-step">
         <span className="admin-step-label">שלב 1 — אימון מודל</span>
