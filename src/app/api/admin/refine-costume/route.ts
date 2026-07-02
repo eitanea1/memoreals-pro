@@ -31,17 +31,20 @@ export async function POST(req: NextRequest) {
   // The characterName is the English costume name (e.g. "Spider-Man"); custom
   // characters use their given name — Kontext still refines the visible outfit.
   const instruction =
-    `Transform the outfit into a realistic, highly detailed cinematic ${image.characterName} ` +
-    `costume with proper textured fabric, accurate emblems and crisp details. Keep the EXACT ` +
-    `same child's face, eyes, hairstyle, skin, body, pose and background completely unchanged. ` +
-    `Photorealistic, sharp, vibrant, professional photography.`;
+    `Enhance into a realistic photograph: natural detailed skin with real texture (not plastic, ` +
+    `not waxy), a refined realistic ${image.characterName} costume with textured fabric and crisp ` +
+    `details, cinematic lighting. CRITICAL: keep the child's face, facial features, face shape, ` +
+    `skin tone, eyes and hair 100% IDENTICAL — do not alter the face at all. Keep the same pose and background.`;
 
   try {
     const result = (await fal.subscribe('fal-ai/flux-pro/kontext', {
-      input: { prompt: instruction, image_url: image.imageUrl },
+      // guidance 1.5: low so Kontext changes little and preserves the child's likeness
+      // (default 3.5 drifted the face). Enough to fix skin realism + costume.
+      input: { prompt: instruction, image_url: image.imageUrl, guidance_scale: 1.5 },
       logs: false,
       onQueueUpdate: () => {},
-    })) as KontextResult;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } as any)) as KontextResult;
 
     const outUrl = result.data?.images?.[0]?.url ?? result.data?.image?.url;
     if (!outUrl) throw new Error('Kontext returned no image');
